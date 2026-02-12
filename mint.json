@@ -1,0 +1,108 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "AnE Fertility and Roleplay System",
+  "logo": {
+    "light": "logo/ane-logo.png",
+    "dark": "logo/ane-logo.png"
+  },
+  "favicon": "favicon.ico",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "navigation": [
+    {
+      "group": "Overview",
+      "pages": [
+        "index",
+        "overview/our-features",
+        "overview/need-assistance",
+        "getting-started/new-to-ane"
+      ]
+    },
+    {
+      "group": "〽️ Operation",
+      "pages": [
+        "getting-started/operation",
+        "getting-started/operation/characters",
+        "getting-started/operation/species",
+        "getting-started/operation/species-overriding",
+        "getting-started/operation/species-compatibility",
+        "getting-started/operation/credit-system",
+        "getting-started/operation/ane-store"
+      ]
+    },
+    {
+      "group": "🤰 Conception",
+      "pages": [
+        "getting-started/conception",
+        "getting-started/conception/copulation",
+        "getting-started/conception/character-compatibility",
+        "getting-started/conception/conception-probability",
+        "getting-started/conception/conception-competition",
+        "getting-started/conception/essence-retention"
+      ]
+    },
+    {
+      "group": "Getting Started",
+      "pages": [
+        "getting-started/knotting-tying",
+        "getting-started/fluids-and-stats",
+        "getting-started/stats-hud",
+        "getting-started/adoptions",
+        "getting-started/packs",
+        "getting-started/command-line",
+        "getting-started/attachments"
+      ]
+    },
+    {
+      "group": "OPTIONAL ADD-ONS",
+      "pages": [
+        "optional-add-ons/rlv-outfits",
+        "optional-add-ons/lovense",
+        "optional-add-ons/breeding-gardens-and-forests",
+        "optional-add-ons/telegram-integration"
+      ]
+    },
+    {
+      "group": "PLUGINS",
+      "pages": [
+        "plugins/ovum-exchanger",
+        "plugins/roleplayer-plugin",
+        "plugins/nectar-extractor-plugin",
+        "plugins/oviposition-plugin",
+        "plugins/good-moaning-plugin",
+        "plugins/project-arousal-plugin",
+        "plugins/its-not-mine-plugin"
+      ]
+    },
+    {
+      "group": "ITEMS",
+      "pages": [
+        "items/fluid-container",
+        "items/breeding-seed",
+        "items/condoms-pack",
+        "items/aging-potion",
+        "items/paternity-tester",
+        "items/poison-apple"
+      ]
+    },
+    {
+      "group": "DEVELOPMENT",
+      "pages": [
+        "development/release-notes",
+        "development/developers-api",
+        "development/builders-kit",
+        "development/faq"
+      ]
+    }
+  ],
+  "footer": {
+    "socials": {
+      "x": "https://x.com/mintlify",
+      "github": "https://github.com/mintlify",
+      "linkedin": "https://linkedin.com/company/mintlify"
+    }
+  }
+}

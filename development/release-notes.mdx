@@ -1,0 +1,198 @@
+---
+title: "Release Notes"
+---
+
+# Release Notes
+
+## 2025/07/28 - UPDATES
+
+* **Replaced `AttachmentConstants` with `AttachmentTypeEnum`:** Removed deprecated interface and updated all references accordingly.
+* **Code Cleanup:** Removed redundant null checks and added missing `use` statements for proper namespace resolution.
+* **Updated `ProfileModelImpl` to Use UUIDs:** Replaced integer IDs with UUID strings; added optional `oldId` for legacy support. Constructor now generates UUIDs for new profiles.
+* **Refactored `ProfileHelper` to Use String IDs:** Modified methods to handle string-based UUIDs instead of integers. Adjusted dependent logic, enums, dialogs, and updated composer dependencies.
+
+## 2025/07/26 - RELEASE
+
+This release focuses heavily on refining fluid container handling and enhancing roleplay mechanics. Key updates include improved fluid properties (like type, color, and scent), expanded plugin support for devices, and significant improvements to rendering and interaction logic. Penetration tracking and stimulator behavior were also streamlined for more accurate roleplay service performance. Several bugs were addressed around dialog naming and subscription cleanup, and logging was improved to aid in debugging and model traceability.
+
+#### **Updates**
+
+* Added `SexRifleDevice` plugin.
+* **25.5.20.1**:
+  * Enhanced roleplay service with improved stimulator functionality and streamlined penetration handling.
+  * Added new projectile device plugins and revamped fluid container model.
+* **25.6.15.1**:
+  * Added detailed fluid properties (type, color, scent, etc.).
+  * Updated various dependencies for improved compatibility and security.
+* **25.7.13.1**:
+  * Added comprehensive fluid container rendering and interaction improvements.
+  * Introduced `RenderHelper` for shared logic and improved plugin dialogs.
+  * Updated dependencies to support these changes.
+* **25.7.20.1**:
+  * Added `renderFluidContainerUsage` for better rendering consistency.
+  * Improved `updateEvent` logic and arousal adjustments for better accuracy.
+* **25.7.22.1**:
+  * Improved texture handling and dynamic color setting in fluid containers.
+  * Enhanced container state display and fixed issues in `doText`.
+  * Fixes applied for Essence Booster and RolePlayService stat transfer.
+* **25.7.25.1**:
+  * Enhanced logging for debugging.
+  * Improved data model identifiers and fluid/genetics handling accuracy.
+
+***
+
+#### **Bugfixes**
+
+* **25.7.9.1**:
+  * Standardized dialog naming using `setDialogName`.
+  * Cleaned up subscription logic (`on_created`, `on_destroy`).
+  * Improved modularity in birth offering logic.
+
+***
+
+#### **Refactors**
+
+* **25.6.2.1**:
+  * Reorganized fluid classes and plugins with clearer naming and improved structure.
+  * Added new injector plugins and updated enums for consistency.
+* **25.6.8.1**:
+  * Standardized method signatures and applied stricter typing.
+  * Introduced `readonly` stat classes and split extraction/injection logic.
+* **25.6.22.1**:
+  * Improved fluid handling in `AbstractItemFluidTypeContainer`.
+  * Added support for fluid retrieval by ID or hash.
+  * Cleaned up header model implementation with proper overrides.
+* **25.6.22.2**:
+  * Renamed `ContainerItemTrait` to `FluidContainerTrait` for clarity.
+* **25.7.2.1**:
+  * Unified logic for orifice/stimulator tracking in penetration handling.
+  * Added support for `ItemObjectRifleFluidContainer`.
+  * Removed deprecated methods and added consistent overrides.
+* **25.7.13.2**:
+  * Updated `SensorSearch` instantiation with null params for clarity.
+* **25.7.18.1**:
+  * Improved attachment/detachment logic in `SexRifleDevice`.
+  * Cleaned up unused monitoring calls in `RunningState`.
+
+## 2025/02/26 - BUG-FIXES
+
+Simplified logic in OvipositionPlugin by replacing orifice penetration checks with state validation and minor refactoring for better readability.
+
+Simplified dialog message handling and improved code readability across multiple plugin classes. Added modular dialog naming for better clarity and streamlined arousal logic in ProjectArousalPlugin.
+
+25.2.25.1 Remove deprecated ProjectArousalPlugin and update related APIs
+
+Deleted the legacy ProjectArousalPlugin and replaced its usages with updated implementations in external and related plugins. Adjusted dialog handling, improved modularity, and added directional control for project interaction logic.
+
+25.2.26.1 Refactor dialog messages and actions in plugin classes.
+
+## 2025/02/21 - RELEASE
+
+**Fixes**:
+
+* Updated button bar button orientation glitch causing buttons to not be right-side up when bar was positioned in any direction other than left-side. Updates:
+* New [Knot-Tying](/getting-started/knotting-tying) capability when breeding for penetration of knot to engage RLV (with leash-like behavior) to keep both individuals together until the knot dissipates or is forcefully withdrawn. 
+* ProjectArousal plugin release to support PA2.
+* New Ovum Exchange (Extractor/Implanter) device plugin to move ovum between characters.
+
+**Notes**: If having purchased a plugin that was updated, these updates are always provided for free; a product will be redistributed if purchased through the SLMP (SecondLife Marketplace) or in-world vendor, else points will be credited if purchased through the [Rewards store](/getting-started/operation/ane-store). 
+
+Changes: \
+• 24.10.10.4 Change sound action order for BarChange theme \
+• 24.10.13.1 Remove unnecessary logging and update default profile values \
+• 24.12.21.1 Upgrade dependencies \
+• 25.1.14.1 Refactor method signatures and update service dependencies. \
+• 25.1.20.1 Update type and service handling across multiple classes \
+• 25.2.9.1 Refactor and enhance plugin and item handling. \
+• 25.2.12.1 Refactor command handling and update dependencies \
+• 25.2.12.3 Add ovum ampoule handling and improve interaction logic \
+• 25.2.12.4 Add dynamic text updates for Ovum status \
+• 25.2.14.1 Refactor and enhance functionality across multiple components \
+• 25.2.15.1 Fix enum usage and correct embryo size calculation \
+• 25.2.16.1 Updated ProjectArousal implementation to enable PA2 integration \
+• 25.2.15.2 Corrected embryo size calculation \
+• 25.2.16.2 Refactor plugin handling and update dependencies. \
+• 25.2.16.3 Add knotting/tying functionality to Breed story. \
+• 25.2.17.1 Refactor ProjectArousalPlugin to improve arousal tracking \
+• 25.2.19.1 Refactor message formatting and adjust arousal stat increment. \
+• 25.2.21.1 Refactor plugin attachment logic and update dependencies
+
+## 2024/10/13 - RELEASE
+
+**Features**:
+
+* Copulate now engages Strength Stat to allow individual that did not initiate the copulation to resist based on character and/or species strength; resistance is pretty much futile if initiator’s species has more strength and resisting is not an option if your strength drops below 25% or your arousal is above 25%. 
+
+**Bugfixes**:
+
+* HUD Bar gesture and texture has been fixed to allow swiping across the HUD to change direction and texture will update appropriately.
+
+**Changes**: 
+
+• 24.10.10.1 Refactor gesture direction handling and exception updates 
+
+• 24.9.28.2 Remove group membership check for reward processing 
+
+• 24.9.28.1 Refactored RolePlayService to include new methods for checking strength and defense, and enhanced the resistance logic in CopulateState. 
+
+• 24.9.8.4 Fix changing the race within character creation causes an error 
+
+• 24.9.8.4 Update InitialState to use VersionHelper for version text
+
+## 2024/09/08 - BUG-FIXES
+
+Fixed a major bug that prevented users from getting a new copy of the AnE HUD upon attaching an older copy prior to the 09/01 update. Please reattach your HUD to receive an updated copy.
+
+* Moved bar menu higher than stats hud
+* Updated RLV Relay Settings dialog implementation
+* Refractored RLV Relay permission handling
+* Enhanced SettingsDialog with more granular permission management options and corrected menu logic.
+* Removed check membership for SmartBots inviter
+
+## 2024/08/11 - BUG-FIXES
+
+* Update dependencies and refactor methods
+* Enhanced pregnancy logging.
+
+## 2024/08/10 - BUG-FIXES
+
+* Disable aging in Profile Model
+* Add species existence check and update product vend method
+* Added fix for AnE Store
+* Fix fluid collection and consolidate constants handling
+* Added fix for Outfits
+
+## 2024/08/10 - RELEASE
+
+AnE has been under active development since our last release, and now the long-awaited updates are here for the first release of 2024; the high-level list of updates include:
+
+**Performance:** 
+
+Migration to dedicated Intel based Google VM instances Enabling of multiple Cache implementations to increase processing speed
+
+**Optimization**: 
+
+Unified API which has significantly reduced listening channels and provides a more robust system Secondary scripts are capable of auto-recovery restoring their state Scripts have been reworked to reduce memory and provide faster response times
+
+**Visual/Audio**: 
+
+HUD Startup and Bar positioning sounds updated for better user experience Added quick access button for modifying Clothing/Outfits or click-hold for easy switching of Outfits HUD uses mesh instead of prims to facilitate improved texturing
+
+**Bugfixes**: 
+
+RLV implementations (including Relay) have been reworked to be more responsive and provide a better user experience overall
+
+**Features**: 
+
+RolePlayer allows for multi-color gradient titles and event-based popup icons RLV overlay vignette that adjusts alpha intensity based on arousal
+
+**Deprecations**: 
+
+Species Taxonomy removed from implementations (data not deleted, just pending better future integration) Legacy plugins are updated due to security and interference concerns (attach legacy plugin to receive an updated copy from vendor)
+
+**Work-in-Progress**: 
+
+Redefine of fluid properties and implementing of fluid side-effects Stats HUD redesign as a plugin for better user-experience Direct interface with familiar systems rather than requiring additional scripts 
+
+* Project Arousal 
+* Good Moaning

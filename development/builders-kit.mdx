@@ -1,0 +1,44 @@
+---
+title: "Builders Kit"
+---
+
+# Builders Kit
+
+The builders kit available in the [Marketplace](https://marketplace.secondlife.com/p/AnE-Builders-Kit/21858286) provides numerous scripts that allow integration with AnE for inclusion in your own projects; some example scripts are provided to assist you in starting and you can always reach out in the group or message the creator for assistance in getting your project going. Presently what is included in the kit is the following.
+
+#### Stats Script
+
+The `ane.stats` script affects user stats in the region. Use the example script and the `ane.stats` script in a prim to test. This requires basic SL events and JSON knowledge.
+
+**Stats Representation:**
+
+* Stats are percentages but implemented with points (default 1000 per stat per species).
+* Adjustments are made per profile/character by a ratio and then added or subtracted.
+* Baseline value is the average human expectation for stats like vitality, defense, arousal, etc.
+* Profile modifiers or special items can affect the profile stat ratio or value changes.
+
+**Example:**
+
+* To decrease vitality by 25%, send -250 (because -250 / 1000 = -25%).
+* To increase arousal by 75%, send 750 (because 750 / 1000 = 75%).
+
+**Considerations:**
+
+* Effects are applied to existing stat values. E.g., a vitality stat at 40% hit by -250 will drop to 30%.
+* Stats are capped between 0% and 100%.
+* Some stats affect others indirectly (e.g., increasing arousal decreases defense).
+
+#### Discovery Script
+
+The `ane.discover` script finds HUD users in the region. Results are key/value pairs with the user UUID as the key and the HUD object UUID as the value. Additional key/value pairs include `count` and `handle` (a custom string to identify the request in linked messages).
+
+### Broadcast Channels <a href="#broadcast_channels" id="broadcast_channels"></a>
+
+The following channels broadcast JSON data; see the `ane.broadcast.example` script:
+
+```json
+* integer CHAN_BROADCAST_SETTINGS = -1537921548;
+* integer CHAN_BROADCAST_PREGNANCY = -1537921547;
+* integer CHAN_BROADCAST_STATE = -1537921546;
+* integer CHAN_BROADCAST_STATS = -1537921545;
+```

@@ -1,0 +1,82 @@
+---
+title: "Character Compatibility"
+---
+
+# Character Compatibility
+
+Species match is determined first.
+
+**Same species** → **100%**\
+**Different species** → **50%**\
+**If either species is a hybrid** → **25%**, unless both characters share the exact same hybrid species, which stays **100%**.
+
+***
+
+### Species Forced
+
+Species Forced is gained through consecutive days of receiving that species’ semen by copulation or insemination.\
+The required number of days is:
+
+**min(Growth Period, Ovulation Cycle)**
+
+Completing that full streak results in **100% forced compatibility** with that species.
+
+***
+
+### Class & Form Compatibility
+
+Class and Form modify the species match using their complexity values.\
+The compatibility factor uses the lower value divided by the higher value for both Class and Form:
+
+```
+(class_low / class_high) * (form_low / form_high)
+```
+
+***
+
+#### Class Complexity
+
+* Human — 1.0
+* Demon — 1.2
+* Daemon — 1.5
+* Deity — 2.0
+* Synth — 100.0
+* Digital — 500.0
+
+#### Form Complexity
+
+* Human — 1.0
+* Feral — 0.8
+* Anthro — 0.9
+* Taur — 1.1
+* Shift — 1.2
+* Monster — 1.3
+
+***
+
+### Example
+
+Two characters share the same species and both are Feral.\
+One has a Human class (1.0) and the other has a Daemon class (1.5).
+
+Base compatibility:
+
+```
+100 * (1.0 / 1.5) * (0.8 / 0.8) = 66%
+```
+
+***
+
+### Breeding Forests & Partners
+
+Breeding Forests and Partners can each add up to **50% of the remaining incompatibility**.
+
+Using the previous example:
+
+* Remaining incompatibility: **34%**
+* Partner bonus (100% partner compatibility): **17%**
+* Final compatibility: **83%**
+
+<br />
+
+<img src="/images/migrated/c79f866159f6268ae906bc46360d2110.png" alt="" />

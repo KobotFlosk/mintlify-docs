@@ -1,0 +1,56 @@
+---
+title: "RLV Outfits"
+---
+
+# RLV Outfits
+
+Make use of RLV if you have multiple characters, outfits, or just a lot of clothes. The HUD will remember your outfit and ensure that you are always in character every time you log in or reset. You can follow the structure below for setting up RLV shared folders so that you can easily switch attachments on the HUD.
+
+1. RLV Shared Folder Structure: **(see video Help > Videos > Shared Folders)**
+2. Copy and paste links to attachments and not the actual attachment.
+3. Folder nodes below *not* in bold are for user to label as desired.
+4. Italicized folder names can be named however you like for the attachment.
+5. **.on\_attach** detaches anything in the folder when attaching the items in parent folder and **.on\_detach** attaches anything in the folder when detaching the items in parent folder
+
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/Dlyz_I0ewMM"
+  title="RLV Shared Folders Tutorial"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+You can use the following command with the AnE gesture to the output below: **/ane help rlv-shared-folders-module shared-folders**
+
+```
+#RLV/.AnE
+#RLV/.AnE/{character name}
+#RLV/.AnE/{character name}/base
+#RLV/.AnE/{character name}/base/.genitalia
+#RLV/.AnE/{character name}/base/.abdomen
+#RLV/.AnE/{character name}/base/.abdomen/010
+#RLV/.AnE/{character name}/base/.abdomen/020
+#RLV/.AnE/{character name}/base/.abdomen/030
+#RLV/.AnE/{character name}/base/.abdomen/040
+#RLV/.AnE/{character name}/base/.abdomen/050
+#RLV/.AnE/{character name}/base/.abdomen/060
+#RLV/.AnE/{character name}/base/.abdomen/070
+#RLV/.AnE/{character name}/base/.abdomen/080
+#RLV/.AnE/{character name}/base/.abdomen/090
+#RLV/.AnE/{character name}/base/.abdomen/100
+#RLV/.AnE/{character name}/outfits
+#RLV/.AnE/{character name}/outfits/.underwear
+#RLV/.AnE/{character name}/outfits/{Outfit}
+#RLV/.AnE/{character name}/outfits/{Outfit}/.base
+#RLV/.AnE/{character name}/outfits/{Outfit}/.on_attach
+#RLV/.AnE/{character name}/outfits/{Outfit}/.on_detach
+#RLV/.AnE/{character name}/outfits/{Outfit}/{Clothing}
+#RLV/.AnE/{character name}/outfits/{Outfit}/{Clothing}/.on_attach
+#RLV/.AnE/{character name}/outfits/{Outfit}/{Clothing}/.on_detach
+```
+
+**See example below.**
+
+<img src="/images/migrated/e0db36d8d6b91ecfb98ba0c4e3d3fa12.png" alt="" />

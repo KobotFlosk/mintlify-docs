@@ -1,0 +1,90 @@
+---
+title: "RolePlayer Plugin"
+---
+
+# RolePlayer Plugin
+
+The RolePlayer plugin provides a means to display your character information in a highly customizable format and represent your character in local chat.
+
+## Redirect <a href="#redirect" id="redirect"></a>
+
+Redirect allows your RolePlayer to represent what you type in local chat using your character name; this feature requires that you have RLV enabled on your viewer and redirection enabled by using the **/ane** gesture command: **/ane enable-redirect true**
+
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/dhdxoigIxEA"
+  title="AnE RolePlayer Walkthrough"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+<Info>
+Redirection is also used by the Telegram integration feature that allows you to interact with local chat from Telegram as if you were chatting from the viewer.
+</Info>
+
+While having redirection enabled, you can make use of any of the tags listed below in your message which will get replaced when displayed in local. 
+
+#### EXAMPLE:
+
+ “The time here is \[date:time]…” > “The time here is 10:05PM…“ 
+
+Additionally, shouting or whispering is also possible by starting your message with less-than `<` to shout or greater-than `>` to whisper (can think of these like a megaphone; text on the larger side is louder, text on the smaller side is quieter)
+
+## Statuses <a href="#statuses" id="statuses"></a>
+
+There is an active status and an inactive status (“away” status); you can customize how the text and color is displayed on each. 
+
+Though you can quite literally put what you want in these, its purpose was to display the tags listed below; you can use a template below to get an idea how the tags work on the RolePlayer. When changing your active or inactive title, your original will be printed in local chat for reference or to copy/paste for modifying.
+
+You can change between these status using the **/away** and **/back** gestures; the /away gesture allows you the option to specify a reason why you went away (i.e. /away “getting food!”) but must have the \[away:text] tag in your inactive title.
+
+## Templates
+
+**Simple Template:**
+
+```
+~[mood]~
+[fullname]
+[class] / [form]
+[gender] [species]
+[is:public]
+```
+
+**Complex Template:**
+
+```
+[is:public]
+[fullname] ([gender])
+[class] / [form]
+[[mood]] [species]
+[is:fertile] [is:pregnant]
+[stat:arousal] | [stat:essence]
+```
+
+**Stats Template**
+
+```
+[is:public]
+[fullname]
+[is:fertile] [is:pregnant]
+[stat:vitality] | [stat:strength] | [stat:defense]
+[stat:arousal] | [stat:essence]
+```
+
+## Tags <a href="#tags" id="tags"></a>
+
+* **\[fullname]** - Full name of your character.
+* **\[maturity]** - Maturity of your character (Young, Adolescent, …)
+* **\[gender]** - Gender of your character (Male, Female, Herm)
+* **\[class]** - Class of your character (Living, Demon, …)
+* **\[form]** - Form of your character (Human, Anthro, …)
+* **\[race]** - Race of your character
+* **\[species]** - Species of your character
+* **\[mood]** - Mood that is set with gesture /mood “Happyish”
+* **\[stat:arousal]** - Displays arousal percentage
+* **\[stat:essence]** - Displays essence percentage
+* **\[stat:defense]** - Displays defense percentage
+* **\[stat:strength]** - Displays strength percentage
+* **\[stat:vitality]** - Displays vitality percentage
