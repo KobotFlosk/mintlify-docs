@@ -2,10 +2,12 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "AnE Fertility and Roleplay System",
   "logo": {
-    "light": "logo/ane-logo.png",
-    "dark": "logo/ane-logo.png"
+    "light": "/logo/ane-logo.png",
+    "dark": "/logo/ane-logo.png",
+    "href": "/"
   },
-  "favicon": "favicon.ico",
+  "logoLink": "/",
+  "favicon": "/favicon.ico",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
