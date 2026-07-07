@@ -86,6 +86,18 @@
         ]
       },
       {
+        "group": "SYSTEM GUIDE",
+        "pages": [
+          "system-guide/system-overview",
+          "system-guide/interaction-and-roleplay",
+          "system-guide/reproduction-and-genetics",
+          "system-guide/species-compatibility",
+          "system-guide/creating-a-species",
+          "system-guide/form-shapeshifters",
+          "system-guide/attachable-items-and-devices"
+        ]
+      },
+      {
         "group": "DEVELOPMENT",
         "pages": [
           "development/release-notes",
