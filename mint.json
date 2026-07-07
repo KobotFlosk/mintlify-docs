@@ -27,19 +27,17 @@
       "group": "〽️ Operation",
       "pages": [
         "getting-started/operation",
-        "getting-started/operation/characters",
         "getting-started/operation/species",
         "getting-started/operation/species-overriding",
         "getting-started/operation/species-compatibility",
         "getting-started/operation/credit-system",
-        "getting-started/operation/ane-store"
+        "getting-started/operation/breeding"
       ]
     },
     {
       "group": "🤰 Conception",
       "pages": [
         "getting-started/conception",
-        "getting-started/conception/copulation",
         "getting-started/conception/character-compatibility",
         "getting-started/conception/conception-probability",
         "getting-started/conception/conception-competition",
@@ -50,12 +48,17 @@
       "group": "Getting Started",
       "pages": [
         "getting-started/knotting-tying",
-        "getting-started/fluids-and-stats",
         "getting-started/stats-hud",
-        "getting-started/adoptions",
+        "getting-started/character",
+        "getting-started/character/abilities",
+        "getting-started/character/adoptions",
+        "getting-started/character/classes-and-forms",
+        "getting-started/character/fluids-and-stats",
+        "getting-started/breeding",
         "getting-started/packs",
-        "getting-started/command-line",
-        "getting-started/attachments"
+        "getting-started/commands",
+        "getting-started/attachments",
+        "getting-started/ane-store"
       ]
     },
     {
@@ -83,9 +86,7 @@
       "group": "ITEMS",
       "pages": [
         "items/fluid-container",
-        "items/breeding-seed",
         "items/condoms-pack",
-        "items/aging-potion",
         "items/paternity-tester",
         "items/poison-apple"
       ]
@@ -94,8 +95,6 @@
       "group": "DEVELOPMENT",
       "pages": [
         "development/release-notes",
-        "development/developers-api",
-        "development/builders-kit",
         "development/faq"
       ]
     }
