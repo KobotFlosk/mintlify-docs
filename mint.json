@@ -1,12 +1,12 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
+  "$schema": "https://mintlify.com/schema.json",
+  "theme": "mint",
   "name": "AnE Fertility and Roleplay System",
   "logo": {
     "light": "/logo/ane-logo.png",
     "dark": "/logo/ane-logo.png",
     "href": "/"
   },
-  "logoLink": "/",
   "favicon": "/favicon.ico",
   "colors": {
     "primary": "#16A34A",
@@ -30,6 +30,7 @@
         "getting-started/operation/species",
         "getting-started/operation/species-overriding",
         "getting-started/operation/species-compatibility",
+        "getting-started/operation/characters",
         "getting-started/operation/credit-system",
         "getting-started/operation/breeding"
       ]
@@ -87,6 +88,7 @@
       "pages": [
         "items/fluid-container",
         "items/condoms-pack",
+        "items/aging-potion",
         "items/paternity-tester",
         "items/poison-apple"
       ]
@@ -95,6 +97,8 @@
       "group": "DEVELOPMENT",
       "pages": [
         "development/release-notes",
+        "development/developers-api",
+        "development/builders-kit",
         "development/faq"
       ]
     }
