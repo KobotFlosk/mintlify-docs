@@ -88,7 +88,6 @@
       "pages": [
         "items/fluid-container",
         "items/condoms-pack",
-        "items/aging-potion",
         "items/paternity-tester",
         "items/poison-apple"
       ]
@@ -97,8 +96,6 @@
       "group": "DEVELOPMENT",
       "pages": [
         "development/release-notes",
-        "development/developers-api",
-        "development/builders-kit",
         "development/faq"
       ]
     }
