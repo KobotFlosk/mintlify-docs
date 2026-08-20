@@ -30,6 +30,16 @@ This document connects to two companion pages:
    its body form, lineage, and a blended **species makeup**. That child can be
    raised, named, and even adopted.
 
+### Handing a birth to a new player
+
+A birth doesn't have to stay with its parent. Once it's ready, it can be
+**offered** to a nearby person with no active character of their own, who can
+accept or decline becoming that child. Accepting instantly makes the birth
+their new active character, inheriting everything it was born with —
+including its parent's pack membership, if any (see
+[Packs & Groups](packs-and-groups.md)). Declining, or letting the offer time
+out, leaves the birth unclaimed for later.
+
 ### Where things land
 
 Your character's real anatomy decides where a deposit actually goes and whether it
@@ -165,6 +175,14 @@ scoring.
   (`EMBRYO_LIVE`) resolve directly.
 - Births can be publicised, adopted (`AdoptOfferModule`,
   `ProfileAdoptionHelper`), and turned into full profiles.
+- `BirthOfferModule` drives the "hand this birth to a new player" flow: it
+  searches nearby accounts with no active profile (`HeaderHelper::fetchAccountsInRegionAfter`,
+  filtered by `AccountBlockHelper`), sends a time-limited `DialogConfirm`
+  offer via `InteractionService`, and on acceptance calls
+  `BirthHelper::birthProfileOf(...)` then transitions the accepting account
+  back to `RunningState` as the newly claimed profile. It refuses offers to
+  an account that is already an ancestor of the birth's parents
+  (`BirthHelper::isDescendantOf`).
 
 ### 7. Species inheritance & compatibility
 

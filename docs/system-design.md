@@ -185,12 +185,74 @@ a chain of cooperating helpers (`FluidsHelper`, `IncubatorHelper`, `OvumHelper`,
   environment name, logging level, third-party keys). **Never** commit secrets;
   configuration specifics stay out of end-user documentation.
 
+### Accounts, profiles, and access
+
+An **account** (`AccountModelImpl`) represents the caller and owns one or more
+**profiles** (`ProfileModelImpl`, the character aggregate); one profile is
+active at a time. Roles (`AccountRoleEnum`) and permissions
+(`AccountPermissionEnum`) gate privileged features (e.g. the AI companion).
+See [Accounts & Profiles](account-and-profiles.md).
+
+### Packs & groups
+
+`PackModule` (`classes/modules/`) lets a profile create or join a small,
+role-hierarchied group (`ProfilePackModelImpl` / `ProfilePackRoleModelImpl`,
+roles from `ProfilePackRoleHelper`), reached from the profile menu, with
+newborns inheriting their mother's pack role at birth (`InitialState`). See
+[Packs & Groups](packs-and-groups.md).
+
+### The AI role-play companion
+
+`AiService` (`classes/services/AiService.php`) fronts a pluggable set of AI
+platform adapters (`classes/ai/platforms/`) and an MCP-style tool-calling layer
+(`classes/ai/mcp/tools/`), used by the `ChoiceStory` scene to narrate a
+freeform, choice-driven interaction, gated by the `AI_PRIVILEGED` role. See
+[The AI Role-Play Companion](ai-companion.md).
+
 ### Third-party integrations
 
 `classes/thirdparty` and related modules integrate external services — including a
 messaging bot bridge, a connected-device (Lovense) bridge, a character-profile
-directory (F-List), a code-changes feed (GitHub), and Steam. These are optional
-and gated per account/profile settings.
+directory (F-List), a code-changes feed (GitHub), and Steam — plus a large
+compatibility layer bridging popular third-party mesh body add-ons and gadgets
+(genitals, fluid covers, reactive vocals/touch systems, mini-games) into the
+same role-play event model everything else uses. These are optional and gated
+per account/profile settings. See
+[Third-Party Integrations & Product Compatibility](third-party-integrations.md).
+
+### The web portal
+
+Browser-based hand-off pages (`ui/portal.php`, `PortalService`) let a player
+securely enter credentials or scan a pairing code for a third-party link
+without typing them into the virtual world itself. See
+[The Web Portal](web-portal.md).
+
+### The store & rewards economy
+
+`TransactionHelper` and `AccountTransactionRepositoryImpl` implement an
+append-only, ledger-based Credit balance per account; `ProductHelper`/
+`ProductModelImpl` back a browsable shop (`ShopDialog`, `PointStoreDialog`)
+for spending Credits, and `AccountRewardsHelper`/`RewardModelImpl` implement
+one-off reward grants (Credits or products) that can be claimed later via
+`ManageRewardsDialog`. See [The Store & Rewards Economy](store-and-rewards.md).
+
+### RLV-driven character & outfit control
+
+`RlvSharedFoldersModule` (`classes/modules/`) maps a profile's current
+outfit, base body, and abdomen size onto a fixed viewer-side shared-folder
+convention, and issues batched attach/detach commands through the shared
+framework's `RlvService` to automate dressing, undressing, outfit switching,
+and protecting the companion/body from accidental removal during scenes. See
+[RLV-Driven Character & Outfit Control](rlv-and-control.md).
+
+### Command-line interaction
+
+A decentralized chat-command bus (`CommandLineService`/`CommandLineSubscriber`
+in the shared framework) lets modules, plugins, and services each claim the
+`/ane <command>` chat commands relevant to them (`CommandLineModule`,
+`RlvSharedFoldersModule`, `RolePlayerPlugin`, `TelegramModule`, …), with a
+parallel `CommandHelpService` bus for `/ane help <topic>`. See
+[Command-Line Interaction](command-line-tooling.md).
 
 ### Testing
 
@@ -207,3 +269,11 @@ and gated per account/profile settings.
   [Creating a Species](species-creation.md)
 - Shapeshifting biology → [Form Shapeshifters](form-shapeshifters.md)
 - Consumable items and attachable devices → [Attachable Items & Devices](attachable-items-and-devices.md)
+- Accounts, characters, and access → [Accounts & Profiles](account-and-profiles.md)
+- Forming a named group with roles and invites → [Packs & Groups](packs-and-groups.md)
+- The optional AI narrator → [The AI Role-Play Companion](ai-companion.md)
+- External services and third-party product compatibility → [Third-Party Integrations & Product Compatibility](third-party-integrations.md)
+- Secure browser hand-off for linking accounts → [The Web Portal](web-portal.md)
+- Spending and earning Credits → [The Store & Rewards Economy](store-and-rewards.md)
+- Automated outfit/body attachment → [RLV-Driven Character & Outfit Control](rlv-and-control.md)
+- Typed chat-command shortcuts → [Command-Line Interaction](command-line-tooling.md)

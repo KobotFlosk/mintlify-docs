@@ -23,11 +23,16 @@
         "group": "SYSTEM GUIDE",
         "pages": [
           "system-guide/system-overview",
+          "system-guide/accounts-and-profiles",
           "system-guide/interaction-and-roleplay",
           "system-guide/reproduction-and-genetics",
           "system-guide/species-compatibility",
           "system-guide/creating-a-species",
           "system-guide/form-shapeshifters",
+          "system-guide/ai-companion",
+          "system-guide/companion-dashboard",
+          "system-guide/search-and-discovery",
+          "system-guide/web-portal",
           "system-guide/attachable-items-and-devices"
         ]
       },
@@ -93,6 +98,7 @@
         "pages": [
           "items/fluid-container",
           "items/condoms-pack",
+          "items/aging-potion",
           "items/paternity-tester",
           "items/poison-apple"
         ]
@@ -101,6 +107,8 @@
         "group": "DEVELOPMENT",
         "pages": [
           "development/release-notes",
+          "development/developers-api",
+          "development/builders-kit",
           "development/faq"
         ]
       }
