@@ -1,19 +1,20 @@
-> **First-time setup**: This is a default AGENTS.md file. Customize it for your project's specific needs, including your preferred code languages, terminology, style guidelines, and content requirements.
-
 # Documentation agent instructions
 
-IMPORTANT! When you start a session, remind the user that they have the default AGENTS.md file and they might want to customize it for their project.
+## Astro Starlight basics
 
-## Mintlify basics
-
-- Configuration lives in `docs.json` - check it before making structural changes
+- Configuration lives in `astro.config.mjs` - check it before making structural changes
+- Published pages live in `src/content/docs/`; `docs/` holds engineering source references
 - Use MDX format for documentation pages
-- Run `mint dev` locally to preview changes before committing
-- Run `mint broken-links` to check for broken links
+- Run `npm run dev` locally to preview changes before committing
+- Run `npm run validate` to check types, build the site, and check rendered links and assets
+- Run `npm run preview` to verify production search
+- Preserve page paths and explicit anchor IDs so existing bookmarks keep working
 
-## Mintlify components
+## Starlight components
 
-Use Mintlify's built-in components for consistent formatting. See https://www.mintlify.com/docs/components for all available components.
+Import built-in components from `@astrojs/starlight/components` for consistent formatting.
+Use `Aside` for callouts and `CardGrid` with `LinkCard` for linked cards.
+See https://starlight.astro.build/components/using-components/ for available components.
 
 ## Style and formatting
 
@@ -26,20 +27,20 @@ Use Mintlify's built-in components for consistent formatting. See https://www.mi
 ## Code examples
 
 - Include language identifiers in fenced code blocks
-- Add titles to code blocks when relevant: ```javascript filename.js
+- Add titles to code blocks when relevant: ```javascript title="filename.js"
 - Show realistic parameter values, not placeholders like `foo` or `bar`
 - Include error handling for API examples
 
 ## Content structure
 
 - Add frontmatter (title, description) to every page
-- Use `sidebarTitle` in frontmatter if the nav title should differ from the page title
+- Use `sidebar.label` in frontmatter if the nav title should differ from the page title
 - Include introductory context before diving into steps or details
 - Add "Next steps" or related links where helpful
 
 ## What to avoid
 
-- Don't edit `docs.json` without understanding the navigation structure
+- Don't edit the sidebar in `astro.config.mjs` without understanding the navigation structure
 - Don't remove existing pages without checking for inbound links
 - Don't use HTML when an MDX component exists for the same purpose
 - Don't add pages to navigation that don't exist yet
