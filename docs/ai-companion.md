@@ -13,7 +13,7 @@ how it is wired up as a pluggable AI backend with tool-calling.
 ### What it is
 
 Alongside the regular menu-driven scenes (see
-[Interaction & Role-Play Lifecycle](interaction-lifecycle.md)), some characters
+[Interaction and Role-Play Lifecycle](interaction-lifecycle.md)), some characters
 can start a **freeform, narrated** scene where an AI companion writes the
 in-character narration, offers you choices, and reacts to what happens — much
 like a live game master. This is an optional, access-gated feature rather than
@@ -57,7 +57,7 @@ The AI-narrated scene is a **story** like any other, `ChoiceStory`
 `StoryBreed`, `StoryAnal`, and `StoryOral` in `CopulateState::STORIES`. Its
 availability is gated: it checks
 `AccountHelper::hasRole(AccountRoleEnum::AI_PRIVILEGED)` (see
-[Accounts & Profiles](account-and-profiles.md)) before offering itself as a
+[Accounts and Profiles](account-and-profiles.md)) before offering itself as a
 scene option.
 
 ### `AiService` — the façade
@@ -178,5 +178,5 @@ turn.
 
 See [System Design](system-design.md) for how the AI layer fits into the
 overall architecture, and
-[Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for how stories
+[Interaction and Role-Play Lifecycle](interaction-lifecycle.md) for how stories
 in general drive scenes.

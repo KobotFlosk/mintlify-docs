@@ -1,4 +1,4 @@
-# Reproduction & Genetics Lifecycle
+# Reproduction and Genetics Lifecycle
 
 The full chain from intimacy to a new character: fluids, fertility, conception,
 pregnancy, birth, and how a child inherits its traits and species.
@@ -37,7 +37,7 @@ A birth doesn't have to stay with its parent. Once it's ready, it can be
 accept or decline becoming that child. Accepting instantly makes the birth
 their new active character, inheriting everything it was born with —
 including its parent's pack membership, if any (see
-[Packs & Groups](packs-and-groups.md)). Declining, or letting the offer time
+[Packs and Groups](packs-and-groups.md)). Declining, or letting the offer time
 out, leaves the birth unclaimed for later.
 
 ### Where things land
@@ -87,7 +87,7 @@ climax → fluid emission ─▶ transfer between profiles ─▶ resolve incuba
                                                               (BirthHelper, BirthingState)
 ```
 
-### 1. Fluid emission & transfer
+### 1. Fluid emission and transfer
 
 - A climax (`ClimaxEvent`, driven by `StoryClimax`) causes the emitting body to
   produce fluids. Which fluids a body emits is gated by **real** production
@@ -113,7 +113,7 @@ This is the reproductive half of the apparent-vs-real split described in
 [Form Shapeshifters](form-shapeshifters.md): apparent form gates *participation*;
 real biology gates *reception and conception*.
 
-### 3. Ovulation & the ovum
+### 3. Ovulation and the ovum
 
 - `OvumHelper` and `PregnancyHelper::generateOvum(IncubatorTypeEnum)` manage the
   fertility cycle and produce a `ProfileOvumModelImpl` in an incubator.
@@ -160,7 +160,7 @@ received, sliced by source profile, `OrificeTypeEnum`, and `FluidTypeEnum`
 sensibly. This is the data behind lineage, paternity testing, and compatibility
 scoring.
 
-### 6. Pregnancy progression & birth
+### 6. Pregnancy progression and birth
 
 - `PregnancyHelper` tracks pregnancies per incubator (`isPregnant`,
   `fetchPregnanciesByIncubator`, `fetchClosestPregnancy`) and progresses them from
@@ -184,7 +184,7 @@ scoring.
   an account that is already an ancestor of the birth's parents
   (`BirthHelper::isDescendantOf`).
 
-### 7. Species inheritance & compatibility
+### 7. Species inheritance and compatibility
 
 The child's **species makeup** is inherited as a weighted blend of the parents'
 makeups and resolved to a concrete species (truebred, true hybrid, or composition

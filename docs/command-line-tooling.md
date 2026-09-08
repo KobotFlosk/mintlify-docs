@@ -85,14 +85,14 @@ Telegram commands live with the Telegram module, and so on).
 | Handler | Notable commands |
 |---|---|
 | `CommandLineModule` (`src/classes/modules/`) | Admin-only (`on_command_admin`, gated by `AccountHelper::isAdmin()`): `endpoint`, `remote-command`, `owner-say`, `reset-session`/`delete-session`, `vend-product`, `vend-lindens`, `system-disable`, `send-message`, `debug`. State-scoped (`on_command_state`): `clear-restrictions`, `leave`/`logout`/`logoff`/`leave-profile`/`leave-character`, `follow`, `show-identifier`. General (`on_command_other`): `manage-announcements`, `announce`/`announce-now`/`announce-live`, `show-account`, `show-rewards`, `send-command`, `enable-attachments`, `show-attached`, `show-balance`, `close-browser`, `join-group`, `profile-id`, `detach`, `version`. |
-| `RlvSharedFoldersModule` (`src/classes/modules/`) | `reset-character`, `change-outfit`, `reset-outfit`, `wear-outfit`/`dress-outfit`, `strip-outfit`, `wear-underwear`/`dress-underwear`, `strip-all`/`strip-underwear`/`strip-everything`, `enable-redressing`, `enable-characters`. Help topic: `folders`/`shared-folders`. See [RLV-Driven Character & Outfit Control](rlv-and-control.md). |
+| `RlvSharedFoldersModule` (`src/classes/modules/`) | `reset-character`, `change-outfit`, `reset-outfit`, `wear-outfit`/`dress-outfit`, `strip-outfit`, `wear-underwear`/`dress-underwear`, `strip-all`/`strip-underwear`/`strip-everything`, `enable-redressing`, `enable-characters`. Help topic: `folders`/`shared-folders`. See [RLV-Driven Character and Outfit Control](rlv-and-control.md). |
 | `RolePlayerPlugin` (`src/classes/plugins/`) | `translate`, mood tag / `change-mood`, `ooc`/`toggle-roleplay`, `status-toggle`, `away`/`status-away`, `back`/`status-back`. Help topics: `tags`, `cli`. |
-| `TelegramModule` (`src/classes/modules/thirdparty/`) | `telegram-chat <bool>`. See [Third-Party Integrations & Product Compatibility](third-party-integrations.md). |
+| `TelegramModule` (`src/classes/modules/thirdparty/`) | `telegram-chat <bool>`. See [Third-Party Integrations and Product Compatibility](third-party-integrations.md). |
 
 Several commands additionally require an `AccountRoleEnum` (e.g.
 `ADMINISTRATOR`, `TASKFORCE`, `AFFILIATE`) or an `AccountPermissionEnum` (e.g.
 `PERM_CLI_SEND_COMMAND`) before they're allowed to execute — see
-[Accounts & Profiles](account-and-profiles.md) for the role/permission model.
+[Accounts and Profiles](account-and-profiles.md) for the role/permission model.
 
 ### Flow
 

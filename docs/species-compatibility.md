@@ -7,7 +7,7 @@ number you see when you check breeding/mating compatibility.
 - **🧑‍💻 Developer Documentation** — the vector math behind the scenes.
 
 This document connects to [Creating a Species](species-creation.md) and
-[Reproduction & Genetics Lifecycle](reproduction-and-genetics.md).
+[Reproduction and Genetics Lifecycle](reproduction-and-genetics.md).
 
 ---
 
@@ -225,7 +225,7 @@ access), unit-testable implementation of everything described above:
   — a character's lineage affinity intersected with a candidate species'
   decomposition (used, for example, when matching an ovum's gene-parent
   against a candidate breeder species; see
-  [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)).
+  [Reproduction and Genetics Lifecycle](reproduction-and-genetics.md)).
 
 Both `decomposeInternal` and `affinityInternal` are cycle-guarded (`$visited`
 sets keyed by species id / `spl_object_id`), so a malformed or

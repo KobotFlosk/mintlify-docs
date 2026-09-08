@@ -1,4 +1,4 @@
-# Search & Discovery
+# Search and Discovery
 
 How you find other characters and community-registered breeding locations, and
 how those results are gathered and filtered behind the scenes.
@@ -39,10 +39,10 @@ with them, you may be able to:
 - **View Profile** — see their full character sheet.
 - **Breed** — send a breeding request, if you're both nearby and biologically
   compatible. See
-  [Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for how
+  [Interaction and Role-Play Lifecycle](interaction-lifecycle.md) for how
   breeding requests and auto-acceptance work.
 - **Adopt** — offer an adoption bond (Master/Slave, Owner/Pet, or Parent/Child).
-  See [Accounts & Profiles](account-and-profiles.md).
+  See [Accounts and Profiles](account-and-profiles.md).
 - **Block** — stop that person from appearing in any of your search results
   going forward. Blocking only affects your own results; it doesn't notify the
   other person or restrict them from finding you through other means.
@@ -129,6 +129,6 @@ rendered. It is consulted by every "who's nearby/online" search dialog above.
 - The dashboard's web equivalent of these scopes (`DiscoveryHelper`) →
   [The Companion Web Dashboard](companion-dashboard.md)
 - What happens once a breeding request is sent →
-  [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)
+  [Interaction and Role-Play Lifecycle](interaction-lifecycle.md)
 - Adoption bonds offered from a search result →
-  [Accounts & Profiles](account-and-profiles.md)
+  [Accounts and Profiles](account-and-profiles.md)

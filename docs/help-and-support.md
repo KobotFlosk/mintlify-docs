@@ -1,4 +1,4 @@
-# Help & Support Menu
+# Help and Support Menu
 
 The always-available "Help" entry on the main menu: joining the community
 group, finding the manual and community chat, checking for updates, watching

@@ -1,4 +1,4 @@
-# The Store & Rewards Economy
+# The Store and Rewards Economy
 
 How players spend and earn **Credits** — a simple in-world currency used to buy
 optional add-ons and unlock features — and how one-off rewards are granted and
@@ -191,5 +191,5 @@ some subsystem ──▶ AccountRewardsHelper::tryReward('event.name', ...)
   `AccountRewardsHelper::processReward(...)`.
 
 See [System Design](system-design.md) for how the store fits into the overall
-architecture, and [Accounts & Profiles](account-and-profiles.md) for how an
+architecture, and [Accounts and Profiles](account-and-profiles.md) for how an
 account (the thing that owns a Credit balance) relates to profiles/characters.

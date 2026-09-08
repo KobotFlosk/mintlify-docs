@@ -1,4 +1,4 @@
-# Vitality & Stats
+# Vitality and Stats
 
 The set of vital statistics every character has — health, arousal, stamina,
 essence, strength, and defense — how they rise and fall during play, and what
@@ -52,7 +52,7 @@ them:
   afterwards, and the way your character died may be shown as their in-world
   cause of passing.
 - Some optional add-ons and consumable items (see
-  [Attachable Items & Devices](attachable-items-and-devices.md)) exist purely
+  [Attachable Items and Devices](attachable-items-and-devices.md)) exist purely
   to affect your vitals — a novelty poison item, for instance, is a
   guaranteed way to end that character's life if consumed.
 
@@ -105,7 +105,7 @@ behind every stat read/write. Values are persisted per-profile
   profile's uterus/incubator volume and a gender ratio
   (`calcGenderEssenceRatioOf(...)`) to translate the abstract percent into a
   concrete fluid-volume unit used elsewhere in reproduction (see
-  [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)).
+  [Reproduction and Genetics Lifecycle](reproduction-and-genetics.md)).
 
 ### `StatInvokerInterface` — who changed a stat, and why
 
@@ -134,7 +134,7 @@ calls with the rest of the pipeline every stat change goes through:
    previous percent, the delta, and the raw amount — to every
    `RolePlaySubscriber` (states, active stories, attachments, third-party
    integrations; see
-   [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)).
+   [Interaction and Role-Play Lifecycle](interaction-lifecycle.md)).
 
 `RolePlayService::handleStatChange(...)` is itself a subscriber to its own
 `StatChangeEvent`s and layers in the domain reactions:
@@ -190,7 +190,7 @@ scaled per orifice, capped between `10%` and `80%`).
   announces the cause via `CommOwnerSay`, and transitions back to
   `InitialState` for character selection/creation.
 - `ItemObjectPoisonApple` (`src/classes/items/`, see
-  [Attachable Items & Devices](attachable-items-and-devices.md)) is a concrete
+  [Attachable Items and Devices](attachable-items-and-devices.md)) is a concrete
   example: consuming it calls `adjustStatBy(...)` with a `-1` (i.e. full)
   vitality change tagged `CAUSE_POISON`.
 
@@ -208,7 +208,7 @@ adds a floating-point `amount` for stat-affecting modifiers, and
 examples: `PoisonVitalityProfileModifier` (strength-affecting, tagged
 `CAUSE_POISON`), `IncreasedAgingProfileModifier`, `BioBugDeviceProfileModifier`,
 and `BioBugRemoteProfileModifier`. See
-[Attachable Items & Devices](attachable-items-and-devices.md#timed-effects-modifiers)
+[Attachable Items and Devices](attachable-items-and-devices.md#timed-effects-modifiers)
 for how modifiers relate to items/devices; note some of these classes are
 scaffolded extension points with their `update()` step not yet fully wired to
 a live effect.
@@ -235,7 +235,7 @@ ones. See [The AI Role-Play Companion](ai-companion.md).
   through `ProfileModifierService`.
 
 See [System Design](system-design.md) for how this fits into the overall
-architecture, [Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for
+architecture, [Interaction and Role-Play Lifecycle](interaction-lifecycle.md) for
 the broader role-play event system stat changes are part of, and
-[Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) for how
+[Reproduction and Genetics Lifecycle](reproduction-and-genetics.md) for how
 essence specifically feeds into fluid exchange and conception.

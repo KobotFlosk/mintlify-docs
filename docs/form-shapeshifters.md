@@ -10,9 +10,9 @@ changing what their body actually produces or can conceive.
   player.
 
 This document connects to
-[Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) (real biology
+[Reproduction and Genetics Lifecycle](reproduction-and-genetics.md) (real biology
 gates reception/conception) and
-[Interaction & Role-Play Lifecycle](interaction-lifecycle.md) (apparent form
+[Interaction and Role-Play Lifecycle](interaction-lifecycle.md) (apparent form
 gates participation in a scene).
 
 ---

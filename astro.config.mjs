@@ -31,6 +31,9 @@ export default defineConfig({
         "slug": "overview/need-assistance"
       },
       {
+        "slug": "overview/help-and-support"
+      },
+      {
         "slug": "getting-started/new-to-ane"
       }
     ]
@@ -43,6 +46,9 @@ export default defineConfig({
       },
       {
         "slug": "system-guide/accounts-and-profiles"
+      },
+      {
+        "slug": "system-guide/vitality-and-stats"
       },
       {
         "slug": "system-guide/interaction-and-roleplay"
@@ -70,6 +76,9 @@ export default defineConfig({
       },
       {
         "slug": "system-guide/web-portal"
+      },
+      {
+        "slug": "system-guide/third-party-integrations"
       },
       {
         "slug": "system-guide/attachable-items-and-devices"

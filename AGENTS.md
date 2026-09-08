@@ -21,6 +21,7 @@ See https://starlight.astro.build/components/using-components/ for available com
 - Use active voice and second person ("you")
 - Keep sentences concise - one idea per sentence
 - Use sentence case for headings
+- Write "and" instead of an ampersand in page titles, headings, sidebar labels, and linked document names
 - When referencing UI elements, use bold: Click **Settings**
 - Use code formatting for: file names, commands, paths, and code references
 

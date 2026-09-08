@@ -1,4 +1,4 @@
-# RLV-Driven Character & Outfit Control
+# RLV-Driven Character and Outfit Control
 
 How the companion uses RLV (a viewer-side relay/automation protocol supported
 by many compatible virtual-world viewers) to automatically dress, undress, and
@@ -130,7 +130,7 @@ Key entry points, each gated by `checkSharedFoldersEnabled()` (throws
 stored per-outfit under `ProfileSettingHelper`, keeping this state with the
 profile rather than the RLV module.
 
-### Chat commands & dialogs
+### Chat commands and dialogs
 
 - `on_command(CommandEvent)` (implements `CommandLineSubscriber`) recognises,
   while in `RunningState`: `reset-character`, `change-outfit <name>`,
@@ -152,7 +152,7 @@ profile rather than the RLV module.
   garments within the current outfit), and `render_clothing_options()`/
   `dialog_clothing_options()` (per-outfit options like override/memorize).
 
-### Related settings & permissions
+### Related settings and permissions
 
 - `Constants::SETTING_RLV_CHARACTERS` — account opt-in to folder-driven
   character management (`enable-characters`).
@@ -178,5 +178,5 @@ profile rather than the RLV module.
 See [System Design](system-design.md) for how this module fits into the
 overall architecture, [Command-Line Interaction](command-line-tooling.md) for
 the full chat-command surface, and
-[Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) for how
+[Reproduction and Genetics Lifecycle](reproduction-and-genetics.md) for how
 abdomen size is calculated during pregnancy.

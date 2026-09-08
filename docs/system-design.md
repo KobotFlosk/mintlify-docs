@@ -124,8 +124,8 @@ responsibility:
 | **Helpers** | `classes/helpers` | Stateless domain logic and queries (~57 helpers): profiles, species, genetics, fluids, pregnancy, birth, ovum, incubators, compatibility, attachments, transactions, etc. |
 | **Models** | `classes/models` + `interfaces/models` | Doctrine entities (interface + `…Impl`) for accounts, profiles, species, births, pregnancies, fluids, ovum, items, plugins, sessions, and more. |
 | **Repositories** | `classes/repos` | Doctrine repositories; persistence and queries per aggregate, mapped in `Application`. |
-| **Plugins / Devices** | `classes/plugins` | Attachable add-ons (`AbstractAnePlugin`) and hardware-like devices (`AbstractDevicePlugin`) that hook role-play events and add menus. See [Attachable Items & Devices](attachable-items-and-devices.md). |
-| **Items** | `classes/items` | Consumables and objects (pills, condoms, syringes, ampoules, potions, testers). Registered via `ItemService::setItemClasses(...)`. See [Attachable Items & Devices](attachable-items-and-devices.md). |
+| **Plugins / Devices** | `classes/plugins` | Attachable add-ons (`AbstractAnePlugin`) and hardware-like devices (`AbstractDevicePlugin`) that hook role-play events and add menus. See [Attachable Items and Devices](attachable-items-and-devices.md). |
+| **Items** | `classes/items` | Consumables and objects (pills, condoms, syringes, ampoules, potions, testers). Registered via `ItemService::setItemClasses(...)`. See [Attachable Items and Devices](attachable-items-and-devices.md). |
 | **Modifiers** | `classes/modifiers` | Timed effects on a profile's stats (aging, poison, bio-bug devices). |
 | **Events** | `classes/events` | Role-play events (climax, penetration, stat change, death, …) published during scenes. |
 | **Prefabs** | `classes/prefabs` | Reusable UI: dialogs, wizards, and preset actions. |
@@ -148,7 +148,7 @@ load-bearing ones:
 - `HybridTypeEnum` / `TaxonomicTypeEnum` — species classification (truebred, true
   hybrid, composition hybrid). See the [Species](species-creation.md) documents.
 
-### Interaction & events
+### Interaction and events
 
 Two request-driven mechanisms connect the pieces:
 
@@ -159,7 +159,7 @@ Two request-driven mechanisms connect the pieces:
   (e.g. `ClimaxEvent`, `PenetrationEvent`, `StatChangeEvent`). Plugins, the AI
   companion, and third-party integrations subscribe via `RolePlaySubscriber`.
 
-See [Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for details.
+See [Interaction and Role-Play Lifecycle](interaction-lifecycle.md) for details.
 
 ### Reproduction chain
 
@@ -167,9 +167,9 @@ Fluid transfer → conception → pregnancy → birth → genetics/species inher
 a chain of cooperating helpers (`FluidsHelper`, `IncubatorHelper`, `OvumHelper`,
 `PregnancyHelper`, `BirthHelper`, `GeneticsHelper`) and the
 `OpenTransferService`. See
-[Reproduction & Genetics Lifecycle](reproduction-and-genetics.md).
+[Reproduction and Genetics Lifecycle](reproduction-and-genetics.md).
 
-### Persistence & infrastructure
+### Persistence and infrastructure
 
 - **Database:** PostgreSQL via Doctrine ORM. Entities and repositories are mapped
   explicitly in `Application::doConfigure()`; metadata/query caches use a PHP-files
@@ -191,15 +191,15 @@ An **account** (`AccountModelImpl`) represents the caller and owns one or more
 **profiles** (`ProfileModelImpl`, the character aggregate); one profile is
 active at a time. Roles (`AccountRoleEnum`) and permissions
 (`AccountPermissionEnum`) gate privileged features (e.g. the AI companion).
-See [Accounts & Profiles](account-and-profiles.md).
+See [Accounts and Profiles](account-and-profiles.md).
 
-### Packs & groups
+### Packs and groups
 
 `PackModule` (`classes/modules/`) lets a profile create or join a small,
 role-hierarchied group (`ProfilePackModelImpl` / `ProfilePackRoleModelImpl`,
 roles from `ProfilePackRoleHelper`), reached from the profile menu, with
 newborns inheriting their mother's pack role at birth (`InitialState`). See
-[Packs & Groups](packs-and-groups.md).
+[Packs and Groups](packs-and-groups.md).
 
 ### The AI role-play companion
 
@@ -218,7 +218,7 @@ compatibility layer bridging popular third-party mesh body add-ons and gadgets
 (genitals, fluid covers, reactive vocals/touch systems, mini-games) into the
 same role-play event model everything else uses. These are optional and gated
 per account/profile settings. See
-[Third-Party Integrations & Product Compatibility](third-party-integrations.md).
+[Third-Party Integrations and Product Compatibility](third-party-integrations.md).
 
 ### The web portal
 
@@ -227,23 +227,23 @@ securely enter credentials or scan a pairing code for a third-party link
 without typing them into the virtual world itself. See
 [The Web Portal](web-portal.md).
 
-### The store & rewards economy
+### The store and rewards economy
 
 `TransactionHelper` and `AccountTransactionRepositoryImpl` implement an
 append-only, ledger-based Credit balance per account; `ProductHelper`/
 `ProductModelImpl` back a browsable shop (`ShopDialog`, `PointStoreDialog`)
 for spending Credits, and `AccountRewardsHelper`/`RewardModelImpl` implement
 one-off reward grants (Credits or products) that can be claimed later via
-`ManageRewardsDialog`. See [The Store & Rewards Economy](store-and-rewards.md).
+`ManageRewardsDialog`. See [The Store and Rewards Economy](store-and-rewards.md).
 
-### RLV-driven character & outfit control
+### RLV-driven character and outfit control
 
 `RlvSharedFoldersModule` (`classes/modules/`) maps a profile's current
 outfit, base body, and abdomen size onto a fixed viewer-side shared-folder
 convention, and issues batched attach/detach commands through the shared
 framework's `RlvService` to automate dressing, undressing, outfit switching,
 and protecting the companion/body from accidental removal during scenes. See
-[RLV-Driven Character & Outfit Control](rlv-and-control.md).
+[RLV-Driven Character and Outfit Control](rlv-and-control.md).
 
 ### Command-line interaction
 
@@ -263,17 +263,17 @@ parallel `CommandHelpService` bus for `/ane help <topic>`. See
 
 ### Where to go next
 
-- Core gameplay loop → [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)
-- The reproductive life-cycle → [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)
+- Core gameplay loop → [Interaction and Role-Play Lifecycle](interaction-lifecycle.md)
+- The reproductive life-cycle → [Reproduction and Genetics Lifecycle](reproduction-and-genetics.md)
 - Species math and creation → [Species Compatibility](species-compatibility.md),
   [Creating a Species](species-creation.md)
 - Shapeshifting biology → [Form Shapeshifters](form-shapeshifters.md)
-- Consumable items and attachable devices → [Attachable Items & Devices](attachable-items-and-devices.md)
-- Accounts, characters, and access → [Accounts & Profiles](account-and-profiles.md)
-- Forming a named group with roles and invites → [Packs & Groups](packs-and-groups.md)
+- Consumable items and attachable devices → [Attachable Items and Devices](attachable-items-and-devices.md)
+- Accounts, characters, and access → [Accounts and Profiles](account-and-profiles.md)
+- Forming a named group with roles and invites → [Packs and Groups](packs-and-groups.md)
 - The optional AI narrator → [The AI Role-Play Companion](ai-companion.md)
-- External services and third-party product compatibility → [Third-Party Integrations & Product Compatibility](third-party-integrations.md)
+- External services and third-party product compatibility → [Third-Party Integrations and Product Compatibility](third-party-integrations.md)
 - Secure browser hand-off for linking accounts → [The Web Portal](web-portal.md)
-- Spending and earning Credits → [The Store & Rewards Economy](store-and-rewards.md)
-- Automated outfit/body attachment → [RLV-Driven Character & Outfit Control](rlv-and-control.md)
+- Spending and earning Credits → [The Store and Rewards Economy](store-and-rewards.md)
+- Automated outfit/body attachment → [RLV-Driven Character and Outfit Control](rlv-and-control.md)
 - Typed chat-command shortcuts → [Command-Line Interaction](command-line-tooling.md)

@@ -45,21 +45,21 @@ link expires after a short while if unused.
 - **Abilities** — any special ability your character currently has access to
   (for example, a shapeshifter's Shift ability), with the same controls as the
   in-world menu.
-- **Genetics, pregnancies & births** — the same family-tree, pregnancy, and
+- **Genetics, pregnancies and births** — the same family-tree, pregnancy, and
   birth-history views as the in-world profile menu.
-- **Items & attachable devices** — a live scan of nearby usable items and your
+- **Items and attachable devices** — a live scan of nearby usable items and your
   worn attachable devices/plugins.
 - **Settings** — the same account settings you'd change in-world (AI narrator
   preferences, privacy toggles, movement/RLV restrictions, access permissions),
   editable directly from the page.
-- **Search & discovery** — other active characters nearby, online, or
+- **Search and discovery** — other active characters nearby, online, or
   currently fertile, each with a compatibility percentage against your active
   character, plus a "Breed" button that sends the same breeding request the
   in-world Search menu would send.
 - **World presence** — a snapshot of overall community activity: how many
   characters are online, the busiest regions, and the most common species.
 - **Store** — browsing and spending your Credit balance (see
-  [The Store & Rewards Economy](store-and-rewards.md)).
+  [The Store and Rewards Economy](store-and-rewards.md)).
 
 ### Staying in sync
 
@@ -68,7 +68,7 @@ goes offline (removed, region change taking too long, etc.) for more than a
 few minutes, the dashboard shows your session as offline until it hears from
 your companion again — nothing is lost, it just pauses.
 
-### Privacy & security
+### Privacy and security
 
 - The link you open from in-world is single-purpose and expires on its own; it
   isn't a permanent login you need to remember or protect.
@@ -80,7 +80,7 @@ your companion again — nothing is lost, it just pauses.
 
 ## 🧑‍💻 Developer Documentation
 
-### Purpose & relationship to the frontend
+### Purpose and relationship to the frontend
 
 The backend does not render the dashboard itself — it exposes a stateless
 JSON API that a separate Next.js frontend (referred to throughout the
@@ -88,7 +88,7 @@ codebase's inline docs as `ane-ui-nextjs`, not part of this repository)
 consumes to render the live dashboard. This document only covers the
 backend-side surface; the frontend is out of scope.
 
-### Entry point & hand-off
+### Entry point and hand-off
 
 - **`ProfileDialog::menu_profile_dialog()`** (`PROFILE_TREE` button) mints a
   short-lived signed token via `TokenHelper::createUrlToken()` carrying
@@ -158,7 +158,7 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
      restrictions), `access` (public access).
    - `DiscoveryHelper` — the Search panel; `/api?class=DiscoveryHelper&scope=<scope>`
      collapses the in-world Search dialog tree (Region/Global/Online/
-     Garden/Fertile — see [Search & Discovery](search-and-discovery.md)) into
+     Garden/Fertile — see [Search and Discovery](search-and-discovery.md)) into
      one scoped endpoint. `region`/`online`/`fertile`
      return profile rows (name, species, gender, region, fertility, and
      lineage-aware breeding compatibility against the caller's active
@@ -173,7 +173,7 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
      then calls the same `offerCopulate()` used by the in-world flow — the
      target still confirms (or auto-accepts, per their trust/relationship/access
      settings — see `CopulateModule::resolveAutoApprovalReason()` and
-     [Accounts & Profiles](account-and-profiles.md)) before
+     [Accounts and Profiles](account-and-profiles.md)) before
      `CopulateState` is entered.
    - `WorldPresenceHelper` — the World Presence panel; aggregate community
      stats (`online` accounts, busiest `regions`, most-populous `species`),
@@ -181,11 +181,11 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
      gracefully instead of failing the whole payload.
    - `StoreModule::on_api()` — reserved `ApiSubscriber` stub for exposing store
      actions (e.g. `vend`) over the API; see
-     [The Store & Rewards Economy](store-and-rewards.md).
+     [The Store and Rewards Economy](store-and-rewards.md).
    - `AttachmentsHelper` (RLV shared-folders module) — a read-only listing
      (`list=folders|outfits|garments|all`) of the character's shared folders,
      current outfit, and worn/unworn garments, each flagged active/inactive;
-     see [RLV-Driven Character & Outfit Control](rlv-and-control.md).
+     see [RLV-Driven Character and Outfit Control](rlv-and-control.md).
 
 ### Live scene mirroring
 

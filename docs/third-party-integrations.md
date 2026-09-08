@@ -1,4 +1,4 @@
-# Third-Party Integrations & Product Compatibility
+# Third-Party Integrations and Product Compatibility
 
 How the system talks to services and products outside itself: connectable
 online services (a messaging bridge, a connected-toy bridge, a character
@@ -63,7 +63,7 @@ Third-party integration code is split into two distinct concerns under
 |---|---|---|
 | Messaging bridge (Telegram) | `TelegramModule` (`src/classes/modules/thirdparty/TelegramModule.php`) | Wraps the Telegram Bot API client; `sendMessage(...)` pushes notifications to a linked chat ID stored in an account setting; `on_command(...)` handles a `telegram-chat` command line toggle that also flips `RolePlayerPlugin::enableTelegram(...)` so region chat can be relayed both ways via `RlvRedirectService`. Gated by `isLinked()` / `isChatEnabled()`, both backed by `AccountSettingHelper`. |
 | Connected-toy bridge (Lovense) | `LovenseApi`, `LovenseModule` (referenced from `RolePlayService`), plus `LovenseRequest`/`LovenseCommandEnum`/`LovenseFunctionEnum`/`LovensePresetEnum`/`LovenseToy` value objects (`src/classes/thirdparty/services/lovense/`) | `LovenseApi` (a per-account singleton) posts signed commands to the Lovense LAN/cloud API (`sendPreset()`, `sendPattern()`, `sendFunction()`) to buzz a paired toy, and exposes QR-code-based device pairing (`getQR(...)`). `LovenseCallback` handles the provider's webhook. Implements `PortalSubscriber::on_authorize(...)` for the web-based linking flow (see [The Web Portal](web-portal.md)). |
-| Character directory (F-List) | `FlistModule` (`src/classes/modules/thirdparty/FlistModule.php`), `FlistApi` + the `FlistTrait`/`FlistService`, and a large value-object set under `src/classes/thirdparty/services/flist/` (kinks, info tags, character, images, mappings) | Authenticates via the portal flow (`on_authorize`), fetches and caches the linked F-List character (`getCharacter()`/`setCharacter()`), and maps F-List's kink/info-tag vocabulary onto the system's own enums (`FlistMappingKink`, `FlistMappingInfoTag`, …) so external kink preferences can inform in-scene eligibility (see [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)). Per-profile visible "info tag groups" are toggled via `getEnabledInfoTagGroups()`/`setEnabledInfoTagGroup()`. |
+| Character directory (F-List) | `FlistModule` (`src/classes/modules/thirdparty/FlistModule.php`), `FlistApi` + the `FlistTrait`/`FlistService`, and a large value-object set under `src/classes/thirdparty/services/flist/` (kinks, info tags, character, images, mappings) | Authenticates via the portal flow (`on_authorize`), fetches and caches the linked F-List character (`getCharacter()`/`setCharacter()`), and maps F-List's kink/info-tag vocabulary onto the system's own enums (`FlistMappingKink`, `FlistMappingInfoTag`, …) so external kink preferences can inform in-scene eligibility (see [Interaction and Role-Play Lifecycle](interaction-lifecycle.md)). Per-profile visible "info tag groups" are toggled via `getEnabledInfoTagGroups()`/`setEnabledInfoTagGroup()`. |
 | Game platform (Steam) | `SteamModule` (`src/classes/modules/thirdparty/SteamModule.php`), `SteamApi`, `GetPlayerSummaries`, `ResolveVanityURL`, `PlayerSummary` | Resolves a linked Steam username to a Steam ID (`getSteamId()`) and fetches player summaries (`getPlayerSummaries()`/`getPlayerSummary()`) for friend/profile lookups. |
 | Code-changes feed (GitHub) | `GitCommit` (`src/classes/models/github/GitCommit.php`), `GitHubChangesHelper` | Fetches recent commits for the changelog surfaced in `ui/changelog.phtml`. |
 
@@ -99,7 +99,7 @@ discovery so a product's exposed controls can be listed/driven generically
 Attachments are represented at the domain level by `AttachmentModelImpl`
 (`a_type`/`a_name`/`a_class`) and linked to a profile through
 `ProfileAttachmentModelImpl`/the profile's `attachments` collection (see
-[Accounts & Profiles](account-and-profiles.md)). `AttachmentService`
+[Accounts and Profiles](account-and-profiles.md)). `AttachmentService`
 (`src/classes/services/AttachmentService.php`, extending the shared
 framework's `AbstractAttachmentService`) resolves the currently worn
 `GenitalsAttachmentInterface`/`CoversAttachmentInterface` for a profile

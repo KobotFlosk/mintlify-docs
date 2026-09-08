@@ -1,4 +1,4 @@
-# Accounts & Profiles
+# Accounts and Profiles
 
 How a real-world user is represented in the system, how that maps to one or more
 in-character profiles, and how permissions, relationships, and trust between
@@ -50,7 +50,7 @@ Two different things are tracked for every person who uses the system:
 
 Characters can also band together into a named **pack** with a small
 leadership hierarchy (an Alpha, optional Betas, and Omegas), reached from your
-character's profile menu. See [Packs & Groups](packs-and-groups.md) for the
+character's profile menu. See [Packs and Groups](packs-and-groups.md) for the
 full walkthrough.
 
 ### Special roles and permissions
@@ -94,7 +94,7 @@ changed from the settings section of the main menu.
     many-to-many, `ane_profile_trusts`) — see below.
   - `geneA` / `geneB` — self-referencing many-to-one links to the two parent
     profiles used by genetics (see
-    [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)).
+    [Reproduction and Genetics Lifecycle](reproduction-and-genetics.md)).
   - `species` / `speciesOverride` — the character's species and any per-profile
     override (see [Species Compatibility](species-compatibility.md) /
     [Creating a Species](species-creation.md)).
@@ -126,7 +126,7 @@ changed from the settings section of the main menu.
   (`ps_key`/`ps_val`/`ps_updated`) via `ProfileSettingHelper`, storing
   per-character preferences such as content limits consulted by stories during
   eligibility checks (see
-  [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)).
+  [Interaction and Role-Play Lifecycle](interaction-lifecycle.md)).
 
 ### Roles and permissions
 
@@ -158,13 +158,13 @@ request lifecycle:
 Onboarding (first-run profile creation), switching, "assuming" a nearby
 egg/hand-off, and the settings/admin menus are driven by `InitialState`
 (`src/classes/states/InitialState.php`) — see
-[Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for how it fits
+[Interaction and Role-Play Lifecycle](interaction-lifecycle.md) for how it fits
 into the broader state machine.
 
 ### Where to go next
 
 - Layered architecture and the request lifecycle → [System Design](system-design.md)
-- Forming a named group with roles and invites → [Packs & Groups](packs-and-groups.md)
-- How a profile's biology drives scenes → [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)
-- How a profile's genetics/species are inherited → [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)
+- Forming a named group with roles and invites → [Packs and Groups](packs-and-groups.md)
+- How a profile's biology drives scenes → [Interaction and Role-Play Lifecycle](interaction-lifecycle.md)
+- How a profile's genetics/species are inherited → [Reproduction and Genetics Lifecycle](reproduction-and-genetics.md)
 - The optional AI narrator and its access gating → [The AI Role-Play Companion](ai-companion.md)

@@ -1,4 +1,4 @@
-# Interaction & Role-Play Lifecycle
+# Interaction and Role-Play Lifecycle
 
 How the companion comes to life, how shared intimate scenes are driven, and how
 role-play events flow through the system.
@@ -32,7 +32,7 @@ breeding, and egg-laying), each with its own set of moves.
 - Actions affect your **stats** — arousal builds, stamina drains, and so on.
 - Reaching a climax can transfer **fluids** between characters, which is what makes
   conception possible (see
-  [Reproduction & Genetics](reproduction-and-genetics.md)).
+  [Reproduction and Genetics](reproduction-and-genetics.md)).
 - If you have add-on devices or an AI companion enabled, they react in real time —
   narrating, buzzing a connected toy, or triggering special effects.
 - You can stop at any time; consent and your personal limits are always respected,
@@ -143,7 +143,7 @@ routes messages between them:
 Fluid/ovum exchange between the two sides is mediated by `OpenTransferService`
 (hooks such as `on_transfer_fluids`, `on_received_fluids`, `on_transfer_ovum`,
 `on_received_ovum`), which hands off to the reproduction chain documented in
-[Reproduction & Genetics](reproduction-and-genetics.md).
+[Reproduction and Genetics](reproduction-and-genetics.md).
 
 ### Add-ons participate in scenes
 

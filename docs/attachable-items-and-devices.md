@@ -1,4 +1,4 @@
-# Attachable Items & Devices
+# Attachable Items and Devices
 
 How consumable items (pills, potions, fluid containers, and similar objects) and
 attachable plugins/devices (extractors, ovipositors, connected hardware, and
@@ -166,5 +166,5 @@ are implemented as **modifiers** in `src/classes/modifiers/`, extending
 
 See [System Design](system-design.md) for how items and plugins fit into the
 overall layered architecture, and
-[Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for how add-ons
+[Interaction and Role-Play Lifecycle](interaction-lifecycle.md) for how add-ons
 participate in an active scene.

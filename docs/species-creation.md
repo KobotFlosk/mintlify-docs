@@ -1,4 +1,4 @@
-# Creating a Species — Truebred, Hybrid & Composition Hybrid
+# Creating a Species — Truebred, Hybrid and Composition Hybrid
 
 How the in-world species-creation wizard works, and how new truebred, hybrid,
 and composition-hybrid species are built and persisted.
@@ -9,7 +9,7 @@ and composition-hybrid species are built and persisted.
   persistence rules behind it.
 
 This document connects to [Species Compatibility](species-compatibility.md)
-and [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md).
+and [Reproduction and Genetics Lifecycle](reproduction-and-genetics.md).
 
 ---
 
@@ -183,10 +183,10 @@ the review menu you can tap any one to change it, then press **FINISH**.
 **Descriptors (optional):** appearance/behavior tags. Describe the species in your
 own words and the AI generates a tag list you can keep or skip.
 
-**Founding pair (Mother & Father):** every species is seeded with two original
+**Founding pair (Mother and Father):** every species is seeded with two original
 ancestors.
 
-- **Truebred & Composition hybrid:** you name a Mother and a Father who become the
+- **Truebred and Composition hybrid:** you name a Mother and a Father who become the
   species' fresh root lineage.
 - **True hybrid:** you still name them, but their ancestry is bred from the two
   member species (see §4).
@@ -211,7 +211,7 @@ directly.)
 
 ---
 
-## 8. Rules & tips at a glance
+## 8. Rules and tips at a glance
 
 - **The type follows the recipe:** 0 members = truebred, 2 = hybrid, 3+ =
   composition hybrid. You never pick the type label directly.
