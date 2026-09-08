@@ -170,9 +170,6 @@ export default defineConfig({
         "slug": "optional-add-ons/lovense"
       },
       {
-        "slug": "optional-add-ons/breeding-gardens-and-forests"
-      },
-      {
         "slug": "optional-add-ons/telegram-integration"
       }
     ]

@@ -2,8 +2,8 @@
 
 ## Scope
 
-All 70 original MDX pages are now in `src/content/docs/`, including older pages
-outside the main sidebar. Their extensionless paths are preserved. The homepage
+The migration initially moved all 70 original MDX pages into `src/content/docs/`, including older pages
+outside the main sidebar. Retained pages preserve their extensionless paths. The homepage
 remains `/`. `scripts/migrated-routes.json` records the original routes and the
 rendered-link checker verifies that each still builds.
 
@@ -100,3 +100,12 @@ chosen host when available.
 DNS and production hosting have not been changed by this repository migration.
 If a cutover fails, restore the previous DNS target (`cname.mintlify.builders`)
 while investigating. The prior Mintlify source layout is available in Git history.
+
+## Retired pages
+
+The obsolete `optional-add-ons/breeding-gardens-and-forests` implementation guide
+was removed at the project owner's request. Its sidebar entry and inbound links
+were removed, and it is no longer required by the migrated-route check (69
+original routes remain). The current garden directory is documented under
+[Search and discovery](../src/content/docs/system-guide/search-and-discovery.mdx).
+The original Mintlify configuration snapshots above remain historical references.

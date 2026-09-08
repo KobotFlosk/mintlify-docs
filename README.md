@@ -23,7 +23,7 @@ npm run validate
 ```
 
 This checks Astro types and content, builds the site, and checks rendered internal
-links, anchors, local assets, and all 70 migrated page routes. External links are
+links, anchors, local assets, and all retained migrated page routes. External links are
 not crawled. Pagefind search is generated during the production build.
 
 ```sh
