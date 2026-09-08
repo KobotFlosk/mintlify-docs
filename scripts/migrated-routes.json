@@ -1,0 +1,282 @@
+[
+  {
+    "source": "development/builders-kit.mdx",
+    "route": "/development/builders-kit"
+  },
+  {
+    "source": "development/developers-api.mdx",
+    "route": "/development/developers-api"
+  },
+  {
+    "source": "development/faq.mdx",
+    "route": "/development/faq"
+  },
+  {
+    "source": "development/release-notes.mdx",
+    "route": "/development/release-notes"
+  },
+  {
+    "source": "development.mdx",
+    "route": "/development"
+  },
+  {
+    "source": "getting-started/adoptions.mdx",
+    "route": "/getting-started/adoptions"
+  },
+  {
+    "source": "getting-started/ane-store.mdx",
+    "route": "/getting-started/ane-store"
+  },
+  {
+    "source": "getting-started/attachments.mdx",
+    "route": "/getting-started/attachments"
+  },
+  {
+    "source": "getting-started/breeding.mdx",
+    "route": "/getting-started/breeding"
+  },
+  {
+    "source": "getting-started/character/abilities.mdx",
+    "route": "/getting-started/character/abilities"
+  },
+  {
+    "source": "getting-started/character/adoptions.mdx",
+    "route": "/getting-started/character/adoptions"
+  },
+  {
+    "source": "getting-started/character/classes-and-forms.mdx",
+    "route": "/getting-started/character/classes-and-forms"
+  },
+  {
+    "source": "getting-started/character/fluids-and-stats.mdx",
+    "route": "/getting-started/character/fluids-and-stats"
+  },
+  {
+    "source": "getting-started/character.mdx",
+    "route": "/getting-started/character"
+  },
+  {
+    "source": "getting-started/command-line.mdx",
+    "route": "/getting-started/command-line"
+  },
+  {
+    "source": "getting-started/commands.mdx",
+    "route": "/getting-started/commands"
+  },
+  {
+    "source": "getting-started/conception/character-compatibility.mdx",
+    "route": "/getting-started/conception/character-compatibility"
+  },
+  {
+    "source": "getting-started/conception/conception-competition.mdx",
+    "route": "/getting-started/conception/conception-competition"
+  },
+  {
+    "source": "getting-started/conception/conception-probability.mdx",
+    "route": "/getting-started/conception/conception-probability"
+  },
+  {
+    "source": "getting-started/conception/essence-retention.mdx",
+    "route": "/getting-started/conception/essence-retention"
+  },
+  {
+    "source": "getting-started/conception.mdx",
+    "route": "/getting-started/conception"
+  },
+  {
+    "source": "getting-started/fluids-and-stats.mdx",
+    "route": "/getting-started/fluids-and-stats"
+  },
+  {
+    "source": "getting-started/knotting-tying.mdx",
+    "route": "/getting-started/knotting-tying"
+  },
+  {
+    "source": "getting-started/new-to-ane.mdx",
+    "route": "/getting-started/new-to-ane"
+  },
+  {
+    "source": "getting-started/operation/ane-store.mdx",
+    "route": "/getting-started/operation/ane-store"
+  },
+  {
+    "source": "getting-started/operation/breeding.mdx",
+    "route": "/getting-started/operation/breeding"
+  },
+  {
+    "source": "getting-started/operation/characters.mdx",
+    "route": "/getting-started/operation/characters"
+  },
+  {
+    "source": "getting-started/operation/credit-system.mdx",
+    "route": "/getting-started/operation/credit-system"
+  },
+  {
+    "source": "getting-started/operation/species-compatibility.mdx",
+    "route": "/getting-started/operation/species-compatibility"
+  },
+  {
+    "source": "getting-started/operation/species-overriding.mdx",
+    "route": "/getting-started/operation/species-overriding"
+  },
+  {
+    "source": "getting-started/operation/species.mdx",
+    "route": "/getting-started/operation/species"
+  },
+  {
+    "source": "getting-started/operation.mdx",
+    "route": "/getting-started/operation"
+  },
+  {
+    "source": "getting-started/packs.mdx",
+    "route": "/getting-started/packs"
+  },
+  {
+    "source": "getting-started/stats-hud.mdx",
+    "route": "/getting-started/stats-hud"
+  },
+  {
+    "source": "getting-started.mdx",
+    "route": "/getting-started"
+  },
+  {
+    "source": "index.mdx",
+    "route": "/"
+  },
+  {
+    "source": "items/aging-potion.mdx",
+    "route": "/items/aging-potion"
+  },
+  {
+    "source": "items/condoms-pack.mdx",
+    "route": "/items/condoms-pack"
+  },
+  {
+    "source": "items/fluid-container.mdx",
+    "route": "/items/fluid-container"
+  },
+  {
+    "source": "items/paternity-tester.mdx",
+    "route": "/items/paternity-tester"
+  },
+  {
+    "source": "items/poison-apple.mdx",
+    "route": "/items/poison-apple"
+  },
+  {
+    "source": "items.mdx",
+    "route": "/items"
+  },
+  {
+    "source": "optional-add-ons/breeding-gardens-and-forests.mdx",
+    "route": "/optional-add-ons/breeding-gardens-and-forests"
+  },
+  {
+    "source": "optional-add-ons/lovense.mdx",
+    "route": "/optional-add-ons/lovense"
+  },
+  {
+    "source": "optional-add-ons/rlv-outfits.mdx",
+    "route": "/optional-add-ons/rlv-outfits"
+  },
+  {
+    "source": "optional-add-ons/telegram-integration.mdx",
+    "route": "/optional-add-ons/telegram-integration"
+  },
+  {
+    "source": "optional-add-ons.mdx",
+    "route": "/optional-add-ons"
+  },
+  {
+    "source": "overview/need-assistance.mdx",
+    "route": "/overview/need-assistance"
+  },
+  {
+    "source": "overview/our-features.mdx",
+    "route": "/overview/our-features"
+  },
+  {
+    "source": "overview.mdx",
+    "route": "/overview"
+  },
+  {
+    "source": "plugins/good-moaning-plugin.mdx",
+    "route": "/plugins/good-moaning-plugin"
+  },
+  {
+    "source": "plugins/its-not-mine-plugin.mdx",
+    "route": "/plugins/its-not-mine-plugin"
+  },
+  {
+    "source": "plugins/nectar-extractor-plugin.mdx",
+    "route": "/plugins/nectar-extractor-plugin"
+  },
+  {
+    "source": "plugins/oviposition-plugin.mdx",
+    "route": "/plugins/oviposition-plugin"
+  },
+  {
+    "source": "plugins/ovum-exchanger.mdx",
+    "route": "/plugins/ovum-exchanger"
+  },
+  {
+    "source": "plugins/project-arousal-plugin.mdx",
+    "route": "/plugins/project-arousal-plugin"
+  },
+  {
+    "source": "plugins/roleplayer-plugin.mdx",
+    "route": "/plugins/roleplayer-plugin"
+  },
+  {
+    "source": "plugins.mdx",
+    "route": "/plugins"
+  },
+  {
+    "source": "system-guide/accounts-and-profiles.mdx",
+    "route": "/system-guide/accounts-and-profiles"
+  },
+  {
+    "source": "system-guide/ai-companion.mdx",
+    "route": "/system-guide/ai-companion"
+  },
+  {
+    "source": "system-guide/attachable-items-and-devices.mdx",
+    "route": "/system-guide/attachable-items-and-devices"
+  },
+  {
+    "source": "system-guide/companion-dashboard.mdx",
+    "route": "/system-guide/companion-dashboard"
+  },
+  {
+    "source": "system-guide/creating-a-species.mdx",
+    "route": "/system-guide/creating-a-species"
+  },
+  {
+    "source": "system-guide/form-shapeshifters.mdx",
+    "route": "/system-guide/form-shapeshifters"
+  },
+  {
+    "source": "system-guide/interaction-and-roleplay.mdx",
+    "route": "/system-guide/interaction-and-roleplay"
+  },
+  {
+    "source": "system-guide/reproduction-and-genetics.mdx",
+    "route": "/system-guide/reproduction-and-genetics"
+  },
+  {
+    "source": "system-guide/search-and-discovery.mdx",
+    "route": "/system-guide/search-and-discovery"
+  },
+  {
+    "source": "system-guide/species-compatibility.mdx",
+    "route": "/system-guide/species-compatibility"
+  },
+  {
+    "source": "system-guide/system-overview.mdx",
+    "route": "/system-guide/system-overview"
+  },
+  {
+    "source": "system-guide/web-portal.mdx",
+    "route": "/system-guide/web-portal"
+  }
+]

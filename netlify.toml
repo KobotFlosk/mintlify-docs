@@ -1,0 +1,25 @@
+[build]
+  command = "npm run validate"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Override Astro's HTML redirect pages with HTTP redirects on Netlify.
+[[redirects]]
+  from = "/index"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/development/f.a.q"
+  to = "/development/faq"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/getting-started/operation.md"
+  to = "/getting-started/operation"
+  status = 301
+  force = true

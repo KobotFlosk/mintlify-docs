@@ -1,0 +1,38 @@
+---
+title: "Developers API"
+description: "Read AnE stat broadcasts and build integrations that remain compatible with future updates."
+---
+
+AnE aims to keep integrations backward compatible. Design your scripts so you can update them when broadcast data gains new fields or behavior changes.
+
+## Broadcasts
+
+AnE usually sends broadcasts every five minutes, although some broadcasts occur more frequently. Broadcasts use JSON objects and can grow as new information becomes available. Process them in scripts with enough free memory.
+
+## Stats
+
+Stat broadcasts represent internal and external stats as decimal percentages. Query the companion when you need quantity values. Broadcasts also contain nonnumeric flags.
+
+Some values can exceed `1.000` (100%). For example, the physical abdomen value can exceed 100% during a pregnancy.
+
+```json title="Stats broadcast"
+{
+  "channel": -1537921545,
+  "stats": {
+    "internal": {
+      "vitality": "1.000",
+      "strength": "1.000",
+      "defense": "1.000",
+      "conscious": "1.000",
+      "arousal": "0.000",
+      "essence": "1.000"
+    },
+    "physical": {
+      "abdomen": "0.000"
+    },
+    "flags": {
+      "fertile": false
+    }
+  }
+}
+```

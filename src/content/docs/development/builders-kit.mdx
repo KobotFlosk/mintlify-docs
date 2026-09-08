@@ -1,0 +1,35 @@
+---
+title: "Builders Kit"
+description: "Integrate AnE stats, discovery, and broadcast data into your own Second Life products."
+---
+
+The [AnE Builders Kit](https://marketplace.secondlife.com/p/AnE-Builders-Kit/21858286) provides scripts for integrating AnE into your own projects. It includes example scripts to help you get started.
+
+## Stats script
+
+The `ane.stats` script changes character stats in the region. Place it and the provided example script in a prim to test it. You need a basic understanding of LSL events and JSON.
+
+Stats use points to represent percentages. A species normally starts with `1000` points per stat. AnE applies changes as a ratio to the character's current value.
+
+- Send `-250` to reduce a stat by 25%.
+- Send `750` to increase a stat by 75%.
+- Stats are capped between 0% and 100%.
+- Some stats affect others indirectly. For example, increasing arousal decreases defense.
+- Profile modifiers and special items can change a character's stat ratios or values.
+
+For example, applying `-250` to vitality at 40% reduces it to 30%.
+
+## Discovery script
+
+The `ane.discover` script finds companions in the region. Results use the user's UUID as the key and the companion object's UUID as the value. Results also include `count` and `handle` values. Use `handle` to identify the request in linked messages.
+
+## Broadcast channels
+
+The `ane.broadcast.example` script demonstrates these JSON broadcast channels:
+
+```text title="Broadcast channels"
+integer CHAN_BROADCAST_SETTINGS = -1537921548;
+integer CHAN_BROADCAST_PREGNANCY = -1537921547;
+integer CHAN_BROADCAST_STATE = -1537921546;
+integer CHAN_BROADCAST_STATS = -1537921545;
+```

@@ -1,0 +1,23 @@
+:root {
+  --sl-color-accent-low: #102f21;
+  --sl-color-accent: #16a34a;
+  --sl-color-accent-high: #a7f3c4;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #dcfce7;
+  --sl-color-accent: #15803d;
+  --sl-color-accent-high: #14532d;
+}
+
+.sl-markdown-content iframe {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 0;
+}
+
+.sl-markdown-content img {
+  height: auto;
+}
