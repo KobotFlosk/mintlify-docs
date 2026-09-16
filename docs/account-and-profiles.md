@@ -1,4 +1,4 @@
-# Accounts and Profiles
+# Accounts & Profiles
 
 How a real-world user is represented in the system, how that maps to one or more
 in-character profiles, and how permissions, relationships, and trust between
@@ -45,13 +45,35 @@ Two different things are tracked for every person who uses the system:
 - Two characters can also share a formal **parent/child link** — the result of
   an adoption or of giving birth/being born — which matters for genetics and for
   who counts as a "descendant" of whom.
+- Adoptions can also establish **dominant/paired dynamics** — a Master/Slave or
+  Owner/Pet bond. Both trusting someone and holding such a bond are among the
+  situations that let a **breeding request auto-accept** without prompting you —
+  but that is a property of copulation/breeding, not of relationships alone: the
+  full set of auto-acceptance rules (which also covers your combat stats, public
+  access, and partnership) and their priority order are described under
+  [When a breeding request auto-accepts](interaction-lifecycle.md#when-a-breeding-request-auto-accepts).
 
 ### Packs
 
 Characters can also band together into a named **pack** with a small
 leadership hierarchy (an Alpha, optional Betas, and Omegas), reached from your
-character's profile menu. See [Packs and Groups](packs-and-groups.md) for the
+character's profile menu. See [Packs & Groups](packs-and-groups.md) for the
 full walkthrough.
+
+### Professions
+
+A character can be granted a **profession title** (for example, Chemist or
+Doctor) — a small badge of standing rather than a mechanical bonus. Titles are
+conferred by using a special consumable item on yourself; once conferred, the
+title is simply recorded on your character.
+
+### Blocking
+
+You can block another character from appearing in any of your search results.
+Blocking is one-directional — it only affects what you see, doesn't notify the
+other person, and doesn't stop them from finding or contacting you through
+other means. See [Search & Discovery](search-and-discovery.md) for where
+blocking is offered.
 
 ### Special roles and permissions
 
@@ -94,13 +116,27 @@ changed from the settings section of the main menu.
     many-to-many, `ane_profile_trusts`) — see below.
   - `geneA` / `geneB` — self-referencing many-to-one links to the two parent
     profiles used by genetics (see
-    [Reproduction and Genetics Lifecycle](reproduction-and-genetics.md)).
+    [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)).
   - `species` / `speciesOverride` — the character's species and any per-profile
     override (see [Species Compatibility](species-compatibility.md) /
     [Creating a Species](species-creation.md)).
   - `class` (`ClassTypeEnum`), `form` (`FormTypeEnum`), `gender`
     (`GenderTypeEnum`), `race`, `region`, `outfit`, `height`, `weight`, `aging`,
     `activated`, `birth`, `death` (`ProfileDeathModelImpl`, one-to-one).
+
+### Professions
+
+`ProfileProfessionModelImpl` (table `ane_profile_professions`) is a composite-key
+join of a `ProfileModelImpl` and a `ProfessionTitleEnum` (`TITLE_CHEMIST`,
+`TITLE_DOCTOR`) plus an `added` timestamp; it carries no behaviour of its own.
+`ItemObjectConferrable` (`src/classes/items/`, type
+`item.conferrable.profession`) is the consumable that grants one: its dialog
+lets the holder pick a `ProfessionTitleEnum` case, stores the choice in the
+item's own content, and on confirmation (`confer_confirm_dialog(...)`)
+consumes the item and adds that case directly to
+`ProfileModelImpl::getProfessions()`. There is currently no other gameplay
+system reading `getProfessions()` back out — it is purely a cosmetic title
+marker today.
 
 ### Relations and trust
 
@@ -116,6 +152,21 @@ changed from the settings section of the main menu.
   parents) and `ProfileAdoptionModelImpl` (adoptive relationships), queried via
   `ProfileAdoptionHelper`. `AccountHelper::isAncestorOf(...)` /
   `isAccountAncestorOf(...)` walk this lineage.
+- `ProfileAdoptionModelImpl` (`ane_profile_adoptions` via `adoptions`) links an
+  owning `profile` to the `adopted` profile with an `AdoptionTypeEnum`
+  (`adoptedAs`) describing the role the **adopted** profile holds toward the
+  owner (e.g. an owner-side row with `adoptedAs = ADOPTION_TYPE_SLAVE` means the
+  adopted profile is that owner's Slave). `AdoptionTypeEnum::inverseRelation()`
+  pairs the reciprocal roles: `MASTER`↔`SLAVE`, `OWNER`↔`PET`, `PARENT`↔`CHILD`.
+- **Breeding-request auto-acceptance:** `trusts`, `relations`
+  (`RelationTypeEnum::PARTNER`), and `adoptions` (the Master/Owner/Pet bonds) are
+  three of the inputs to the copulation/breeding auto-acceptance rules, alongside
+  the receiver's combat stats and public-access setting. The rules are **not** a
+  relations feature — they belong to copulation as a whole and are resolved by
+  `CopulateModule::resolveAutoApprovalReason()` into a priority-ordered
+  `CopulateApprovalReasonEnum`. See
+  [Breeding-request auto-acceptance rules](interaction-lifecycle.md#breeding-request-auto-acceptance-rules)
+  for the full ruleset, priority order, and narration.
 
 ### Settings
 
@@ -126,7 +177,7 @@ changed from the settings section of the main menu.
   (`ps_key`/`ps_val`/`ps_updated`) via `ProfileSettingHelper`, storing
   per-character preferences such as content limits consulted by stories during
   eligibility checks (see
-  [Interaction and Role-Play Lifecycle](interaction-lifecycle.md)).
+  [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)).
 
 ### Roles and permissions
 
@@ -137,8 +188,9 @@ changed from the settings section of the main menu.
   [The AI Role-Play Companion](ai-companion.md).
 - `AccountPermissionEnum` (`src/classes/enums/AccountPermissionEnum.php`):
   fine-grained permissions such as `PERM_ACCOUNT_BAN`, `PERM_CAN_DEBUG`,
-  `PERM_CLI_SEND_COMMAND`, `PERM_GRANT_PERM`, `PERM_UNLIMITED_CHARACTERS`,
-  `PERM_VIEW_ACCOUNT_DETAILS`, `PERM_VIEW_ACCOUNT_LOCATION`. Rows live in
+  `PERM_CLI_FORWARD_COMMAND`, `PERM_CLI_SEND_COMMAND`, `PERM_GRANT_PERM`,
+  `PERM_UNLIMITED_CHARACTERS`, `PERM_VIEW_ACCOUNT_DETAILS`,
+  `PERM_VIEW_ACCOUNT_LOCATION`. Rows live in
   `AccountPermissionModelImpl`; checked via `AccountHelper::hasPerm(...)`.
 
 ### Account/profile lookups
@@ -158,13 +210,14 @@ request lifecycle:
 Onboarding (first-run profile creation), switching, "assuming" a nearby
 egg/hand-off, and the settings/admin menus are driven by `InitialState`
 (`src/classes/states/InitialState.php`) — see
-[Interaction and Role-Play Lifecycle](interaction-lifecycle.md) for how it fits
+[Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for how it fits
 into the broader state machine.
 
 ### Where to go next
 
 - Layered architecture and the request lifecycle → [System Design](system-design.md)
-- Forming a named group with roles and invites → [Packs and Groups](packs-and-groups.md)
-- How a profile's biology drives scenes → [Interaction and Role-Play Lifecycle](interaction-lifecycle.md)
-- How a profile's genetics/species are inherited → [Reproduction and Genetics Lifecycle](reproduction-and-genetics.md)
+- Finding other characters and breeding locations → [Search & Discovery](search-and-discovery.md)
+- Forming a named group with roles and invites → [Packs & Groups](packs-and-groups.md)
+- How a profile's biology drives scenes → [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)
+- How a profile's genetics/species are inherited → [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)
 - The optional AI narrator and its access gating → [The AI Role-Play Companion](ai-companion.md)

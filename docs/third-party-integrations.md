@@ -1,4 +1,4 @@
-# Third-Party Integrations and Product Compatibility
+# Third-Party Integrations & Product Compatibility
 
 How the system talks to services and products outside itself: connectable
 online services (a messaging bridge, a connected-toy bridge, a character
@@ -42,6 +42,13 @@ the companion, it can automatically pick up on relevant moments (a climax, a
 touch, a birth) and react appropriately, without you having to configure
 anything beyond wearing both.
 
+From the [companion web dashboard](companion-dashboard.md)'s Attachments
+panel you can also see which of these products the companion currently
+manages, add or remove one, and — if you'd rather drive a device by hand for
+a while — switch it to manual **Override**, which pauses its automatic
+reactions and lets you send its individual controls/commands yourself. Turn
+Override back off to return the device to reacting on its own.
+
 ---
 
 ## 🧑‍💻 Developer Documentation
@@ -63,13 +70,14 @@ Third-party integration code is split into two distinct concerns under
 |---|---|---|
 | Messaging bridge (Telegram) | `TelegramModule` (`src/classes/modules/thirdparty/TelegramModule.php`) | Wraps the Telegram Bot API client; `sendMessage(...)` pushes notifications to a linked chat ID stored in an account setting; `on_command(...)` handles a `telegram-chat` command line toggle that also flips `RolePlayerPlugin::enableTelegram(...)` so region chat can be relayed both ways via `RlvRedirectService`. Gated by `isLinked()` / `isChatEnabled()`, both backed by `AccountSettingHelper`. |
 | Connected-toy bridge (Lovense) | `LovenseApi`, `LovenseModule` (referenced from `RolePlayService`), plus `LovenseRequest`/`LovenseCommandEnum`/`LovenseFunctionEnum`/`LovensePresetEnum`/`LovenseToy` value objects (`src/classes/thirdparty/services/lovense/`) | `LovenseApi` (a per-account singleton) posts signed commands to the Lovense LAN/cloud API (`sendPreset()`, `sendPattern()`, `sendFunction()`) to buzz a paired toy, and exposes QR-code-based device pairing (`getQR(...)`). `LovenseCallback` handles the provider's webhook. Implements `PortalSubscriber::on_authorize(...)` for the web-based linking flow (see [The Web Portal](web-portal.md)). |
-| Character directory (F-List) | `FlistModule` (`src/classes/modules/thirdparty/FlistModule.php`), `FlistApi` + the `FlistTrait`/`FlistService`, and a large value-object set under `src/classes/thirdparty/services/flist/` (kinks, info tags, character, images, mappings) | Authenticates via the portal flow (`on_authorize`), fetches and caches the linked F-List character (`getCharacter()`/`setCharacter()`), and maps F-List's kink/info-tag vocabulary onto the system's own enums (`FlistMappingKink`, `FlistMappingInfoTag`, …) so external kink preferences can inform in-scene eligibility (see [Interaction and Role-Play Lifecycle](interaction-lifecycle.md)). Per-profile visible "info tag groups" are toggled via `getEnabledInfoTagGroups()`/`setEnabledInfoTagGroup()`. |
+| Character directory (F-List) | `FlistModule` (`src/classes/modules/thirdparty/FlistModule.php`), `FlistApi` + the `FlistTrait`/`FlistService`, and a large value-object set under `src/classes/thirdparty/services/flist/` (kinks, info tags, character, images, mappings) | Authenticates via the portal flow (`on_authorize`), fetches and caches the linked F-List character (`getCharacter()`/`setCharacter()`), and maps F-List's kink/info-tag vocabulary onto the system's own enums (`FlistMappingKink`, `FlistMappingInfoTag`, …) so external kink preferences can inform in-scene eligibility (see [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)). Per-profile visible "info tag groups" are toggled via `getEnabledInfoTagGroups()`/`setEnabledInfoTagGroup()`. |
 | Game platform (Steam) | `SteamModule` (`src/classes/modules/thirdparty/SteamModule.php`), `SteamApi`, `GetPlayerSummaries`, `ResolveVanityURL`, `PlayerSummary` | Resolves a linked Steam username to a Steam ID (`getSteamId()`) and fetches player summaries (`getPlayerSummaries()`/`getPlayerSummary()`) for friend/profile lookups. |
-| Code-changes feed (GitHub) | `GitCommit` (`src/classes/models/github/GitCommit.php`), `GitHubChangesHelper` | Fetches recent commits for the changelog surfaced in `ui/changelog.phtml`. |
+| Code-changes feed (GitHub) | `GitCommit` (`src/classes/models/github/GitCommit.php`), `GitHubChangesHelper` | Fetches recent merged-PR commits from the project's GitHub repository (`getMergedCommitsToBranch(...)`, falling back to `getCommits(...)`) so `GithubChangesDialog` (`src/classes/prefabs/dialogs/thirdparty/GithubChangesDialog.php`) can list them as an in-world "Changes" menu, reached from the [Help menu](help-and-support.md). Unlike the other rows in this table, this isn't a per-account link — it's a shared, read-only feed. Note: the unrelated legacy file `ui/changelog.phtml` (a static Bitbucket-backed page) is orphaned/unused and is not part of this feature. |
 
-All of these are optional per account/profile: modules typically expose an
-`isLinked()`/`isEnabled()`-style guard backed by an account or profile setting,
-and are only activated when the corresponding link has been authorized.
+All of the *linkable* integrations above are optional per account/profile:
+modules typically expose an `isLinked()`/`isEnabled()`-style guard backed by an
+account or profile setting, and are only activated when the corresponding link
+has been authorized.
 Authorization for the browser-based links (Telegram chat ID capture, Lovense
 pairing, F-List login) goes through the shared portal flow — see
 [The Web Portal](web-portal.md).
@@ -94,18 +102,71 @@ extending the shared framework's attachment base), which provides a shared
 in-world link-message channel (`createListen()`/`command_listen()`), a
 cooldown helper (`canAffect()`), and reflection-driven `#[ControlMethod]`
 discovery so a product's exposed controls can be listed/driven generically
-(`callControlMethod()`, `controls()`, surfaced via `jsonSerialize()`).
+(`callControlMethod()`, `controls()`, surfaced via `jsonSerialize()`). Each
+`#[ControlMethod]` attribute (`src/classes/attributes/ControlMethod.php`)
+declares a `ControlMethodTypeEnum` kind — `SLIDER` (a bounded `min`/`max`
+range, both required in the attribute), `ACTION` (a one-shot trigger, bounds
+fixed to `0`/`0`), or `TOGGLE` (an on/off switch, bounds fixed to `0`/`1`) —
+which is how a generic client (like the
+[companion web dashboard](companion-dashboard.md)) knows how to render a
+given product's control without knowing about the product itself. The
+attribute validates its own arguments at construction time (a `SLIDER`
+declared without both bounds, or any other unsupported kind, throws
+`InvalidArgumentException`), so a malformed `#[ControlMethod]` declaration
+fails as soon as the attachment class is reflected rather than producing a
+bad control entry.
+
+#### Manual override (user-driven control)
+
+Every attachment can be switched into a per-session **user override**
+(`isUserOverrideEnabled()` / `setUserOverride(bool)` on
+`AbstractAttachmentBase`) that pauses its own automatic reactions so a person
+can drive its `#[ControlMethod]`/test-method commands directly instead:
+
+- While override is enabled, the instance unsubscribes itself from
+  `RolePlayService`/`OpenTransferService` (if it implements
+  `RolePlaySubscriber`/`OpenTransferSubscriber`), so role-play events no
+  longer trigger its automatic commands, and its outbound `doWhisper()`/
+  `doSayTo()` calls are silently dropped (`mayEmitAttachmentCommand()`)
+  *unless* they happen inside an explicit `runUserCommand(callable)` call.
+  Disabling override resubscribes it and lets automatic commands flow again.
+- The override flag is deliberately **not persisted** — it lives only on the
+  live attachment instance for the current HUD session, so a HUD
+  reset/reattach always starts back in automatic mode.
+- `jsonSerialize()` reports the current flag as `overridden`, alongside the
+  `controls` list, so a client can show whether a device is currently under
+  manual control.
+
+This is what backs the companion web dashboard's Attachments panel
+(`AttachmentsHelper`, see [The Companion Web Dashboard](companion-dashboard.md)):
+its `override` action flips the flag, and its `control`/`method` actions are
+rejected with an error unless override is already enabled for that
+attachment, then invoke `callControlMethod()`/the test-method call through
+`runUserCommand()` so the manual command still reaches the device even while
+its own automation is paused.
+
+`AbstractLowerGenitalsAttachment` also debounces climax notices coming from a
+product: once a "cum event" is accepted it stamps a per-profile timestamp
+setting (`CLIMAX_TIMESTAMP_SETTING`), and any further notice received within
+`CLIMAX_BACKOFF_SECONDS` (30s) is ignored (`isClimaxBackoffActive()`) so a
+single physical climax cannot be reported multiple times by chatty hardware and
+re-trigger `RolePlayService::doClimax()`/arousal effects repeatedly.
 
 Attachments are represented at the domain level by `AttachmentModelImpl`
 (`a_type`/`a_name`/`a_class`) and linked to a profile through
 `ProfileAttachmentModelImpl`/the profile's `attachments` collection (see
-[Accounts and Profiles](account-and-profiles.md)). `AttachmentService`
+[Accounts & Profiles](account-and-profiles.md)). `AttachmentService`
 (`src/classes/services/AttachmentService.php`, extending the shared
 framework's `AbstractAttachmentService`) resolves the currently worn
 `GenitalsAttachmentInterface`/`CoversAttachmentInterface` for a profile
 (`withGenitalsAttachment()`/`withCoversAttachment()`), which is how stories and
 plugins query "what body parts/effects does this character actually have
 attached" without depending on any specific product's class directly.
+`AttachmentService::on_api()` itself just delegates to `AttachmentsHelper`
+(kept as its own resolvable endpoint, `/api?class=AttachmentService`, for
+compatibility with HUD sessions serialized before the Attachments panel
+existed) — see [The Companion Web Dashboard](companion-dashboard.md) for the
+actual attach/detach/override/control contract.
 
 `AttachmentTypeEnum` (`genitals.anus`, `genitals.penis`, `genitals.vagina`,
 `genitals.breasts`, `covers.body`, `games`) is the shared vocabulary used to

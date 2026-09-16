@@ -9,6 +9,11 @@ itself.
 - **🧑‍💻 Developer Documentation** — how the hand-off and authorization flow
   works.
 
+> This is a different thing from
+> [The Companion Web Dashboard](companion-dashboard.md), which is an ongoing
+> browser session showing your character's live status rather than a one-off
+> credential/pairing hand-off.
+
 ---
 
 ## 🎮 End-User Documentation
@@ -47,7 +52,7 @@ The portal is a small, generic browser hand-off used whenever a third-party
 integration needs a step that can't happen through in-world dialogs — chiefly
 credential entry (F-List login) or displaying a scannable pairing code
 (Lovense toy pairing). See
-[Third-Party Integrations and Product Compatibility](third-party-integrations.md)
+[Third-Party Integrations & Product Compatibility](third-party-integrations.md)
 for the integrations that use it.
 
 ### Pieces
@@ -129,5 +134,5 @@ in-world dialog ──▶ PortalHandle::newInstance($caller, 'portal_access')
 
 See [System Design](system-design.md) for how the portal fits into the overall
 architecture, and
-[Third-Party Integrations and Product Compatibility](third-party-integrations.md)
+[Third-Party Integrations & Product Compatibility](third-party-integrations.md)
 for the integrations that rely on it.

@@ -66,6 +66,9 @@ export default defineConfig({
         "slug": "system-guide/form-shapeshifters"
       },
       {
+        "slug": "system-guide/abilities"
+      },
+      {
         "slug": "system-guide/ai-companion"
       },
       {

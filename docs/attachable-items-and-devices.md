@@ -1,4 +1,4 @@
-# Attachable Items and Devices
+# Attachable Items & Devices
 
 How consumable items (pills, potions, fluid containers, and similar objects) and
 attachable plugins/devices (extractors, ovipositors, connected hardware, and
@@ -55,6 +55,19 @@ is happening during a scene and add their own menu:
   inject or extract fluids from a distance rather than through direct touch.
 - Third-party connected toys (see the companion's settings) can also react to
   scenes in real time, buzzing in sync with in-character events.
+- **Connected outfit system** — if you wear a compatible connected outfit
+  system, you can link one of its outfit profiles to a character (or, for a
+  shapeshifter, to one specific form) from that add-on's own menu. Once
+  linked, switching outfit profiles there switches which character or form is
+  active here, and switching character here switches the outfit profile there
+  too. You can also mark an outfit profile as an **alternative appearance**
+  for a character or form instead of a full link — a stand-in look that gets
+  applied automatically without changing which character that outfit profile
+  is officially tied to. A per-character toggle lets you turn this automatic
+  switching on or off if you'd rather change things by hand for a while, and
+  you can remove one link or all of them at any time from the same menu.
+  Whatever the outfit system currently reports as covered or exposed also
+  determines what's considered accessible on your character during a scene.
 
 Add-ons are optional: you choose which ones to wear or attach, and each adds its
 own menu button alongside your regular companion menu. Some effects (such as
@@ -123,22 +136,80 @@ Notable concrete plugins/devices:
 | `NectarExtractorPlugin` | Nectar Extractor | Extends `AbstractExtractorPlugin`; captures nectar-type fluid during penetration events. |
 | `SpunkExtractorPlugin` | (extractor) | Same pattern for semen-type fluid; present in code but **commented out** of the plugin factory in `Application::doInitialize()`, so not currently attachable. |
 | `OvipositionPlugin` | Oviposition | Drives egg-laying via `BirthHelper`, producing `ItemObjectBirthEgg` items and `BirthEvent`s. |
-| `OvipositorPlugin` | Ovipositor | Companion add-on for the oviposition flow. |
+| `OvipositorPlugin` | Ovipositor | A stub companion add-on for the oviposition flow; it has no behaviour beyond its handle/label yet, and is **not** registered in the plugin factory below, so it cannot currently be attached in production. |
 | `OvumExchangeDevice` | Ovum Exchanger | Extends `AbstractDevicePlugin`, implements `InteractionSubscriber`; exchanges ovum directly between two profiles via `OvumHelper`/`PregnancyHelper`. |
 | `GenitalsControllerPlugin` | Kiss Arousal | Raises arousal stats from kiss-style interactions. |
 | `RolePlayerPlugin` | Role Player | Narration/role-play-flavour add-on reacting to a broad set of role-play events. |
 | `ItsNotMinePlugin` | `It's Not Mine` Plugin | Implements `OpenTransferSubscriber`; alters paternity/attribution behaviour on fluid transfer. |
 | `NaniteTesiPlugin` | (Nanite-Systems TESI integration) | Implements `OpenTransferSubscriber`; bridges to the third-party Nanite Systems TESI protocol. |
-| `SexRifleDevice` | (rifle device) | Uses `FluidContainerTrait`; a projectile-style fluid device. |
+| `SexRifleDevice` | (rifle device) | Holds a `FluidContainerHolder`-backed fluid container; a projectile-style fluid device that can be loaded from and drained into other fluid containers. |
 | `external/ProjectArousalPlugin` | Project Arousal 1/2 | Bridges to the third-party "Project Arousal" HUD/attachment. |
-| `fullarray/FullArrayPlugin` | (full-array outfit controller) | Tracks outfit/genital visibility state and reacts to `AbilityShiftEvent`/penetration events for full-array-style avatars. |
+| `fullarray/FullArrayPlugin` | (full-array outfit controller) | Tracks outfit/genital visibility state and reacts to `AbilityShiftEvent`/penetration events for full-array-style avatars; see [FullArray profile & appearance linking](#fullarray-profile--appearance-linking) below for its character-linking system. |
 | `projectile/ExtractorProjectileDevice`, `projectile/InjectorProjectileDevice` | (projectile devices) | Concrete handles (`device.projectile.extractor`, `device.projectile.injector`) over `AbstractFluidExtractorProjectileDevice` / `AbstractFluidInjectorProjectileDevice`. |
 
 Devices are resolved by handle through a factory closure registered with
 `PluginService::onCreatePlugin(...)` in `Application::doInitialize()`, mapping
 each `getHandle()` to its class. Only plugins registered in that closure are
-attachable at runtime (see the commented-out `SpunkExtractorPlugin` line as an
-example of a defined-but-inactive plugin).
+attachable at runtime (see the commented-out `SpunkExtractorPlugin` line, and
+the entirely unregistered `OvipositorPlugin`, as examples of defined-but-inactive
+plugins).
+
+### FullArray profile & appearance linking
+
+`fullarray/FullArrayPlugin` bridges to the third-party "FullArray" mesh
+body/outfit HUD over a dedicated in-world link-message channel (`FA_CHANNEL`),
+listening via a `SecondaryCommListenChannel` (`listen_fullarray_output(...)`)
+and pushing commands with `pushFullArrayCommand(...)`. It tracks the wearer's
+currently-selected FullArray profile (`currentProfile`, refreshed from
+`FullArray.Profile` messages, and persisted through the plugin's own data
+repository so it survives outside a live session) and outfit exposure state
+(`torsoExposed`/`crotchExposed`, derived from `FullArray.Outfit` messages via
+`updateStates(...)`), which is what backs `isTorsoExposed()`/
+`isCrotchExposed()`/`isStimulatorExposed(...)`/`isOrificeExposed(...)` — the
+same exposure checks `on_roleplay_event(...)` answers for
+`OrificePenetratedQueryEvent`/`StimulatorPenetratedQueryEvent`.
+
+Links are persisted in the `fullarray.profiles` account setting (a JSON tree
+keyed by FullArray profile id and AnE profile/form id, read/written through
+`AccountSettingHelper::getJsonPath(...)`/`setJsonPath(...)`), and cover three
+distinct link kinds, all offered from the plugin's dialog (`onDialog(...)`)
+and mirrored by its web API (`on_api(...)`):
+
+| Link kind | Dialog actions | What it does |
+|---|---|---|
+| Profile link | `ACTION_LINK_PROFILE` / `ACTION_UNLINK_PROFILE` | Binds a FullArray profile to the account's active AnE character (`linkProfiles($aneProfile, false)`), so each side drives the other's active profile while Auto Switch is on. |
+| Form link | `ACTION_LINK_FORM` / `ACTION_UNLINK_FORM` | Same as a profile link, but scoped to the character's *current shapeshifter form* (`linkProfiles($aneProfile, true)`); only offered when the active AnE profile is a shapeshifter (`FormTypeEnum::FORM_SHIFT`) with an active form. |
+| Appearance link | `ACTION_LINK_APPEARANCE` / `ACTION_UNLINK_APPEARANCE` | Alternative-appearance mechanism (`linkAppearance()`/`unlinkAppearance()`/`isAppearanceLinked()`): stores the *currently active* AnE profile/form under `state.appearances.fa-profile.<faProfileId>` in the same setting, without touching that FullArray profile's primary profile/form link. When present, it overrides which AnE profile/form gets activated when this FullArray profile is (re-)selected, letting one FullArray profile serve as a stand-in look for a character without becoming that character's canonical link. |
+
+The dialog keeps the first two link kinds and the appearance link mutually
+exclusive for a given FullArray profile: `Link Profile` is only offered while
+no appearance is linked for it, and `Link Appearance` is only offered while it
+has no profile/form link (`Link Form`, shown separately whenever the active
+character is a shapeshifter with an active form, is not gated by the
+appearance state). All links for the account can be cleared at once with
+`ACTION_UNLINK_ALL_PROFILES`, which removes the entire `fullarray.profiles`
+setting.
+
+When a `FullArray.Profile` message reports that the wearer switched profiles
+in FullArray, `listen_fullarray_output(...)` resolves which AnE profile/form
+to activate: it reads the plain profile/form link for that FullArray profile,
+then — if an appearance override exists for it — replaces the target with the
+override, before comparing against what's currently active and, if
+different, calling `AccountHelper::newInstance()->activateProfile(...)` (plus
+`RolePlayService::doShift(...)` for shapeshifter forms). The reverse
+direction — an AnE-side profile/form switch — pushes a `change profile`
+command to FullArray from `formChanged(...)` (subscribed via
+`on_roleplay_event(...)`'s `AbilityShiftEvent` handling) and
+`on_state_change(...)` (when leaving `InitialState`). A per-account
+`auto_switch` flag (`ACTION_TOGGLE_AUTO_SWITCH`) can disable this automatic
+switching in both directions while still allowing manual link/unlink changes.
+
+`on_api(...)` (used by the companion web dashboard) rehydrates the
+last-seen FullArray profile from the plugin's data repository, accepts the
+same `link_profile`/`link_form`/`link_appearance`/`unlink_appearance`/
+`unlink`/`unlink_all`/`autoSwitch` actions as the in-world dialog, and reports
+the current link state (`linked`, `linkedFaProfileId`, `appearanceLinked`)
+alongside the active character/form and outfit exposure flags.
 
 ### Timed effects (modifiers)
 
@@ -166,5 +237,5 @@ are implemented as **modifiers** in `src/classes/modifiers/`, extending
 
 See [System Design](system-design.md) for how items and plugins fit into the
 overall layered architecture, and
-[Interaction and Role-Play Lifecycle](interaction-lifecycle.md) for how add-ons
+[Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for how add-ons
 participate in an active scene.

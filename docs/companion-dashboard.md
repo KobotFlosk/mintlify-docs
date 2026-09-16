@@ -43,23 +43,26 @@ link expires after a short while if unused.
   parents, plus your core stats (vitality, arousal, stamina, essence, strength,
   defense), fertility/pregnancy flags, and body growth.
 - **Abilities** — any special ability your character currently has access to
-  (for example, a shapeshifter's Shift ability), with the same controls as the
-  in-world menu.
-- **Genetics, pregnancies and births** — the same family-tree, pregnancy, and
+  (for example, a shapeshifter's Shift ability, or Bite), with the same
+  controls as the in-world menu.
+- **Genetics, pregnancies & births** — the same family-tree, pregnancy, and
   birth-history views as the in-world profile menu.
-- **Items and attachable devices** — a live scan of nearby usable items and your
-  worn attachable devices/plugins.
+- **Items & attachable devices** — a live scan of nearby usable items, and the
+  same manage/attach/detach controls as the in-world menu for your worn
+  attachable devices/plugins, including switching a device to manual
+  **Override** so you can drive its controls yourself instead of letting it
+  react automatically.
 - **Settings** — the same account settings you'd change in-world (AI narrator
   preferences, privacy toggles, movement/RLV restrictions, access permissions),
   editable directly from the page.
-- **Search and discovery** — other active characters nearby, online, or
+- **Search & discovery** — other active characters nearby, online, or
   currently fertile, each with a compatibility percentage against your active
   character, plus a "Breed" button that sends the same breeding request the
   in-world Search menu would send.
 - **World presence** — a snapshot of overall community activity: how many
   characters are online, the busiest regions, and the most common species.
 - **Store** — browsing and spending your Credit balance (see
-  [The Store and Rewards Economy](store-and-rewards.md)).
+  [The Store & Rewards Economy](store-and-rewards.md)).
 
 ### Staying in sync
 
@@ -68,7 +71,7 @@ goes offline (removed, region change taking too long, etc.) for more than a
 few minutes, the dashboard shows your session as offline until it hears from
 your companion again — nothing is lost, it just pauses.
 
-### Privacy and security
+### Privacy & security
 
 - The link you open from in-world is single-purpose and expires on its own; it
   isn't a permanent login you need to remember or protect.
@@ -80,7 +83,7 @@ your companion again — nothing is lost, it just pauses.
 
 ## 🧑‍💻 Developer Documentation
 
-### Purpose and relationship to the frontend
+### Purpose & relationship to the frontend
 
 The backend does not render the dashboard itself — it exposes a stateless
 JSON API that a separate Next.js frontend (referred to throughout the
@@ -88,7 +91,7 @@ codebase's inline docs as `ane-ui-nextjs`, not part of this repository)
 consumes to render the live dashboard. This document only covers the
 backend-side surface; the frontend is out of scope.
 
-### Entry point and hand-off
+### Entry point & hand-off
 
 - **`ProfileDialog::menu_profile_dialog()`** (`PROFILE_TREE` button) mints a
   short-lived signed token via `TokenHelper::createUrlToken()` carrying
@@ -125,20 +128,41 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
    top-level `ApiSubscriber`, resolved by short class name
    (`/api?class=<ClassName>`), for example:
    - `StatusHelper` — `/api?class=StatusHelper`: the stable top-level poll
-     endpoint (~every 10s from the frontend). Returns the current state-machine
-     state (`resolveStateName()`), a rendered character summary
-     (`renderCharacter()`, including `RenderHelper::renderProfileOf()` and the
-     same stat block `AbstractAneState::on_broadcast(CHAN_BROADCAST_STATS)`
+     endpoint (~every 10s from the frontend). Returns the account's Second
+     Life agent name (`agentName`, always present, even with no active
+     character — used for a profile picture before a character exists), the
+     current state-machine state (`resolveStateName()`), a rendered character
+     summary (`renderCharacter()`, including `RenderHelper::renderProfileOf()`
+     and the same stat block `AbstractAneState::on_broadcast(CHAN_BROADCAST_STATS)`
      uses), a `present` heartbeat flag, and — while `CopulateState` is active —
      a `copulation` block from `CopulateState::buildCopulationActivity()`.
      `present` is derived from the age of the account's latest in-world header
-     versus `SESSION_HEADER_TTL_SECONDS` (300s; kept in sync with
-     `SESSION_HEADER_TTL_SECONDS` in the frontend's `useAppStatus.ts`).
-   - `AbilityHelper` / `AbilityShiftHelper` — the Abilities panel; `AbilityHelper`
-     reports which abilities the active character has (today, only the
-     Shapeshifter's Shift, gated on `FormTypeEnum::FORM_SHIFT`), and
+     versus `StatusHelper::SESSION_HEADER_TTL_SECONDS` (300s); the backend owns
+     this timeout and does not expose the raw age, only the boolean `present`
+     flag.
+   - `AbilityHelper` / `AbilityShiftHelper` / `AbilityBiteHelper` — the Abilities panel; `AbilityHelper`
+     reports Transmute (Shift) and Bite eligibility, resolved through the
+     [default and species-specific ability grants](abilities.md) system, and
      `AbilityShiftHelper` drives the Shift ability's own detail surface,
      collapsing the in-world MyProfile → Abilities → Shift dialog tree.
+     `AbilityBiteHelper` lists eligible nearby targets and applies Bite
+     selections — see [Abilities](abilities.md) for how eligibility, range,
+     and effects are resolved for both.
+   - `AttachmentsHelper` — the Attachments panel; collapses
+     `ProfileAttachmentDialog`'s Attach/Detach/Test flow and the generated
+     `#[ControlMethod]` metadata (see
+     [Third-Party Integrations](third-party-integrations.md#attachment-compatibility-layer))
+     into one surface: `GET` returns the character's managed attachments
+     (each with its controls/test methods and `overridden` flag) plus the
+     remaining catalog and the account's attachment limit; `POST ?do=attach`/
+     `?do=detach` manage which attachments a profile has; `POST ?do=override`
+     toggles a single managed attachment's manual **Override** so a person can
+     drive it directly instead of the automation; `POST ?do=control` and
+     `POST ?do=method` send a slider/toggle/action control or a test command
+     to an overridden attachment (both are rejected while Override is off).
+     Also reachable as the `attachments` segment of `ApiHelper`, and mirrored
+     at `/api?class=AttachmentService` for HUD sessions that were already
+     serialized with that subscriber before this panel existed.
    - `ItemHelper` — the Items panel; wraps
      `ItemService::discoverItemObjects(notifyAgent: false, clearCache: true)`,
      the same scan as the in-world `touch → Items` button, with
@@ -158,7 +182,7 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
      restrictions), `access` (public access).
    - `DiscoveryHelper` — the Search panel; `/api?class=DiscoveryHelper&scope=<scope>`
      collapses the in-world Search dialog tree (Region/Global/Online/
-     Garden/Fertile — see [Search and Discovery](search-and-discovery.md)) into
+     Garden/Fertile — see [Search & Discovery](search-and-discovery.md)) into
      one scoped endpoint. `region`/`online`/`fertile`
      return profile rows (name, species, gender, region, fertility, and
      lineage-aware breeding compatibility against the caller's active
@@ -173,7 +197,7 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
      then calls the same `offerCopulate()` used by the in-world flow — the
      target still confirms (or auto-accepts, per their trust/relationship/access
      settings — see `CopulateModule::resolveAutoApprovalReason()` and
-     [Accounts and Profiles](account-and-profiles.md)) before
+     [Accounts & Profiles](account-and-profiles.md)) before
      `CopulateState` is entered.
    - `WorldPresenceHelper` — the World Presence panel; aggregate community
      stats (`online` accounts, busiest `regions`, most-populous `species`),
@@ -181,11 +205,11 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
      gracefully instead of failing the whole payload.
    - `StoreModule::on_api()` — reserved `ApiSubscriber` stub for exposing store
      actions (e.g. `vend`) over the API; see
-     [The Store and Rewards Economy](store-and-rewards.md).
-   - `AttachmentsHelper` (RLV shared-folders module) — a read-only listing
+     [The Store & Rewards Economy](store-and-rewards.md).
+   - `RlvSharedFoldersModule` — a read-only listing
      (`list=folders|outfits|garments|all`) of the character's shared folders,
      current outfit, and worn/unworn garments, each flagged active/inactive;
-     see [RLV-Driven Character and Outfit Control](rlv-and-control.md).
+     see [RLV-Driven Character & Outfit Control](rlv-and-control.md).
 
 ### Live scene mirroring
 

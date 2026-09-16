@@ -1,4 +1,4 @@
-# The Store and Rewards Economy
+# The Store & Rewards Economy
 
 How players spend and earn **Credits** — a simple in-world currency used to buy
 optional add-ons and unlock features — and how one-off rewards are granted and
@@ -132,7 +132,8 @@ to them directly.
   unclaimed reward grants outright.
 - **`StoreModule`** (`src/classes/modules/`) — currently a thin
   `ApiSubscriber` stub reserved for exposing store actions (e.g. `vend`) over
-  the HTTP API; not yet wired to real behaviour.
+  the HTTP API (see the [companion web dashboard](companion-dashboard.md)'s
+  Store panel); not yet wired to real behaviour.
 
 ### Flow: making a purchase
 
@@ -191,5 +192,5 @@ some subsystem ──▶ AccountRewardsHelper::tryReward('event.name', ...)
   `AccountRewardsHelper::processReward(...)`.
 
 See [System Design](system-design.md) for how the store fits into the overall
-architecture, and [Accounts and Profiles](account-and-profiles.md) for how an
+architecture, and [Accounts & Profiles](account-and-profiles.md) for how an
 account (the thing that owns a Credit balance) relates to profiles/characters.

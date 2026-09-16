@@ -13,7 +13,7 @@ how it is wired up as a pluggable AI backend with tool-calling.
 ### What it is
 
 Alongside the regular menu-driven scenes (see
-[Interaction and Role-Play Lifecycle](interaction-lifecycle.md)), some characters
+[Interaction & Role-Play Lifecycle](interaction-lifecycle.md)), some characters
 can start a **freeform, narrated** scene where an AI companion writes the
 in-character narration, offers you choices, and reacts to what happens — much
 like a live game master. This is an optional, access-gated feature rather than
@@ -45,6 +45,12 @@ part of the default experience.
 - Access to this feature is granted per-account; not everyone will see it, and
   that's expected — it's an experimental, opt-in addition rather than a
   replacement for the standard scenes.
+- The narrator occasionally has trouble producing your next set of choices
+  (a slow or unreliable response from the underlying writing assistant). When
+  that happens the scene does not just stop — you'll see a short message
+  saying the story couldn't prepare your choices, with a **Retry choices**
+  option. Tapping it, or touching the device/HUD again, asks the narrator to
+  try once more without losing your place in the scene.
 
 ---
 
@@ -57,7 +63,7 @@ The AI-narrated scene is a **story** like any other, `ChoiceStory`
 `StoryBreed`, `StoryAnal`, and `StoryOral` in `CopulateState::STORIES`. Its
 availability is gated: it checks
 `AccountHelper::hasRole(AccountRoleEnum::AI_PRIVILEGED)` (see
-[Accounts and Profiles](account-and-profiles.md)) before offering itself as a
+[Accounts & Profiles](account-and-profiles.md)) before offering itself as a
 scene option.
 
 ### `AiService` — the façade
@@ -116,8 +122,8 @@ default tool set on `on_commence()`:
 |---|---|
 | `create_dialog` (`DialogTool`) | Present an in-world dialog menu. |
 | `send_output` (`OutputTool`) | Push arbitrary structured output/actions. |
-| `fetch_stats` (`StatsFetchTool`) | Read a profile's current stats. |
-| `apply_stats` (`StatsApplyTool`) | Adjust a profile's stats. |
+| `fetch_stats` (`StatsFetchTool`) | Read a profile's current stats (see [Vitality & Stats](vitality-and-stats.md)). |
+| `apply_stats` (`StatsApplyTool`) | Adjust a profile's stats (see [Vitality & Stats](vitality-and-stats.md)). |
 | `speak` (`SpeakTool`) | Have a character say something in-character. |
 | `choice_penetrate` (`ChoiceStoryPenetrateTool`) | Drive a penetration beat within `ChoiceStory`. |
 | `choice_climax` (`ChoiceStoryClimaxTool`) | Drive a climax beat within `ChoiceStory`. |
@@ -143,6 +149,68 @@ an `AbstractBaseAction` the game engine actually executes.
 caching), plus any scene-scoped tool set. `ChoiceStory` periodically condenses
 older turns into an "[Earlier-scene summary]" entry (`CONDENSE_AFTER_TURNS` /
 `KEEP_RECENT_TURNS` constants) to keep token usage bounded across long scenes.
+
+### Dialog resilience: retries and fallbacks
+
+Every turn of `ChoiceStory` is expected to end with a dialog reaching the
+user; the model dispatch, tool parsing, or the model itself refusing to call
+`choice_dialog` are all failure modes that must never leave the scene
+dead-ended. `ChoiceStory` layers several safeguards around `aiCreateDialog()`:
+
+1. The shared expected-tool contract (used by `chatWithTools()`/
+   `chatWithResult()`) already retries a missing or malformed `choice_dialog`
+   call within the same request.
+2. If every bounded attempt still fails, `pushFallbackDialog()` synthesises a
+   generic, content-safe local `DialogButtons` (bypassing the AI entirely, via
+   `menu_fallback_choice`) so the turn still produces something tappable.
+3. If even the local fallback dialog cannot be pushed (e.g. an exception while
+   constructing/pushing it), the prompt used for that turn is stashed in
+   metadata (`dialog_retry_prompt` / `dialog_retry_pending`) and
+   `dialogGenerationError()` returns a `DialogButtons` with a single
+   **Retry choices** (`ACTION_RETRY_DIALOG`) button routed to
+   `menu_dialog_generation_error()`, which calls `retryDialogGeneration()`.
+4. `on_event_touch()` is overridden so that touching the device/HUD when there
+   is no stored story dialog but `dialog_retry_pending` is set also calls
+   `retryDialogGeneration()` instead of falling through to the parent's
+   "no dialog → conclude the story" behavior.
+5. `on_story_action()` applies the same guard around partner-choice handling:
+   `dialogPushedThisCall` is reset before processing a partner choice, and if
+   nothing pushed a dialog by the end (including after `doCreditCost()`), the
+   retry-pending flag is set and `dialogGenerationError()` is returned instead
+   of silently returning nothing to the partner.
+
+`retryDialogGeneration()` prefers the stashed prompt (which may be a plain
+string or the `[cacheable-prefix, tail]` segmented form) but rebuilds one via
+`buildSystemPrompt()`/`buildDialogTask()` if nothing was stashed (the failure
+happened before a prompt existed). On success it clears the retry flags and
+persists the new messages; on failure it returns `dialogGenerationError()`
+again so the user can keep retrying. All of these paths log a `warning`
+through `Application::anyLogger()` rather than throwing, so a flaky AI
+backend degrades the scene instead of crashing it.
+
+### Choice handoff resilience
+
+`ChoiceStory::processChoice(string $choice)` treats handing the choice off to
+the partner (`pushRolePlayStoryAction(self::PARTNER_CHOICE_ACTION, $choice)`)
+as the one step that must always happen. Everything that normally happens
+first — narrating the choice, applying any stat/climax effects, and saving
+message history — is now done in a separate `prepareChoiceHandoff(string
+$choice)` step wrapped in its own `try`/`catch`: if any of that preparatory
+work throws, the failure is logged and `processChoice()` still dispatches the
+partner handoff immediately afterward, so a flaky AI call during this phase
+degrades the scene (the user's own turn may narrate poorly or not at all)
+rather than stranding the partner waiting on a turn that never arrives.
+
+The two `ChoiceStory`-specific AI tools this preparation step relies on are
+exposed as narrow **public** boundary methods on `ChoiceStory` rather than
+letting the tools reach into protected story internals: `doClimax()`
+(overriding the parent story's protected method) and `recordAiPenetration(string
+$receiverUuid, OrificeTypeEnum $orifice, StimulatorTypeEnum $stimulator)` (which
+validates the named receiver is actually the active or target profile before
+recording a penetration, returning `false` instead of mutating state for an
+unrecognised receiver). `ChoiceStoryClimaxTool`/`ChoiceStoryPenetrateTool` call
+these and, like the rest of this layer, catch and log any `Throwable` rather
+than letting a malformed AI tool call abort the turn.
 
 ### Memory
 
@@ -178,5 +246,5 @@ turn.
 
 See [System Design](system-design.md) for how the AI layer fits into the
 overall architecture, and
-[Interaction and Role-Play Lifecycle](interaction-lifecycle.md) for how stories
+[Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for how stories
 in general drive scenes.

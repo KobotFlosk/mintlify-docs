@@ -1,4 +1,4 @@
-# Packs and Groups
+# Packs & Groups
 
 How characters can band together into a small, named group with an internal
 hierarchy, invite/removal flow, and helper conveniences.
@@ -138,8 +138,8 @@ displacing her.
 ### Where to go next
 
 - The character/account model packs attach to →
-  [Accounts and Profiles](account-and-profiles.md)
+  [Accounts & Profiles](account-and-profiles.md)
 - How births are produced and claimed →
-  [Reproduction and Genetics Lifecycle](reproduction-and-genetics.md)
+  [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)
 - The automated outfit/body control add-on used for pack teleports →
-  [RLV-Driven Character and Outfit Control](rlv-and-control.md)
+  [RLV-Driven Character & Outfit Control](rlv-and-control.md)

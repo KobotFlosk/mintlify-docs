@@ -10,14 +10,21 @@ changing what their body actually produces or can conceive.
   player.
 
 This document connects to
-[Reproduction and Genetics Lifecycle](reproduction-and-genetics.md) (real biology
-gates reception/conception) and
-[Interaction and Role-Play Lifecycle](interaction-lifecycle.md) (apparent form
-gates participation in a scene).
+[Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) (real biology
+gates reception/conception),
+[Interaction & Role-Play Lifecycle](interaction-lifecycle.md) (apparent form
+gates participation in a scene), and [Abilities](abilities.md) (whether a
+character can use the Shift action at all).
 
 ---
 
 ## 🧑‍💻 Developer Documentation
+
+> Whether a character is allowed to invoke Shift at all (`RolePlayService::doShift()`,
+> `AbilityShiftHelper`) is decided by the ability-grant system described in
+> [Abilities](abilities.md), not by this document — a profile's form only
+> needs to be `FormTypeEnum::FORM_SHIFT` for the apparent-gender wrapping
+> described below to apply once shifting is otherwise allowed.
 
 ### The three-axis model
 

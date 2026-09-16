@@ -1,4 +1,4 @@
-# RLV-Driven Character and Outfit Control
+# RLV-Driven Character & Outfit Control
 
 How the companion uses RLV (a viewer-side relay/automation protocol supported
 by many compatible virtual-world viewers) to automatically dress, undress, and
@@ -130,7 +130,7 @@ Key entry points, each gated by `checkSharedFoldersEnabled()` (throws
 stored per-outfit under `ProfileSettingHelper`, keeping this state with the
 profile rather than the RLV module.
 
-### Chat commands and dialogs
+### Chat commands & dialogs
 
 - `on_command(CommandEvent)` (implements `CommandLineSubscriber`) recognises,
   while in `RunningState`: `reset-character`, `change-outfit <name>`,
@@ -145,14 +145,15 @@ profile rather than the RLV module.
 - `on_api(ApiEvent)` (implements `ApiSubscriber`) exposes a read-only `GET`
   listing (`list=folders|outfits|garments|all`) of the character's folders,
   current outfit, and worn/unworn garments, each flagged with whether it is
-  currently active — used by the web dashboard.
+  currently active — used by the
+  [companion web dashboard](companion-dashboard.md).
 - Dialogs: `showCharacterOutfitsDialog()`/`returnCharacterOutfitsDialog()`
   (pick an outfit), `returnCharacterClothingDialogDynamic()`/
   `render_clothing_garment()`/`dialog_clothing_garment()` (toggle individual
   garments within the current outfit), and `render_clothing_options()`/
   `dialog_clothing_options()` (per-outfit options like override/memorize).
 
-### Related settings and permissions
+### Related settings & permissions
 
 - `Constants::SETTING_RLV_CHARACTERS` — account opt-in to folder-driven
   character management (`enable-characters`).
@@ -178,5 +179,5 @@ profile rather than the RLV module.
 See [System Design](system-design.md) for how this module fits into the
 overall architecture, [Command-Line Interaction](command-line-tooling.md) for
 the full chat-command surface, and
-[Reproduction and Genetics Lifecycle](reproduction-and-genetics.md) for how
+[Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) for how
 abdomen size is calculated during pregnancy.
