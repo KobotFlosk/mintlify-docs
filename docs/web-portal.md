@@ -1,30 +1,18 @@
-# The Web Portal
-
-How a browser-based hand-off page is used to securely link outside accounts
-(such as a connected-toy pairing or a character-directory login) to your
-in-world account, without ever typing credentials into the virtual world
-itself.
-
-- **🎮 End-User Documentation** — what the portal is and when you'll see it.
-- **🧑‍💻 Developer Documentation** — how the hand-off and authorization flow
-  works.
-
-> This is a different thing from
-> [The Companion Web Dashboard](companion-dashboard.md), which is an ongoing
-> browser session showing your character's live status rather than a one-off
-> credential/pairing hand-off.
-
+---
+audience: mixed
+summary: One-off browser hand-offs for linking optional outside services.
 ---
 
-## 🎮 End-User Documentation
+# The Web Portal
+
+## For end-users
 
 ### What it is
 
-Some optional connections — like pairing a connected toy or logging into a
-linked character directory — need you to enter a code or a username/password.
-Rather than doing that inside the virtual world (which isn't a safe place to
-type a password), the companion opens a small **web page** for that one step,
-then hands control back once you're done.
+Some optional connections, such as a connected toy or a character directory,
+open a small **web page** to complete linking. Follow the instructions there,
+then return to the virtual world. Unlike the companion web dashboard, this is
+a one-off step rather than a live view of your character.
 
 ### How you use it
 
@@ -32,19 +20,17 @@ then hands control back once you're done.
    character directory account), choose to link/connect.
 2. A browser window opens showing a simple page branded for that connection —
    it explains what you're about to link and why.
-3. Depending on what's being linked, you'll either scan/display a code or type
-   a username and password directly into that page.
+3. Follow that service's linking instructions on the page.
 4. Once you submit, the page confirms success (or shows an error) and the
    connection is now active on your account. You can close the browser window
    and return to the virtual world.
 
-Your credentials are only ever seen by that one page for that one exchange —
-they are encrypted in your browser before being sent, and the in-world object
-never sees them directly.
+If linking fails, read the page's message and start again from the same settings
+menu rather than sharing your personal sign-in information in chat.
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### Purpose
 
@@ -132,7 +118,7 @@ in-world dialog ──▶ PortalHandle::newInstance($caller, 'portal_access')
   result, and trigger it from a dialog the same way `LovenseDialog` /
   `FlistDialog` do.
 
-See [System Design](system-design.md) for how the portal fits into the overall
+See [Architecture](architecture.md) for how the portal fits into the overall
 architecture, and
 [Third-Party Integrations & Product Compatibility](third-party-integrations.md)
 for the integrations that rely on it.

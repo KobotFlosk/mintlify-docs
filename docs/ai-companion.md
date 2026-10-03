@@ -1,14 +1,11 @@
-# The AI Role-Play Companion
-
-How the optional AI-narrated scene mode works: what it does for a player, and
-how it is wired up as a pluggable AI backend with tool-calling.
-
-- **🎮 End-User Documentation** — what the AI narrator does and how to use it.
-- **🧑‍💻 Developer Documentation** — how the AI integration is built.
-
+---
+audience: mixed
+summary: Optional AI-narrated scenes, choice handling, memory, and platform integration.
 ---
 
-## 🎮 End-User Documentation
+# The AI Role-Play Companion
+
+## For end-users
 
 ### What it is
 
@@ -54,7 +51,7 @@ part of the default experience.
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### Where it plugs in
 
@@ -152,6 +149,14 @@ older turns into an "[Earlier-scene summary]" entry (`CONDENSE_AFTER_TURNS` /
 
 ### Dialog resilience: retries and fallbacks
 
+`ChoiceStory`'s initial text, confirmation, custom replies, generated choices,
+fallbacks, and retry dialogs use the web-enabled action wrappers.
+`DialogTool::handleParams()` chooses `WebDialogButtons` only for
+`ChoiceStoryDialogTool`; other AI dialog tools retain native-only dialogs.
+The [shared story dialog lifecycle](companion-dashboard.md#shared-story-dialogs)
+owns presentation caching and rejection of stale HUD/browser responses, so a
+choice is not regenerated separately for each client.
+
 Every turn of `ChoiceStory` is expected to end with a dialog reaching the
 user; the model dispatch, tool parsing, or the model itself refusing to call
 `choice_dialog` are all failure modes that must never leave the scene
@@ -244,7 +249,7 @@ turn.
   `chatWithResult(...)` with a scene-scoped `AiChatContext`, and gate
   availability behind an appropriate role/permission.
 
-See [System Design](system-design.md) for how the AI layer fits into the
+See [Architecture](architecture.md) for how the AI layer fits into the
 overall architecture, and
 [Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for how stories
 in general drive scenes.

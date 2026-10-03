@@ -1,24 +1,11 @@
-# Form Shapeshifters
-
-How a shifted appearance is kept separate from a character's real biology, so a
-disguise can change what a character *appears* to be able to do without ever
-changing what their body actually produces or can conceive.
-
-- **🧑‍💻 Developer Documentation** — how apparent form and real biology are
-  split in code.
-- **🎮 End-User Documentation** — what shifting looks and feels like as a
-  player.
-
-This document connects to
-[Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) (real biology
-gates reception/conception),
-[Interaction & Role-Play Lifecycle](interaction-lifecycle.md) (apparent form
-gates participation in a scene), and [Abilities](abilities.md) (whether a
-character can use the Shift action at all).
-
+---
+audience: mixed
+summary: How a shapeshifter's apparent form remains distinct from real biology.
 ---
 
-## 🧑‍💻 Developer Documentation
+# Form Shapeshifters
+
+## For developers
 
 > Whether a character is allowed to invoke Shift at all (`RolePlayService::doShift()`,
 > `AbilityShiftHelper`) is decided by the ability-grant system described in
@@ -257,7 +244,7 @@ stub-shifted profile in both directions, the incubator-rerouting resolver, and
 
 ---
 
-## 🎮 End-User Documentation
+## For end-users
 
 ### What shifting does
 

@@ -1,16 +1,11 @@
-# RLV-Driven Character & Outfit Control
-
-How the companion uses RLV (a viewer-side relay/automation protocol supported
-by many compatible virtual-world viewers) to automatically dress, undress, and
-switch bodies and outfits, and to prevent accidental removal during a scene.
-
-- **🎮 End-User Documentation** — what this feature does and how to set it up.
-- **🧑‍💻 Developer Documentation** — how the shared-folder convention and
-  command handling are implemented.
-
+---
+audience: mixed
+summary: Optional automated outfit changes, character appearance, and attachment protection.
 ---
 
-## 🎮 End-User Documentation
+# RLV-Driven Character & Outfit Control
+
+## For end-users
 
 ### What it is
 
@@ -52,7 +47,7 @@ of guessing, so nothing gets left in a broken state.
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### Purpose
 
@@ -176,7 +171,7 @@ profile rather than the RLV module.
   `on_rlv_handled_command`) — currently stubbed placeholders in this module —
   or add another subscriber module.
 
-See [System Design](system-design.md) for how this module fits into the
+See [Architecture](architecture.md) for how this module fits into the
 overall architecture, [Command-Line Interaction](command-line-tooling.md) for
 the full chat-command surface, and
 [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) for how

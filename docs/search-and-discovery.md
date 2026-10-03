@@ -1,16 +1,11 @@
-# Search & Discovery
-
-How you find other characters and community-registered breeding locations, and
-how those results are gathered and filtered behind the scenes.
-
-- **🎮 End-User Documentation** — the Search menu, its scopes, and what you can
-  do with a result.
-- **🧑‍💻 Developer Documentation** — the dialogs, helpers, and data behind
-  each scope.
-
+---
+audience: mixed
+summary: Finding characters and community locations through scoped searches.
 ---
 
-## 🎮 End-User Documentation
+# Search & Discovery
+
+## For end-users
 
 ### Opening Search
 
@@ -63,7 +58,7 @@ standing on the parcel:
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### Entry point
 

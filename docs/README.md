@@ -1,3 +1,8 @@
+---
+audience: developer
+summary: Audience-aware index and publication rules for the AnE documentation.
+---
+
 # Documentation Index
 
 This folder documents the system that powers **AnE** — a fertility, biology, and
@@ -6,72 +11,68 @@ whole life-cycle "from conception to character": attraction, intimacy, fluid
 exchange, conception, pregnancy, birth, genetics, species inheritance, and the
 role-play events that tie them together.
 
-These documents are the **source of truth** that a downstream tool uses to
-generate published, player-facing help. Because of that, every document follows a
-strict convention so the two audiences never get mixed up.
+The code on `develop` is the source of truth. These documents support developers
+and a downstream tool producing player-facing help. The coverage record below
+identifies the revision examined in the latest pass.
 
 ---
 
 ## How these documents are organised
 
-Each document is split into clearly labelled sections:
+Every document starts with YAML front matter containing `audience` (`developer`,
+`end-user`, or `mixed`) and a one-sentence `summary`. In mixed documents, content
+belongs under exactly labelled `## For developers` or `## For end-users`
+sections; topic headings are nested beneath them.
 
-- **🧑‍💻 Developer Documentation** — how the implementation actually works:
-  architecture, class and interface names, data flow, persistence, enums, and
-  extension points. This is for engineers working on the codebase.
-- **🎮 End-User Documentation** — how the feature is experienced and used by
-  players and creators, in plain language.
-
-> **Rules for the End-User sections (must be honoured by every document):**
-> - No exact class, interface, or file-type names. Use relatable, descriptive
->   names for a concept if one is needed (e.g. "the interaction engine", "the
->   species recipe").
-> - No configuration keys, environment variables, endpoints, credentials, or
->   anything that could raise a security concern.
-> - No implementation-internal jargon that a player would never see.
->
-> Everything that references code (class names, enums, file types,
-> configuration, infrastructure) belongs **only** in a Developer section.
-
-When a document is entirely aimed at one audience, it says so at the top and is
-still safe to read on its own.
+Publish only end-user documents or the end-user sections of mixed documents.
+Do not publish developer sections, this index, or the coverage record. End-user
+prose must not expose implementation identifiers, file paths/extensions, API
+addresses, configuration, credentials, or infrastructure details. Documentation
+links are navigation metadata: resolve them to the corresponding published
+end-user topic, without exposing repository paths or including developer content.
+Backend support alone does not verify a feature's deployed frontend presentation.
 
 ---
 
-## Start here
+## Mixed audience — product and subsystem guides
 
-| Document | Audience | What it covers |
-|---|---|---|
-| [System Design](system-design.md) | Both | The high-level architecture of the whole system and how the parts fit together. **Read this first.** |
-| [Interaction & Role-Play Lifecycle](interaction-lifecycle.md) | Both | The core gameplay loop: how a device wakes up, how intimate scenes are driven, and how role-play events flow. |
-| [Vitality & Stats](vitality-and-stats.md) | Both | Health, arousal, stamina, essence, strength, and defense — how they change, and what happens at consciousness/death thresholds. |
-| [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) | Both | Fluids, conception, pregnancy, birth, and how a child inherits its genetics and species. |
-| [Species Compatibility](species-compatibility.md) | Both | How the compatibility percentage between two characters is calculated. |
-| [Creating a Species](species-creation.md) | Both | Using the in-world wizard to make truebred, hybrid, and composition-hybrid species. |
-| [Form Shapeshifters](form-shapeshifters.md) | Both | How apparent form and real biology are split for shapeshifting characters. |
-| [Abilities](abilities.md) | Both | Special abilities (Transmute/Shift, Bite) — how eligibility is granted per species/form/class, and how each ability works. |
-| [Attachable Items & Devices](attachable-items-and-devices.md) | Both | Consumable items (pills, potions, fluid containers) and attachable plugins/devices (extractors, ovipositors, connected toys). |
-| [Accounts & Profiles](account-and-profiles.md) | Both | The account/character split, switching characters, relationships, trust, and access roles. |
-| [Packs & Groups](packs-and-groups.md) | Both | Forming a named group of characters with an internal hierarchy, invites, and birth inheritance. |
-| [Search & Discovery](search-and-discovery.md) | Both | Finding nearby, online, or fertile characters, looking up profiles by name, and the community directory of public breeding locations. |
-| [The AI Role-Play Companion](ai-companion.md) | Both | The optional AI-narrated scene mode and how the pluggable AI/tool-calling layer is built. |
-| [Third-Party Integrations & Product Compatibility](third-party-integrations.md) | Both | Linkable outside services (messaging, connected toys, character directory, game platform) and compatibility with third-party body add-ons. |
-| [The Web Portal](web-portal.md) | Both | The browser-based hand-off page used to securely link outside accounts. |
-| [The Companion Web Dashboard](companion-dashboard.md) | Both | The browser-based live status page mirroring your character's status, stats, abilities, items, settings, and more. |
-| [The Store & Rewards Economy](store-and-rewards.md) | Both | The Credit-based shop, purchases, and one-off reward grants. |
-| [RLV-Driven Character & Outfit Control](rlv-and-control.md) | Both | Automated outfit/body attachment and detachment, and protecting the companion from accidental removal. |
-| [Command-Line Interaction](command-line-tooling.md) | Both | The typed chat-command shortcuts layered on top of the menu system. |
-| [Help & Support Menu](help-and-support.md) | Both | The community group invite, manual, Discord, changelog, update, video tutorials, and language options on the main menu. |
+Each guide below has separate end-user and developer sections. Start with
+Architecture, then follow the topic links.
+
+| Document | What it covers |
+|---|---|
+| [Architecture](architecture.md) | The major components and how they fit together. **Read this first.** |
+| [Interaction & Role-Play Lifecycle](interaction-lifecycle.md) | Startup, scenes, turns, automatic acceptance, notifications, and engagement stopping. |
+| [Vitality & Stats](vitality-and-stats.md) | Stat changes, consciousness, death, and species stat budgets. |
+| [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) | Conception, pregnancy, birth, inheritance, and history visibility. |
+| [Species Compatibility](species-compatibility.md) | Inherited species composition and compatibility scoring. |
+| [Creating a Species](species-creation.md) | Creation wizard, founding lineage, web attributes, and owner editing. |
+| [Form Shapeshifters](form-shapeshifters.md) | Apparent form versus real biology. |
+| [Abilities](abilities.md) | Shift and Bite eligibility, grants, and effects. |
+| [Attachable Items & Devices](attachable-items-and-devices.md) | Consumables, attachable plugins, and timed effects. |
+| [Accounts & Profiles](account-and-profiles.md) | Active characters, relationships, trust, and roles. |
+| [Packs & Groups](packs-and-groups.md) | Group hierarchy, invitations, and birth inheritance. |
+| [Search & Discovery](search-and-discovery.md) | Character searches and community locations. |
+| [The AI Role-Play Companion](ai-companion.md) | Narration, tools, choices, memory, and resilience. |
+| [Third-Party Integrations & Product Compatibility](third-party-integrations.md) | Optional service bridges and body add-on compatibility. |
+| [The Web Portal](web-portal.md) | One-off hand-offs for linking outside services. |
+| [The Companion Web Dashboard](companion-dashboard.md) | Tester entry, media controls, current location, character panels, and per-partner prompts. |
+| [The Store & Rewards Economy](store-and-rewards.md) | In-world and browser purchases, Credits, rewards, and delivery/retry boundaries. |
+| [RLV-Driven Character & Outfit Control](rlv-and-control.md) | Automated outfits, bodies, and attachment protection. |
+| [Command-Line Interaction](command-line-tooling.md) | Chat shortcuts, dispatch, and help. |
+| [Help & Support Menu](help-and-support.md) | Community support, manuals, updates, and language options. |
 
 ---
 
-## Documentation maintenance
+## Developer audience — documentation maintenance
 
 This documentation set is regenerated on an interval to stay consistent with the
 evolving codebase. Expect documents to be **added, reworked, renamed, or
 removed** over time as the system grows and comprehensive coverage is filled in.
-The [System Design](system-design.md) document is the anchor; detailed topics are
+The [Architecture](architecture.md) document is the anchor; detailed topics are
 broken out into their own files whenever a subsystem is large or complex enough to
-warrant it. [`DOCS_STATE.md`](DOCS_STATE.md) records the commit each pass
-covered and a changelog of what that pass touched; it isn't part of the
-audience-facing documentation itself.
+warrant it.
+
+- [Coverage record](DOCS_STATE.md) — the commit each pass covered, changelog,
+  and deferred work.
+- [This index](README.md) — document ownership and audience navigation.

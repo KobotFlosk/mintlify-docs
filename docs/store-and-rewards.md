@@ -1,17 +1,11 @@
-# The Store & Rewards Economy
-
-How players spend and earn **Credits** — a simple in-world currency used to buy
-optional add-ons and unlock features — and how one-off rewards are granted and
-claimed.
-
-- **🎮 End-User Documentation** — what the shop and rewards are and how to use
-  them.
-- **🧑‍💻 Developer Documentation** — how balances, purchases, and rewards are
-  modelled and processed.
-
+---
+audience: mixed
+summary: Credit balances, in-world and browser purchases, and one-off reward claims.
 ---
 
-## 🎮 End-User Documentation
+# The Store & Rewards Economy
+
+## For end-users
 
 ### What it is
 
@@ -42,9 +36,26 @@ Free items (priced at 0 Credits) can always be claimed, even if your balance
 happens to be negative for any reason — only purchases that would take your
 balance below zero are blocked.
 
+### Using the browser Store
+
+If your dashboard offers the **Store**, you can review your account balance,
+available products, and unclaimed rewards there too. Choose a product and review
+its current price before purchasing. Products are delivered in-world, not to the
+browser. A changed price or insufficient Credits prevents the purchase; refresh
+the Store before deciding whether to try again.
+
+Claiming a reward adds its Credits or requests delivery of its product. Clearing
+unclaimed rewards requires confirmation and **discards them without paying them
+out**; already claimed rewards are not cleared.
+
+After an error or interrupted purchase, refresh and check your balance and
+inventory before starting another purchase. If the outcome is unclear, contact
+support rather than repeatedly buying the same item. Browser availability and
+layout depend on the dashboard version you are using.
+
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### Purpose
 
@@ -62,8 +73,9 @@ to them directly.
 - **`AccountTransactionRepositoryImpl`** (`src/classes/repos/`) —
   `fetchAccountBalance(AccountModel)` sums all of an account's transaction
   rows to produce the current balance.
-- **`TransactionHelper`** (`src/classes/helpers/`) — the single place balance
-  changes are decided and applied:
+- **`TransactionHelper`** (`src/classes/helpers/`) — the shared affordability
+  rule and the in-world ledger workflow; the web Store also writes ledger rows
+  directly within its own transaction:
   - `fetchBalance()` / `fetchBalanceOf(AccountModel)` — read the current
     balance.
   - `canApplyTransaction(int $balance, int $amount): bool` — the affordability
@@ -130,10 +142,11 @@ to them directly.
   `AccountRewardModelImpl` rows as buttons; selecting one claims it via
   `processReward(...)` and stamps `claimedOn`; a "Purge All" action removes all
   unclaimed reward grants outright.
-- **`StoreModule`** (`src/classes/modules/`) — currently a thin
-  `ApiSubscriber` stub reserved for exposing store actions (e.g. `vend`) over
-  the HTTP API (see the [companion web dashboard](companion-dashboard.md)'s
-  Store panel); not yet wired to real behaviour.
+- **`StoreHelper`** (`src/classes/helpers/StoreHelper.php`) — account-scoped
+  browser catalog, purchases, and reward management, described below.
+- **`StoreModule`** (`src/classes/modules/StoreModule.php`) — an older
+  `ApiSubscriber` stub whose `vend` branch still does nothing. It is not the
+  browser Store implementation.
 
 ### Flow: making a purchase
 
@@ -180,6 +193,75 @@ some subsystem ──▶ AccountRewardsHelper::tryReward('event.name', ...)
                                                 → processReward() → claimedOn set
 ```
 
+### Browser Store requests
+
+`StoreHelper::on_api()` handles `/api?class=StoreHelper`. It resolves the account
+from the current session, not from a client-supplied account or character id.
+`AbstractAneState::on_initialized()` subscribes it in all states, and
+`__unserialize()` adds it to restored sessions. An active character and tester
+role are not checked by this helper; tester gating controls the dashboard
+opening route, not this API's authorization.
+
+| Request | Inputs and behavior |
+|---|---|
+| GET | Returns `ok`, ledger `balance`, visible `products`, and this account's unclaimed `rewards`. A `do` parameter is rejected on GET. |
+| POST `do=purchase` | Body: `productId` (product name), `expectedPrice` (integer), and `requestId` (UUID). Rechecks visibility, nonnegative price, nonblank inventory, and affordability before debiting and delivering. |
+| POST `do=claim` | Body: `rewardId` (UUID). Finds the grant within this account and refreshes it; an already claimed grant is a successful no-op. Credit values must be nonnegative integers, and product values must be nonblank. |
+| POST `do=purge` | Body: `confirmed` must be boolean `true`. Removes only this account's unclaimed grants, without delivering or crediting them. |
+
+Successful actions return a fresh snapshot. Products include `id`, `label`,
+`detail`, `category`, `price`, and `available`; `available` checks price and
+inventory, **not** whether the account can afford the product. Rewards include
+`id`, `label`, `type` (`credit` or `product`), `value`, and `givenOn`. Product
+reward values are inventory references and must not be copied into published
+end-user help.
+
+`ProductRepository::getVisibleProducts()` sorts by category then label;
+`getVisibleProductByName()` applies the same visibility rule at checkout. Both
+use the numeric `p.visible = 1` predicate because the deployed column is
+smallint despite its legacy boolean entity mapping. Do not substitute boolean
+criteria without reconciling the schema and mapping.
+
+Validation errors return `ok: false` with a specific `error`; unexpected errors
+are logged and return a generic refresh instruction. Other verbs and unknown
+actions are rejected.
+
+### Browser transaction and retry boundaries
+
+1. Store writes take a pessimistic account lock outside SQLite, serializing
+   writes through this helper across tabs/workers. This is not a guarantee that
+   unrelated ledger writers or the older HUD flow take the same lock.
+2. Inside an existing request transaction, earlier managed changes are flushed
+   before creating the `ane_store_request` savepoint. Store failure rolls back
+   only to that savepoint, preserving earlier HUD work and avoiding a
+   rollback-only enclosing request. Without an enclosing transaction, the
+   helper begins and commits or rolls back its own transaction.
+3. Purchases persist and flush a debit whose id is `requestId`, then call
+   `VendorHelper::vendProduct()` for the current account. A caught delivery
+   failure rolls back the debit and detaches that debit entity, not the entire
+   managed session. Reward claims pay out before setting `claimedOn`; successful
+   writes are flushed before the savepoint is released or transaction committed.
+4. A purchase retry should reuse its UUID. Once a matching account ledger row
+   exists, the same product/reason returns without another debit or delivery.
+   Reusing it for a different reason is rejected. Product availability is still
+   checked first, and the reason includes the product label: hiding or renaming
+   a product can therefore make a retry fail rather than return success. For a
+   new purchase, `expectedPrice` must strictly equal the current integer price.
+
+> **Delivery boundary:** the vendor protocol has no delivery receipt or
+> idempotency key. A database rollback cannot undo an item already delivered
+> externally. A delivery followed by transaction failure, or a lost response,
+> therefore does not establish exactly-once delivery. Reusing a committed
+> purchase UUID prevents repeat vending, but a new UUID is a new purchase.
+> Maintainers should confirm the intended reconciliation policy before offering
+> stronger delivery guarantees.
+
+`tests/e2e/cases/StoreApiPurchasesAndRewardsProtectAccountBalanceTest.php` covers
+account scope, stale prices, retries, reward claims/purge, delivery failures,
+request-state preservation, and restored-session registration using a delivery
+fixture. `tests/integration/helpers/StoreVisibilityQueryTest.php` checks both
+numeric visibility predicates; neither test proves live vendor delivery.
+
 ### Extension points
 
 - **New product:** add a row to the `ane_products` table (name, label, detail,
@@ -191,6 +273,6 @@ some subsystem ──▶ AccountRewardsHelper::tryReward('event.name', ...)
 - **New payout type:** extend `RewardTypeEnum` and add a case to
   `AccountRewardsHelper::processReward(...)`.
 
-See [System Design](system-design.md) for how the store fits into the overall
+See [Architecture](architecture.md) for how the store fits into the overall
 architecture, and [Accounts & Profiles](account-and-profiles.md) for how an
 account (the thing that owns a Credit balance) relates to profiles/characters.

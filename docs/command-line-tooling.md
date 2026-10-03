@@ -1,15 +1,11 @@
-# Command-Line Interaction (Chat Commands)
-
-How typed chat commands (a lightweight, admin- and power-user-facing "CLI"
-built on top of ordinary in-world chat) are parsed, routed, and handled.
-
-- **🎮 End-User Documentation** — the commands available to regular players.
-- **🧑‍💻 Developer Documentation** — how commands are dispatched and how to
-  add new ones.
-
+---
+audience: mixed
+summary: Typed chat shortcuts and the command dispatch and help mechanisms.
 ---
 
-## 🎮 End-User Documentation
+# Command-Line Interaction (Chat Commands)
+
+## For end-users
 
 ### What it is
 
@@ -42,7 +38,7 @@ speaking "out of character."
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### Purpose
 
@@ -125,5 +121,5 @@ document only the topics it owns.
   `AccountPermissionEnum` at the top of the relevant `case`, matching the
   pattern used in `CommandLineModule::on_command_admin()`.
 
-See [System Design](system-design.md) for how command handling fits into the
+See [Architecture](architecture.md) for how command handling fits into the
 overall architecture.

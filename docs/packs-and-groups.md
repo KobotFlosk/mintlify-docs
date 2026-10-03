@@ -1,14 +1,11 @@
-# Packs & Groups
-
-How characters can band together into a small, named group with an internal
-hierarchy, invite/removal flow, and helper conveniences.
-
-- **🎮 End-User Documentation** — what a pack is and how you use one.
-- **🧑‍💻 Developer Documentation** — how it is modelled and implemented.
-
+---
+audience: mixed
+summary: Pack membership, leadership, invitations, departures, and birth inheritance.
 ---
 
-## 🎮 End-User Documentation
+# Packs & Groups
+
+## For end-users
 
 ### What a pack is
 
@@ -62,7 +59,7 @@ in which case the newborn joins as a Beta rather than displacing her as leader.
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### Module
 

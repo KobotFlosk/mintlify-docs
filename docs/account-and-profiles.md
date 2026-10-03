@@ -1,16 +1,11 @@
-# Accounts & Profiles
-
-How a real-world user is represented in the system, how that maps to one or more
-in-character profiles, and how permissions, relationships, and trust between
-characters work.
-
-- **🎮 End-User Documentation** — what an account and a character are, and how
-  you manage them.
-- **🧑‍💻 Developer Documentation** — how they are modelled and persisted.
-
+---
+audience: mixed
+summary: Accounts, active characters, relationships, trust, and access permissions.
 ---
 
-## 🎮 End-User Documentation
+# Accounts & Profiles
+
+## For end-users
 
 ### Account vs. character
 
@@ -90,7 +85,7 @@ changed from the settings section of the main menu.
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### Two aggregates: `AccountModelImpl` and `ProfileModelImpl`
 
@@ -111,7 +106,7 @@ changed from the settings section of the main menu.
   - `account` (many-to-one back to the owning `AccountModelImpl`).
   - `fluids`, `stats`, `modifiers`, `attachments`, `ovum`, `pregnancies`,
     `adoptions`, `professions` — one-to-many collections into the respective
-    subsystems (see [System Design](system-design.md) for the layer map).
+    subsystems (see [Architecture](architecture.md) for the layer map).
   - `relations` (`ProfileRelationModelImpl`) and `trusts` (a self-referencing
     many-to-many, `ane_profile_trusts`) — see below.
   - `geneA` / `geneB` — self-referencing many-to-one links to the two parent
@@ -215,7 +210,7 @@ into the broader state machine.
 
 ### Where to go next
 
-- Layered architecture and the request lifecycle → [System Design](system-design.md)
+- Layered architecture and the request lifecycle → [Architecture](architecture.md)
 - Finding other characters and breeding locations → [Search & Discovery](search-and-discovery.md)
 - Forming a named group with roles and invites → [Packs & Groups](packs-and-groups.md)
 - How a profile's biology drives scenes → [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)

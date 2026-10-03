@@ -1,16 +1,11 @@
-# Vitality & Stats
-
-The set of vital statistics every character has — health, arousal, stamina,
-essence, strength, and defense — how they rise and fall during play, and what
-happens when one of them bottoms out (unconsciousness, death, and its causes).
-
-- **🎮 End-User Documentation** — what your vitals mean and how they behave.
-- **🧑‍💻 Developer Documentation** — how stats are modelled, calculated, and
-  changed, and how the death/cause system works.
-
+---
+audience: mixed
+summary: Character vitals, their changes during play, and consciousness and death thresholds.
 ---
 
-## 🎮 End-User Documentation
+# Vitality & Stats
+
+## For end-users
 
 ### What it is
 
@@ -62,7 +57,7 @@ or a rough encounter) can certainly affect yours.
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### The vocabulary: `StatTypeEnum`
 
@@ -248,7 +243,7 @@ ones. See [The AI Role-Play Companion](ai-companion.md).
   `AbstractProfileModifier` (or a more specific base) and apply/query it
   through `ProfileModifierService`.
 
-See [System Design](system-design.md) for how this fits into the overall
+See [Architecture](architecture.md) for how this fits into the overall
 architecture, [Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for
 the broader role-play event system stat changes are part of, and
 [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) for how

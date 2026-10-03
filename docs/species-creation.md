@@ -1,19 +1,11 @@
-# Creating a Species — Truebred, Hybrid & Composition Hybrid
-
-How the in-world species-creation wizard works, and how new truebred, hybrid,
-and composition-hybrid species are built and persisted.
-
-- **🎮 End-User Documentation** — a guide for species creators using the
-  wizard; no technical knowledge required.
-- **🧑‍💻 Developer Documentation** — the wizard's implementation and the
-  persistence rules behind it.
-
-This document connects to [Species Compatibility](species-compatibility.md)
-and [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md).
-
+---
+audience: mixed
+summary: Creating species and their founding lineages, and editing base species settings.
 ---
 
-## 🎮 End-User Documentation
+# Creating a Species — Truebred, Hybrid & Composition Hybrid
+
+## For end-users
 
 *A guide for species creators using the in-world creation wizard.*
 
@@ -22,7 +14,7 @@ can create. You don't need any technical knowledge — just follow the prompts.
 
 ---
 
-## 1. The three kinds of species
+### 1. The three kinds of species
 
 What *kind* of species you end up with is decided by **how many member species you
 add** to its recipe — you never set the "type" directly:
@@ -49,7 +41,7 @@ the shares always add up to **100%**.
 
 ---
 
-## 2. Starting the wizard
+### 2. Starting the wizard
 
 When you begin, you're asked whether to **Clone** an existing species or start
 from **Basic**.
@@ -75,7 +67,7 @@ Choosing **Basic** next asks: **Purebred** or **Hybrid?**
 
 ---
 
-## 3. Creating a Truebred
+### 3. Creating a Truebred
 
 A truebred is a species that stands on its own — it has no member species in its
 recipe.
@@ -93,7 +85,7 @@ recipe.
 
 ---
 
-## 4. Creating a Hybrid (two species)
+### 4. Creating a Hybrid (two species)
 
 A **true hybrid** blends **exactly two** species.
 
@@ -114,7 +106,7 @@ A **true hybrid** blends **exactly two** species.
    **review**.
 6. **Name the founding Mother and Father.**
 
-### What's special about a true hybrid's founding pair
+#### What's special about a true hybrid's founding pair
 
 For a true hybrid, the founding pair's **lineage (genes)** is **bred from the two
 member species' own lineages** rather than starting fresh:
@@ -132,7 +124,7 @@ the names you chose.
 
 ---
 
-## 5. Creating a Composition Hybrid (three or more species)
+### 5. Creating a Composition Hybrid (three or more species)
 
 A **composition hybrid** blends **three or more** species. The steps are the same
 as a true hybrid, you just keep adding members.
@@ -157,7 +149,7 @@ as a true hybrid, you just keep adding members.
 
 ---
 
-## 6. The questions every species answers
+### 6. The questions every species answers
 
 Whichever type you make, the wizard collects the same core details. It enforces
 sensible minimums/maximums for each and will re-ask if a value is out of range.
@@ -196,7 +188,7 @@ never left without its lineage.
 
 ---
 
-## 7. Cloning an existing species
+### 7. Cloning an existing species
 
 If your new species is close to one that already exists:
 
@@ -211,7 +203,7 @@ directly.)
 
 ---
 
-## 8. Rules & tips at a glance
+### 8. Rules & tips at a glance
 
 - **The type follows the recipe:** 0 members = truebred, 2 = hybrid, 3+ =
   composition hybrid. You never pick the type label directly.
@@ -244,7 +236,19 @@ hybrid.*
 
 ---
 
-## 🧑‍💻 Developer Documentation
+### Editing a species you own
+
+In the dashboard's species details, the species owner can change reproductive
+timing, sizes, birth type, and descriptive traits. This edits the **shared base
+species**, not just the current character, and may change other characters'
+values and pregnancy estimates.
+
+Review the values, acknowledge their impact on everyone using the species, and
+confirm the update. If the page says the settings changed while you were editing,
+refresh and review the latest values before saving again. Character-specific
+overrides remain separate and are managed from the in-world character menu.
+
+## For developers
 
 ### The wizard
 
@@ -345,3 +349,51 @@ editing, not creation), `src/classes/helpers/SpeciesHelper.php`,
 
 See [Species Compatibility](species-compatibility.md) for how the resulting
 species' makeup is scored for breeding compatibility once created.
+
+### Web creation attributes
+
+`InitialState::apiSpeciesCreate()` (`src/classes/states/InitialState.php`) accepts
+new species only in `InitialState` with no active profile. Its overview includes
+`speciesAttributes` from `SpeciesDefinitionHelper::defaults()`
+(`src/classes/helpers/SpeciesDefinitionHelper.php`), built from detached models
+without writing defaults to the database.
+
+Optional `stats` and `fluids` inputs are validated before species creation.
+Stats are base quantities rather than character percentages; their budget and
+omitted-default handling are described in [Vitality & Stats](vitality-and-stats.md#new-species-stat-budget).
+For each supplied fluid, all six attributes are required: a six-digit hex
+`color`, nonblank `scent` and `flavor` of at most 255 characters, `acidity`
+between 0 and 14, nonnegative `viscosity`, and `translucency` between 0 and 1.
+Unknown fluid types/attributes and nonfinite numbers are rejected.
+
+`SpeciesDefinitionHelper::apply()` stores supplied values inside the same
+transaction as the species and founding lineage. Omitted fluids retain the
+usual defaults. Uterus and embryo volumes accept fractional values; the
+overview's default embryo size is derived from the minimum size multiplier
+rather than a fixed literal.
+
+### Editing base species settings
+
+`SpeciesSettingsHelper` (`src/classes/helpers/SpeciesSettingsHelper.php`) owns the
+editable panel and save operation exposed through `MyCharacterHelper`'s
+`species` section. Only the species-owning account sees the panel. Its action
+includes the species `targetId`, field metadata, and a hash-based `version`
+of the current editable values.
+
+On save, a transaction reloads and pessimistically locks the species before
+checking ownership, the target, and the version. The submitted `values` must
+include boolean `acknowledgeImpact: true`. The numeric reproductive fields are
+required, positive, finite, and integral except for the two volumes; dependent
+bounds are checked through `SpeciesSpecificsHelper`. A detached clone is
+validated first so a rejected request cannot leave dirty managed values for a
+later flush.
+
+The operation also requires a valid `embryoType` and a `descriptors` string of
+at most 4000 characters. Descriptors are split on commas or newlines, trimmed,
+deduplicated, and emptied entries removed. Unknown keys are rejected. Only after
+all checks pass are values copied to the managed species. It does not edit
+per-character species overrides or creation-time stat/fluid attributes.
+
+`tests/e2e/cases/SpeciesSettingsOwnerEditsAreValidatedAndScopedTest.php` and
+`SpeciesCreationInitialStatsAndFluidsPersistWithLineageTest.php` in that directory
+cover owner/stale-page guards, invalid values, and transactional persistence.

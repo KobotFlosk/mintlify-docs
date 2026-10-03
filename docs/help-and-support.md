@@ -1,15 +1,11 @@
-# Help & Support Menu
-
-The always-available "Help" entry on the main menu: joining the community
-group, finding the manual and community chat, checking for updates, watching
-tutorial videos, reading recent changes, and choosing your display language.
-
-- **🎮 End-User Documentation** — what each Help option does and how to use it.
-- **🧑‍💻 Developer Documentation** — how the menu and its options are built.
-
+---
+audience: mixed
+summary: Community support, manuals, updates, tutorials, and language selection.
 ---
 
-## 🎮 End-User Documentation
+# Help & Support Menu
+
+## For end-users
 
 ### What it is
 
@@ -47,13 +43,13 @@ else your character can do.
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### Where it plugs in
 
 The menu is `HelpDialog` (`src/classes/prefabs/dialogs/HelpDialog.php`), a
 `DialogButtons` reached from the main menu offered by the active state (see
-[System Design](system-design.md)). Each button is keyed by a `HelpDialog::ACTION_*`
+[Architecture](architecture.md)). Each button is keyed by a `HelpDialog::ACTION_*`
 / `GROUP_INVITE` constant and handled in `menu_help(DialogButtons $dialogButtons)`:
 
 | Button | Constant | Behaviour |
@@ -115,7 +111,7 @@ commit details).
   for a different forge/API by implementing the same `GitCommit[]`-returning
   methods `GithubChangesDialog` relies on.
 
-See [System Design](system-design.md) for how dialogs and the main menu fit
+See [Architecture](architecture.md) for how dialogs and the main menu fit
 into the overall request/state flow, and
 [Command-Line Interaction](command-line-tooling.md) for the separate,
 typed `/ane help <topic>` chat-command help system (a different feature from

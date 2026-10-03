@@ -1,23 +1,11 @@
-# Abilities
-
-How special character abilities — currently **Shift** (shapeshifting) and
-**Bite** — are granted, resolved, and used, both in-world and from the
-[companion web dashboard](companion-dashboard.md).
-
-- **🎮 End-User Documentation** — what abilities are and how to use them.
-- **🧑‍💻 Developer Documentation** — how eligibility is granted and resolved,
-  and how each ability's effects work.
-
-This document connects to
-[Form Shapeshifters](form-shapeshifters.md) (what Shift actually changes about
-a character) and
-[Third-Party Integrations & Product Compatibility](third-party-integrations.md)
-(the attachment control surface Bite/Shift are unrelated to, but which shares
-the same dashboard patterns).
-
+---
+audience: mixed
+summary: Character ability eligibility and the use of Shift and Bite.
 ---
 
-## 🎮 End-User Documentation
+# Abilities
+
+## For end-users
 
 ### What abilities are
 
@@ -63,7 +51,7 @@ silently failing or landing on the wrong person.
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### `AbilityTypeEnum`
 
@@ -214,5 +202,5 @@ and `ability.shift` to `ShiftAbilityDialog`.
   that any species-specific row for an ability fully replaces that species'
   default eligibility for it, per the note above.
 
-See [System Design](system-design.md) for how this fits into the overall
+See [Architecture](architecture.md) for how this fits into the overall
 architecture.

@@ -1,24 +1,18 @@
-# Species Compatibility — How It Works
-
-How the system decides how compatible two characters are, species-wise — the
-number you see when you check breeding/mating compatibility.
-
-- **🎮 End-User Documentation** — a plain-language guide for players.
-- **🧑‍💻 Developer Documentation** — the vector math behind the scenes.
-
-This document connects to [Creating a Species](species-creation.md) and
-[Reproduction & Genetics Lifecycle](reproduction-and-genetics.md).
-
+---
+audience: mixed
+summary: Species ancestry, inherited composition, and compatibility scoring.
 ---
 
-## 🎮 End-User Documentation
+# Species Compatibility — How It Works
+
+## For end-users
 
 *A plain-language guide for players.* No math background needed; if you can
 read a pie chart, you're set.
 
 ---
 
-## 1. Every character has a "species makeup"
+### 1. Every character has a "species makeup"
 
 Think of each character as a pie chart of what they're made of.
 
@@ -32,7 +26,7 @@ That pie chart is the heart of everything below. We call it the character's
 
 ---
 
-## 2. Where the makeup comes from: your family tree
+### 2. Where the makeup comes from: your family tree
 
 A character's makeup isn't just a label someone typed in — it's **inherited from
 the parents**, all the way back up the family tree.
@@ -44,7 +38,7 @@ The rule is simple:
 Apply that at every generation and it naturally blends down to the original
 **purebred ancestors** at the top of the tree.
 
-### A quick example
+#### A quick example
 
 - **Mom** is a purebred Husky → her pie is **100% Husky**.
 - **Dad** is a "Sledge" hybrid → his pie is **60% Husky, 40% Malamute**.
@@ -58,7 +52,7 @@ the family. That stacking is exactly the point.
 
 ---
 
-## 3. The kinds of species
+### 3. The kinds of species
 
 You'll see species described one of three ways. It just depends on how many
 ingredients are in the recipe:
@@ -77,7 +71,7 @@ always add up to 100%.
 
 ---
 
-## 4. How compatibility is scored: the "shared slices" rule
+### 4. How compatibility is scored: the "shared slices" rule
 
 To compare two characters, we line up their pie charts and look at the species
 they **both** have. For each shared species, we count **the smaller of the two
@@ -90,7 +84,7 @@ we add those shared amounts up.
 That's it. The more species you share — and the bigger those shared slices —
 the higher the score.
 
-### Why "the smaller of the two"?
+#### Why "the smaller of the two"?
 
 Imagine two cups of juice. One is 70% apple, the other 50% apple. How much apple
 do they *truly have in common*? **50%** — you can only match up to the lesser
@@ -99,7 +93,7 @@ Taking the smaller slice keeps the score honest.
 
 ---
 
-## 5. Worked examples
+### 5. Worked examples
 
 Let's use three characters:
 
@@ -107,7 +101,7 @@ Let's use three characters:
 - **B** = **30% Sergal, 50% Fennec, 20% Kobold** (a Fenserbold-type)
 - **C** = **100% Fennec** (a purebred Fennec)
 
-### Example 1 — A with B
+#### Example 1 — A with B
 
 | Species | A | B | Shared (smaller) |
 |---------|----|----|------------------|
@@ -119,7 +113,7 @@ Let's use three characters:
 They share Sergal **and** Fennec, so the score is high. Kobold doesn't count —
 only **B** has it.
 
-### Example 2 — A with C
+#### Example 2 — A with C
 
 | Species | A | C | Shared (smaller) |
 |---------|----|------|------------------|
@@ -129,7 +123,7 @@ only **B** has it.
 
 They only overlap on Fennec, so the score is just that overlap: **70%**.
 
-### Example 3 — two mixed grandkids
+#### Example 3 — two mixed grandkids
 
 Breed A with C, and separately breed A with B, and you get two new characters:
 
@@ -145,7 +139,7 @@ Breed A with C, and separately breed A with B, and you get two new characters:
 
 ---
 
-## 6. Things that are good to know
+### 6. Things that are good to know
 
 - **Same species = perfectly compatible.** Two purebred Fennecs share 100%
   Fennec → **100%**.
@@ -162,7 +156,7 @@ Breed A with C, and separately breed A with B, and you get two new characters:
 
 ---
 
-## 7. Quick FAQ
+### 7. Quick FAQ
 
 **Q: My character is "a Fennec," so why isn't it 100% Fennec?**
 Its *label* might say Fennec, but its **family tree** decides its makeup. If a
@@ -192,7 +186,7 @@ slices mean higher compatibility.*
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### `SpeciesAffinityHelper` (lineage-aware compatibility)
 

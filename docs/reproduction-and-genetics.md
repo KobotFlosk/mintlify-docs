@@ -1,19 +1,11 @@
-# Reproduction & Genetics Lifecycle
-
-The full chain from intimacy to a new character: fluids, fertility, conception,
-pregnancy, birth, and how a child inherits its traits and species.
-
-- **🎮 End-User Documentation** — what happens to your character and how you use it.
-- **🧑‍💻 Developer Documentation** — how the chain is implemented.
-
-This document connects to two companion pages:
-[Species Compatibility](species-compatibility.md) and
-[Creating a Species](species-creation.md). Fluid volumes are derived from a
-character's essence stat; see [Vitality & Stats](vitality-and-stats.md).
-
+---
+audience: mixed
+summary: Reproductive progression, inherited traits, and visibility of character history.
 ---
 
-## 🎮 End-User Documentation
+# Reproduction & Genetics Lifecycle
+
+## For end-users
 
 ### The life-cycle at a glance
 
@@ -68,7 +60,24 @@ calculated — is explained in
 
 ---
 
-## 🧑‍💻 Developer Documentation
+### Viewing character histories
+
+The dashboard offers histories for your active character. Ordinary characters
+see genetic exchanges from the last six calendar months, including the other
+character, date, and destination. Synthetic and digital characters can see the
+full recorded history, including fluid types and amounts.
+
+Birth history normally shows births your character carried without revealing
+the father. Demon, daemon, deity, digital, and synthetic characters can also
+see paternal births and the father. Missing information can therefore reflect
+your character's visibility limits rather than a lost record.
+
+Pregnancies become visible in the dashboard once they reach 10% development.
+Early pregnancies are omitted from both the list and its visible count. If a
+history view reports that your active character changed, refresh before trying
+again. These histories are read-only.
+
+## For developers
 
 ### The chain of responsibility
 
@@ -197,6 +206,46 @@ hybrid) by the species subsystem (`SpeciesHelper`, `SpeciesHybridHelper`,
   percentage is computed from two species makeups.
 - [Creating a Species](species-creation.md) — truebred vs hybrid vs composition
   hybrid and the creation wizard rules.
+
+### History API visibility
+
+`GeneticsHelper::on_api()` and `BirthHelper::on_api()` (under
+`src/classes/helpers/`) are GET-only. Both require an active authenticated
+profile and a query `characterId` exactly matching that profile. Supplying
+another profile when constructing a helper, or supplying client class/interval
+flags, does not change the viewer. These checks also apply through
+`MyCharacterHelper` and the segmented dispatcher.
+
+Both return explicit scalar `entries`, never whole entity graphs, with
+`characterId`, `offset`, `pageSize` (50), and `hasMore`. Offset must be an integer
+from 0 through 2147483647. Repositories fetch 51 rows to determine whether
+another page exists, ordering newest date first and descending ID as a stable
+tie-breaker. Unsupported requests return errors; unexpected exceptions are
+logged and replaced with a generic refresh/retry message.
+
+- **Genetics:** `GeneticRepository::fetchHistory()`
+  (`src/classes/repos/GeneticRepository.php`) filters by the active receiver or
+  transferor. `direction` is `received` by default, or `given`. Synth and digital
+  classes receive `visibility: full`, no date cutoff, and `fluidType`/`amountMl`.
+  Other classes receive `visibility: recent`, with those two fields omitted and
+  an inclusive six-calendar-month `since` cutoff, clamped for shorter months.
+  Each entry includes the record ID, date, peer identity, and destination.
+- **Births:** `BirthHelper::canViewFather()` grants paternal visibility only to
+  demon, daemon, deity, digital, and synth classes.
+  `BirthRepository::fetchVisibleBirths()` (`src/classes/repos/BirthRepository.php`)
+  limits ordinary viewers to maternal matches; authorized viewers also get
+  paternal matches. The response includes `canViewFather`, and entries contain
+  date, identity, species, gender, class/form labels, race, status, and mother.
+  The `father` field is omitted entirely for other viewers.
+
+`MyCharacterHelper` reuses the birth visibility query for the family panel.
+Its pregnancy panel filters early pregnancies before serialization and counts;
+it does not expose a hidden total or a web delivery action. See
+[Character detail requests](companion-dashboard.md#character-detail-requests).
+
+Regression coverage lives in `tests/e2e/cases/GeneticsHistoryClassVisibilityAndOwnershipTest.php`,
+`BirthHistoryClassVisibilityAndOwnershipTest.php`, and
+`MyCharacterPregnanciesRespectVisibilityAndProgressTest.php` in that directory.
 
 ### Items that influence reproduction
 

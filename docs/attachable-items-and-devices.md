@@ -1,16 +1,11 @@
-# Attachable Items & Devices
-
-How consumable items (pills, potions, fluid containers, and similar objects) and
-attachable plugins/devices (extractors, ovipositors, connected hardware, and
-similar add-ons) extend the companion.
-
-- **🎮 End-User Documentation** — what items and add-ons do and how you use them.
-- **🧑‍💻 Developer Documentation** — how they are implemented and how to add new
-  ones.
-
+---
+audience: mixed
+summary: Consumable items, attachable add-ons, and their effects on the companion.
 ---
 
-## 🎮 End-User Documentation
+# Attachable Items & Devices
+
+## For end-users
 
 ### Items
 
@@ -77,7 +72,7 @@ set duration.
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### Items
 
@@ -235,7 +230,7 @@ are implemented as **modifiers** in `src/classes/modifiers/`, extending
   `AbstractProfileModifier` (or a more specific base) and apply it through
   `ProfileModifierService`.
 
-See [System Design](system-design.md) for how items and plugins fit into the
+See [Architecture](architecture.md) for how items and plugins fit into the
 overall layered architecture, and
 [Interaction & Role-Play Lifecycle](interaction-lifecycle.md) for how add-ons
 participate in an active scene.

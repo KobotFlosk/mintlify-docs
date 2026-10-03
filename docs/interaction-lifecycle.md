@@ -1,14 +1,11 @@
-# Interaction & Role-Play Lifecycle
-
-How the companion comes to life, how shared intimate scenes are driven, and how
-role-play events flow through the system.
-
-- **🎮 End-User Documentation** — how scenes are experienced.
-- **🧑‍💻 Developer Documentation** — how they are implemented.
-
+---
+audience: mixed
+summary: Session startup, shared scenes, request acceptance, engagement stopping, and role-play events.
 ---
 
-## 🎮 End-User Documentation
+# Interaction & Role-Play Lifecycle
+
+## For end-users
 
 ### Waking up and the main menu
 
@@ -58,9 +55,16 @@ If none of these apply, you are prompted to accept, reject, or trust the request
 as normal. (Trust and ownership bonds are set up from your character's profile —
 see [Accounts & Profiles](account-and-profiles.md).)
 
+When the dashboard is connected and supports notifications, an auto-accepted
+request can also show a notice naming the requester and the reason, even when
+your character is unconscious. A missing browser notice does not mean the
+request was refused.
+
 ### During a scene
 
 - You pick moves from a menu; your partner sees and responds to what happens.
+  Supported prompts can also be answered in the browser; see
+  [Answering scene choices](companion-dashboard.md#answering-scene-choices).
 - Actions affect your **stats** — arousal builds, stamina drains, and so on.
 - Reaching a climax can transfer **fluids** between characters, which is what makes
   conception possible (see
@@ -71,8 +75,28 @@ see [Accounts & Profiles](account-and-profiles.md).)
   or redress outfit pieces mid-scene without leaving it, and a **Partner** menu
   offers a shortcut to your partner's clothing and any connected toy they have
   linked, if either supports it.
-- You can stop at any time; consent and your personal limits are always respected,
-  and the scene ends cleanly, returning you to the idle mode.
+- Available stopping controls depend on who initiated the engagement and whether
+  a story is active; see below rather than assuming both participants have the
+  same controls.
+
+### Stopping an engagement
+
+In-world, the initiator's **Stop** control concludes the current story; **FINISH**
+ends the engagement when no story is selected. A participant who did not
+initiate it instead has a **Resist** option when their character is capable of
+defending themselves. Resistance is a chance-based role-play action, not a
+guaranteed exit.
+
+Where the dashboard offers an **emergency stop**, the character who initiated
+the engagement can end it without waiting for a turn, even while tied. Select
+the intended partner: stopping that engagement leaves other partners' scenes
+and pending choices intact. Ending the last engagement returns the companion
+to idle. Restrictions still needed for another tied scene remain in effect.
+
+If the dashboard reports that the engagement has ended or that you did not
+initiate it, refresh the scene list. The current browser control does not give
+the other participant the same emergency exit. These are game mechanics, not
+a substitute for agreeing boundaries with other players.
 
 ### Choosing how turns are paced
 
@@ -93,20 +117,24 @@ Whichever option is set by the person who starts the scene applies for that
 scene; you can change your own preference any time from settings for the next
 scene you start.
 
-### Your limits are always in charge
+### Content limits and request acceptance
 
 Everything offered during a scene is filtered by your body and by the content
 limits you configure. If something isn't possible or isn't allowed for your
 character, it simply won't be offered.
 
+Action filtering is separate from the automatic request-acceptance rules above;
+it does not mean every engagement begins with a confirmation prompt or that
+every participant has an unconditional stop control.
+
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 ### The state loop
 
 Interaction is governed by the state machine in `src/classes/states/` (summarised
-in [System Design](system-design.md)):
+in [Architecture](architecture.md)):
 
 ```
 InitialState ──▶ RunningState ──▶ CopulateState ──▶ RunningState
@@ -291,6 +319,57 @@ receiver's own personal setting is never consulted mid-scene. Switching stories
 mid-scene (`clearStory()`) preserves this snapshot rather than re-reading
 settings, so pacing stays stable for the whole encounter.
 
+### Emergency-stop requests
+
+`CopulationInteractionHelper::on_api()`
+(`src/classes/helpers/CopulationInteractionHelper.php`) accepts POST at
+`/api?class=CopulationInteractionHelper`, with body `action: stop` and a string
+or integer `targetId` identifying the partner's profile, not their account key.
+`AbstractAneState::on_initialized()` and `__unserialize()` register the helper
+for new and restored sessions.
+
+The helper requires `CopulateState`. `CopulateState::emergencyStop()` searches
+the active profile's engagements and only matches one where the active profile
+is the **initiator** and the target id matches. It deliberately bypasses story
+focus, penetration, and knot restrictions, without trusting the currently
+selected partner. The receiving participant cannot invoke this exit simply
+because they are the owner of their own session.
+
+On a match, `finishCopulationWith()`:
+
+1. Retains the story's local engagement snapshot for cleanup, since the peer
+   may already have deleted the shared record.
+2. Removes and flushes an existing shared engagement, then sends
+   `CONTROL_COMPLETE` to the explicitly selected partner. Persistence failures
+   propagate to the surrounding request rather than reporting a successful stop.
+3. Removes that partner's story and closes only its pending dialog. If no
+   remaining story is knotted, it clears tie restrictions. If the active
+   character was receiving, fluid draining resumes for the affected incubator
+   unless another receiving story remains tied there.
+4. Announces the end and clears stale target context. It returns to
+   `RunningState` when no engagements remain; otherwise remaining engagements
+   and their dialogs stay available.
+
+Success returns `ok: true`. Unsupported verbs, malformed actions/targets, and
+absent or non-initiated engagements return `ok: false` with an error. A repeated
+stop is not a success acknowledgment and cannot silently stop another partner.
+This endpoint differs from ordinary `ACTION_STOP`, which calls
+`concludeStory()`, and `ACTION_FINISH`, which calls `finishCopulation()`.
+
+`tests/e2e/cases/CopulationEmergencyStopLastTiedEngagementReturnsRunningTest.php`
+covers a final tied engagement while the partner owns the turn, restored-session
+routing, tie release, and fluid drainage.
+`tests/e2e/cases/CopulationEmergencyStopPreservesOtherEngagementTest.php`
+covers initiator gating, explicit target selection, duplicate stops, preserved
+ties, and independent partner prompts. See
+[Shared story dialogs](companion-dashboard.md#shared-story-dialogs) for their
+request/recovery contract.
+
+> **Maintainer question:** initiator-only emergency stopping is explicit in the
+> implementation and tests. Confirm whether recipients should also have an
+> unconditional emergency exit; documentation must not promise one until the
+> behavior changes.
+
 ### Extension points
 
 - **New scene type:** add a `StoryInterface` implementation (usually extending
@@ -303,7 +382,8 @@ settings, so pacing stays stable for the whole encounter.
 
 ### Breeding-request auto-acceptance rules
 
-Before a scene can start, the receiver of a breeding request must consent.
+Before a scene can start, the receiver's request must be accepted, either
+explicitly or by the automatic rules below.
 `CopulateModule::on_action()` (handling `COPULATE_REQUEST`) decides whether to
 prompt the receiver (accept/reject/trust dialog) or **auto-accept** on their
 behalf. This is the auto-acceptance ruleset for engaging in copulation/breeding
@@ -327,11 +407,25 @@ highest-first and the resolver returns the first that applies, in this order:
    receiver's Owner), or `ADOPTION_TYPE_OWNER` (requester is the receiver's Pet).
 
 `CopulateApprovalReasonEnum::NONE` means no rule applies and the receiver is
-prompted. When a rule applies, `on_action` auto-accepts and narrates the winning
-reason via `CopulateApprovalReasonEnum::asReasonPhrase()` (*"…is auto-accepting
-breeding request from %s because %s…"*). The `STATS`/`PUBLIC_USE` facts are passed
+prompted. When a rule applies, `on_action` auto-accepts and, if the receiver is
+conscious, narrates the winning reason via
+`CopulateApprovalReasonEnum::asReasonPhrase()`. The `STATS`/`PUBLIC_USE` facts are passed
 into the resolver so the decision logic stays pure and unit-testable. The rules,
 priority order, and narration are covered by
 `tests/integration/modules/CopulateAutoApprovalTest.php`. Trust and adoption
 storage are documented in [Accounts & Profiles](account-and-profiles.md).
 
+After sending the automatic acceptance handshake, `CopulateModule::on_action()`
+(`src/classes/modules/CopulateModule.php`) publishes an owner-routed Redis
+notification through `RedisHelper::tryPublish()`, using
+`Constants::REDIS_INTERACTION_EVENT`. The payload has `type: notification`,
+`code: copulation.auto-accepted`, a translated title/message, `characterId`,
+requester identity, and the selected reason. It targets the receiving
+character's owner, not the requester, and is independent of the consciousness
+gate on HUD narration. Delivery is best-effort: a Redis failure must not abort
+acceptance. Manual acceptance and rejected requests do not emit this event.
+
+`tests/e2e/cases/CopulateAutoAcceptancePublishesOwnerNotificationTest.php`
+checks the routing and payload, unconscious receivers, non-auto-accepted
+requests, and continued acceptance when Redis fails. The browser bridge itself
+is outside this repository.

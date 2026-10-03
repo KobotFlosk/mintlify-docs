@@ -1,16 +1,11 @@
-# Third-Party Integrations & Product Compatibility
-
-How the system talks to services and products outside itself: connectable
-online services (a messaging bridge, a connected-toy bridge, a character
-directory, a game platform), and compatibility with popular third-party
-in-world body add-ons and gadgets.
-
-- **🎮 End-User Documentation** — what you can connect and what it adds.
-- **🧑‍💻 Developer Documentation** — how each integration is implemented.
-
+---
+audience: mixed
+summary: Optional service connections and compatibility with third-party in-world products.
 ---
 
-## 🎮 End-User Documentation
+# Third-Party Integrations & Product Compatibility
+
+## For end-users
 
 ### Connected online services
 
@@ -51,7 +46,7 @@ Override back off to return the device to reacting on its own.
 
 ---
 
-## 🧑‍💻 Developer Documentation
+## For developers
 
 Third-party integration code is split into two distinct concerns under
 `src/classes/thirdparty/` and `src/classes/modules/thirdparty/`:
@@ -186,5 +181,5 @@ classify attachments regardless of which third-party product implements them.
   `RolePlaySubscriber`), then register it wherever attachments of that kind are
   resolved (see `AttachmentService`).
 
-See [System Design](system-design.md) for how the third-party layer fits into
+See [Architecture](architecture.md) for how the third-party layer fits into
 the overall architecture.
