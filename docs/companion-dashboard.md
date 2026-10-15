@@ -139,17 +139,17 @@ describe supported interactions, not a verified inventory of deployed panels.
 
 - **`RunningState::touch_root()`** (`src/classes/states/RunningState.php`,
   `button09`) closes an already-open media browser; otherwise, it opens
-  the destination selected by `WebUiHelper::open()`
-  (`src/classes/helpers/WebUiHelper.php`): `Constants::HTTPS_ANEHUD_DOCS` unless
-  the account explicitly holds `AccountRoleEnum::TESTER`. Testers instead open
-  `HTTPS_ANEHUD_TEST_UI` with a signed token containing the account's `uuid` and
-  `name`. Administrator status alone does not qualify. The default expiry is
-  ten minutes.
+  the UI through `WebUiHelper::open()` (`src/classes/helpers/WebUiHelper.php`)
+  for every account. The URL uses `UI_PROTOCOL` and `UI_HOST`, with a `test.`
+  host prefix on test domains, and a signed token containing the account's
+  `uuid` and `name`. The default expiry is ten minutes.
 - **`InitialState`** (`src/classes/states/InitialState.php`) adds `ACTION_UI`
-  to the Start dialog only when `WebUiHelper::isTester()` is true. Selection
-  checks the role again, so a stale selection after revocation returns the
-  updated Start dialog without opening media or issuing a token. This path
-  requires no active profile and always opens, rather than toggles, the browser.
+  to the Start dialog for every account. Selection opens the same signed UI
+  regardless of tester role or administrator status. This path requires no
+  active profile and always opens, rather than toggles, the browser.
+  During system initialization, accounts with no profiles automatically open
+  the same signed Web UI for onboarding. Accounts with existing profiles do not
+  auto-open it, even if no profile is currently active.
 - **`ProfileDialog::menu_profile_dialog()`** (`PROFILE_TREE` button) mints a
   short-lived signed token via `TokenHelper::createUrlToken()` carrying
   `target` (the profile id being viewed) and `viewer` (the caller's owner
@@ -314,9 +314,9 @@ Unsupported verbs/actions and invalid URLs return `ok: false` with an error.
 
 `tests/integration/helpers/MediaHelperTest.php` covers request validation and
 registration; `tests/e2e/cases/MediaWebLinkQueuesOwnerWebsiteDialogTest.php`
-checks owner routing and preservation of the current prompt. Tester entry and
+checks owner routing and preservation of the current prompt. Web UI entry and
 location behavior are covered by
-`tests/e2e/cases/WebButtonTesterRoleRoutesSignedTokenTest.php` and
+`tests/e2e/cases/WebButtonAllAccountsReceiveSignedTokenTest.php` and
 `tests/e2e/cases/StatusRegionFollowsHeaderPreservesBirthRegionTest.php`.
 
 > **Restored-session boundary:** `MediaHelper` and `DialogInteractionHelper`

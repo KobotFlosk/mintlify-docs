@@ -69,18 +69,25 @@ The menu is `HelpDialog` (`src/classes/prefabs/dialogs/HelpDialog.php`), a
 uses `GitHubChangesHelper::newInstance()` to fetch recent history from the
 project's GitHub repository:
 
-- `getMergedCommitsToBranch(11, 'release')` — the primary path: the 11 most
-  recent pull requests merged into the `release` branch, resolved via the
+- `getMergedCommitsToBranch(limit: null, since: $since)` — the primary path:
+  pull requests merged within the last six months into the branch configured
+  by `GITHUB_BRANCH`, resolved via the
   GitHub Pull Requests API (`state=closed`, `base=<branch>`, filtered to
-  `merged_at !== null`).
-- Falls back to `getCommits(11)` (raw commit history, merge commits only by
+  `merged_at !== null`). It follows API pages until their update dates pass
+  the cutoff, filters by merge date, and sorts newest merges first. Each merge
+  SHA is resolved to its actual commit message instead of using the PR title.
+- Falls back to `getCommits(limit: null, since: $since)` (raw commit history, merge commits only by
   default) if the PR-based lookup returns nothing (e.g. no base branch
-  configured).
+  configured). The fallback uses the same six-month cutoff and follows API pages.
 
 Each result becomes a `GitCommit` value object (`src/classes/models/github/GitCommit.php`:
 `sha`, `htmlUrl`, `message`, `authorName`, `committedDate`) and is rendered as
-a numbered button labelled with a timestamp prefix and a truncated commit/PR
-title. Selecting one (`menu_help_changes(...)`) re-fetches the single commit by
+a numbered entry labelled with a timestamp prefix and the merge commit's
+first line, truncated to 20 UTF-8-safe bytes with an ellipsis when needed.
+The commit body is excluded from the label. If a merge commit cannot be loaded,
+its short SHA is shown instead of substituting the PR title.
+The HUD's previous/next page buttons make the full history available;
+it is no longer limited to eleven changes. Selecting one (`menu_help_changes(...)`) re-fetches the single commit by
 SHA (`getCommitBySha(...)`) and posts its full message, author, date, and a
 link back to GitHub via `CommOwnerSay`.
 
