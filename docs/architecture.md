@@ -120,7 +120,7 @@ responsibility:
 | **Stories** | `classes/stories` | Self-contained intimate "scenes" (oral, anal, breed, oviposit, climax) offered inside `CopulateState`. Each is a `StoryInterface` with its own actions and dialogs. |
 | **Services** | `classes/services` | Long-lived cross-cutting subscribers (interaction routing, role-play, AI, attachments, fluid transfer, profile modifiers, the web portal). |
 | **Modules** | `classes/modules` | Feature bundles attached to a session (copulate, birth/adopt offers, packs, store, media, Lovense, RLV shared folders, command line). |
-| **Helpers** | `classes/helpers` | Stateless domain logic and queries (~60 helpers): profiles, species, genetics, fluids, pregnancy, birth, ovum, incubators, compatibility, attachments, transactions, etc. |
+| **Helpers** | `classes/helpers` | Domain logic, queries, and API surfaces: profiles, species, genetics, fluids, pregnancy, birth, ovum, incubators, compatibility, attachments, transactions, etc. |
 | **Models** | `classes/models` + `interfaces/models` | Doctrine entities (interface + `…Impl`) for accounts, profiles, species, births, pregnancies, fluids, ovum, items, plugins, sessions, and more. |
 | **Repositories** | `classes/repos` | Doctrine repositories; persistence and queries per aggregate, mapped in `Application`. |
 | **Plugins / Devices** | `classes/plugins` | Attachable add-ons (`AbstractAnePlugin`) and hardware-like devices (`AbstractDevicePlugin`) that hook role-play events and add menus. See [Attachable Items & Devices](attachable-items-and-devices.md). |
@@ -144,8 +144,10 @@ load-bearing ones:
   delivers them.
 - `IncubatorTypeEnum` — where a deposit can gestate (uterus, colon, stomach).
 - `StatTypeEnum` — vitality, arousal, stamina, essence, strength, defense.
-- `HybridTypeEnum` / `TaxonomicTypeEnum` — species classification (truebred, true
-  hybrid, composition hybrid). See the [Species](species-creation.md) documents.
+- `HybridTypeEnum` — species recipe kind (truebred, true hybrid, composition
+  hybrid). `TaxonomicTypeEnum` separately represents biological ranks from
+  domain to species. See [Species creation](species-creation.md) and
+  [Species compatibility](species-compatibility.md).
 
 ### Interaction & events
 
@@ -231,7 +233,10 @@ counts header rows, not distinct owners, so multiple devices can inflate counts.
 
 An **account** (`AccountModelImpl`) represents the caller and owns one or more
 **profiles** (`ProfileModelImpl`, the character aggregate); one profile is
-active at a time. Roles (`AccountRoleEnum`) and permissions
+active at a time. Optional character identity is persisted through
+`ProfileIdentityHelper`, with active-character checks and versioned saves,
+and read by the dashboard and discovery without changing reproductive biology.
+Roles (`AccountRoleEnum`) and permissions
 (`AccountPermissionEnum`) gate privileged features (e.g. the AI companion).
 See [Accounts & Profiles](account-and-profiles.md).
 
@@ -243,7 +248,15 @@ Profiles — each backed by a dedicated `…SearchDialog` in `classes/prefabs/di
 and header/presence queries (`HeaderHelper`). A community-maintained directory
 of public breeding-friendly locations (`SimulatorModelImpl`, `GardenHelper`) is
 browsable from the Gardens scope, and `AccountBlockHelper` lets a character
-exclude another from their own results. See
+exclude another from their own character results. `DiscoveryHelper` exposes
+browser character searches, while `GardenHelper` separately handles browser
+listing and management with HUD-backed parcel checks.
+
+The shared `SpeciesCompositionHelper` resolves recipes and family inheritance.
+`CharacterAncestryHelper` presents an individual's full ancestry and definition
+match independently of `CompatibilityHelper`'s pair-specific score and
+contribution breakdown. The search API returns both without treating a species
+label or a positive-match contributor list as a substitute for ancestry. See
 [Search & Discovery](search-and-discovery.md).
 
 ### Packs & groups
@@ -282,8 +295,8 @@ without typing them into the virtual world itself. See
 
 ### The companion web dashboard
 
-A signed, time-limited token (`TokenHelper`) from the profile menu opens a
-browser-based dashboard (a separate frontend, `ane-ui-nextjs`, not part of this
+A signed, time-limited token (`TokenHelper`) from the Web or Start-menu UI action
+opens a browser-based dashboard (a separate frontend, `ane-ui-nextjs`, not part of this
 repository) that polls a session-backed JSON API (`ApiHelper`'s segmented
 dispatcher plus a set of dedicated `ApiSubscriber` helpers such as
 `StatusHelper`, `SettingHelper`, `DiscoveryHelper`, `AbilityHelper`, and
@@ -294,8 +307,11 @@ abilities, items, settings, and search/world-presence data.
 clients, with Redis events accelerating delivery rather than owning the prompt.
 `CopulationInteractionHelper` lets an initiator end one selected engagement
 without ending others. `MediaHelper` queues owner-only website prompts or closes
-the media view, while `WebUiHelper` shares tester routing between the Web button
-and the pre-character Start menu. See
+the media view, while `WebUiHelper` shares signed dashboard routing between the
+Web button and the pre-character Start menu for every account. Accounts without
+profiles also open it automatically during initialization. Dashboard host
+selection depends on configuration and the request's test-domain classification,
+not tester eligibility. See
 [The Companion Web Dashboard](companion-dashboard.md).
 
 ### The store & rewards economy
@@ -317,7 +333,11 @@ failure boundaries.
 outfit, base body, and abdomen size onto a fixed viewer-side shared-folder
 convention, and issues batched attach/detach commands through the shared
 framework's `RlvService` to automate dressing, undressing, outfit switching,
-and protecting the companion/body from accidental removal during scenes. See
+and protecting the companion/body from accidental removal during scenes.
+`OutfitsHelper` exposes owner-scoped browser reads and explicit clothing
+actions over that same module, checking capabilities, the viewed character and
+outfit, and current inventory names before dispatch. Viewer execution remains
+asynchronous rather than guaranteed by the API response. See
 [RLV-Driven Character & Outfit Control](rlv-and-control.md).
 
 ### Command-line interaction

@@ -3,11 +3,17 @@ title: "Creating a species"
 description: "A guide for species creators using the in-world creation wizard — truebred, hybrid, and composition hybrid."
 ---
 
-This page walks you through making a new species and explains the three kinds you can create. You don't need any technical knowledge — just follow the prompts.
+import { Aside } from '@astrojs/starlight/components';
+
+This page walks you through making a new species and explains the three kinds you
+can create. You don't need any technical knowledge — just follow the prompts.
+
+---
 
 ## 1. The three kinds of species
 
-What *kind* of species you end up with is decided by **how many member species you add** to its recipe — you never set the "type" directly:
+What *kind* of species you end up with is decided by **how many member species you
+add** to its recipe — you never set the "type" directly:
 
 | Kind | Member species in the recipe | Example |
 |------|------------------------------|---------|
@@ -15,77 +21,158 @@ What *kind* of species you end up with is decided by **how many member species y
 | **Hybrid** (true hybrid) | exactly **2** | Fenser = Sergal + Fennec |
 | **Composition Hybrid** | **3 or more** | Fenserbold = Sergal + Fennec + Kobold |
 
-> A recipe with a **single** member isn't a valid species, so the wizard won't let you finish until you've either added **zero** members (a truebred) or **two or more** (a hybrid). The **FINISH** button stays hidden until the recipe is valid.
+<Aside type="note">
+A recipe with a **single** member isn't a valid species, so the wizard won't let
+you finish until you've either added **zero** members (a truebred) or **two or
+more** (a hybrid). The **FINISH** button stays hidden until the recipe is valid.
+</Aside>
 
-> **Each hybrid must use a unique set of species.** If a hybrid — true *or* composition — already exists with the **exact same set** of member species, the wizard won't let you create another one. Only *which* species are in the mix matters; the percentages are ignored. The check runs the moment you press **FINISH**, and you'll be told which existing species already uses that combination so you can adjust the members.
+<Aside type="note">
+**Each hybrid must use a unique set of species.** If a hybrid — true *or*
+composition — already exists with the **exact same set** of member species, the
+wizard won't let you create another one. Only *which* species are in the mix
+matters; the weights are ignored. The check runs the moment you press
+**FINISH**, and you'll be told which existing species already uses that
+combination so you can adjust the members.
+</Aside>
 
-Every member in a hybrid recipe has a **percentage** (its share of the mix), and the shares always add up to **100%**.
+Every member has a **relative composition weight** from **0 to 100**. The
+weights do not need to total 100: **60 Sergal and 60 Dragon** compares as equal
+parts, or 50% each, when the species recipe is used for compatibility. Your
+values stay as entered; positive weights are normalized during comparison.
+
+After conception succeeds, the child's species is selected by matching the
+complete set of truebred ancestors from both parents to a registered hybrid's
+expanded recipe. Exactly one matching definition selects that hybrid. No match,
+multiple matches, or incomplete ancestry retains the ovum donor's species.
+There is no additional maternal-species probability roll. A listed member with
+weight zero still belongs to the set used for birth matching.
+
+Only purebreds define their own taxonomy. Once a species classification is saved,
+users cannot change or clear it. An existing unclassified purebred's owner can
+use **Define taxonomy** to set all eight ranks exactly once. True hybrids and composition hybrids
+derive taxonomy from their member species, including nested compositions.
+Species overlap and taxonomy keep their existing normalized-weight calculations;
+birth matching uses complete membership separately. See
+[taxonomy compatibility](/system-guide/species-compatibility#8-optional-taxonomy-compatibility)
+for the weighting rules and examples.
+
+---
 
 ## 2. Starting the wizard
 
-When you begin, you're asked whether to **Clone** an existing species or start from **Basic**.
+When you begin, you're asked whether to **Clone** an existing species or start
+from **Basic**.
 
 - **Basic** — build a brand-new species from scratch (covered below).
-- **Clone** — copy an existing species as a starting point, give it a new name, and confirm. Handy when your new species is a small tweak of one that already exists. (See §7.)
+- **Clone** — copy an existing species as a starting point, give it a new name,
+  and confirm. Handy when your new species is a small tweak of one that already
+  exists. (See §7.)
 
 Choosing **Basic** next asks: **Purebred** or **Hybrid?**
 
 - **Purebred** → make a truebred (§3).
 - **Hybrid** → open the composition builder to add member species (§4 and §5).
 
-> **AI presets (right after you name the species).** Once you've named a new species, the wizard asks the AI to **prefill best-guess fertility values** based on the name (and any descriptors), then shows them on a **review menu** — each value is its own button. Tap a value to change just that one (the wizard asks for the new number and drops you back on the menu), and press **FINISH** when you're happy with them. The suggestions are always sanity-clamped to valid ranges, and if the AI is unavailable the menu simply starts from sensible defaults, so creation is never blocked.
+<Aside type="note">
+**AI presets (right after you name the species).** Once you've named a new
+species, the wizard asks the AI to **prefill best-guess fertility values** based
+on the name (and any descriptors), then shows them on a **review menu** — each
+value is its own button. Tap a value to change just that one (the wizard asks
+for the new number and drops you back on the menu), and press **FINISH** when
+you're happy with them. The suggestions are always sanity-clamped to valid
+ranges, and if the AI is unavailable the menu simply starts from sensible
+defaults, so creation is never blocked.
+</Aside>
+
+---
 
 ## 3. Creating a truebred
 
-A truebred is a species that stands on its own — it has no member species in its recipe.
+A truebred is a species that stands on its own — it has no member species in its
+recipe.
 
 1. Choose **Basic → Purebred**.
 2. **Name** the species.
-3. On the **review menu**, tap any **species specifics** value to adjust it, then press **FINISH** (see §2 and §6).
-4. Optionally **define descriptors** (appearance tags) — you can describe the look in your own words and let the AI turn it into tags, or **Skip**.
+3. On the **review menu**, tap any **species specifics** value to adjust it, then
+   press **FINISH** (see §2 and §6).
+4. Optionally **define descriptors** (appearance tags) — you can describe the
+   look in your own words and let the AI turn it into tags, or **Skip**.
 5. **Review** the summary and confirm.
-6. **Name the founding Mother and Father** — these two become the species' original ancestors (its root lineage). See §6 "Founding pair".
+6. **Name the founding Mother and Father** — these two become the species'
+   original ancestors (its root lineage). See §6 "Founding pair".
 7. Confirm — the species and its founding pair are created together.
+
+---
 
 ## 4. Creating a hybrid (two species)
 
 A **true hybrid** blends **exactly two** species.
 
 1. Choose **Basic → Hybrid** to open the composition builder.
-2. **ADD** your **first** member species. The first member automatically holds the **remainder** of the mix, so you aren't asked for a percentage yet.
-3. **ADD** your **second** member species. Now you're asked **what percentage** this species makes up — enter a whole number greater than 0 and less than the remaining amount. The first member's share shrinks automatically so the total stays 100%.
-   - *Example:* add Sergal first, then add Fennec at **70%** → the recipe becomes **Sergal 30% / Fennec 70%** (Sergal takes the leftover 30%).
-4. With two members in the recipe, the **FINISH** button appears. Press it. (If those two species already form an existing hybrid, the wizard sends you back to adjust the members — see the uniqueness rule in §1.)
-5. **Name** the species, then **review/adjust** the AI-suggested fertility values on the menu and press **FINISH** (§2, §6); optionally add **descriptors**, and **review**.
+2. **ADD** your **first** member species and enter its relative composition
+   weight from **0 to 100**.
+3. **ADD** your **second** member species and enter its weight. Changing
+   one value does not change the other.
+   - *Example:* Sergal **60** / Dragon **40** gives a species recipe of 60%
+     Sergal and 40% Dragon for compatibility. A born character's makeup still
+     follows their actual parents; the recipe weights do not choose birth species.
+4. With two members in the recipe, the **FINISH** button appears. Press it.
+   (If those two species already form an existing hybrid, the wizard sends you
+   back to adjust the members — see the uniqueness rule in §1.)
+5. **Name** the species, then **review/adjust** the AI-suggested fertility values
+   on the menu and press **FINISH** (§2, §6); optionally add **descriptors**, and
+   **review**.
 6. **Name the founding Mother and Father.**
 
 ### What's special about a true hybrid's founding pair
 
-For a true hybrid, the founding pair's **lineage (genes)** is **bred from the two member species' own lineages** rather than starting fresh:
+For a true hybrid, the founding pair's **lineage (genes)** is **bred from the two
+member species' own lineages** rather than starting fresh:
 
 - **Mother** = member A's mother × member B's father
 - **Father** = member A's father × member B's mother
 
-You still **type the Mother and Father names** you want — only their ancestry is derived automatically, so a Sergal+Fennec hybrid is genuinely descended from both Sergals and Fennecs. The confirmation screen shows both the derived lineage and the names you chose.
+You still **type the Mother and Father names** you want — only their ancestry is
+derived automatically, so a Sergal+Fennec hybrid is genuinely descended from both
+Sergals and Fennecs. The confirmation screen shows both the derived lineage and
+the names you chose.
 
-> If one of the two member species has no lineage of its own to breed from, the wizard will stop and tell you, rather than create an incomplete species.
+<Aside type="note">
+If one of the two member species has no lineage of its own to breed from, the
+wizard will stop and tell you, rather than create an incomplete species.
+</Aside>
+
+---
 
 ## 5. Creating a composition hybrid (three or more species)
 
-A **composition hybrid** blends **three or more** species. The steps are the same as a true hybrid, you just keep adding members.
+A **composition hybrid** blends **three or more** species. The steps are the same
+as a true hybrid, you just keep adding members.
 
 1. Choose **Basic → Hybrid**.
-2. **ADD** the first member (it holds the remainder — no percentage asked).
-3. **ADD** each additional member and give it a **percentage** (greater than 0, less than what's left). The first member keeps shrinking to hold the leftover so the total is always 100%.
-   - *Example:* Sergal (first), then Fennec **50%**, then Kobold **20%** → **Sergal 30% / Fennec 50% / Kobold 20%**.
-4. You can keep up to **9** members. Each member's button shows its current percentage so you can see the mix at a glance. Selecting a member **removes** it (and its share returns to the first member).
-5. Press **FINISH** (available once you have at least two members). If this exact set of species already exists as a hybrid, you'll be sent back to adjust the members (see §1).
-6. **Name** the species, then **review/adjust** the AI-suggested fertility values and press **FINISH** (§2, §6); optionally add **descriptors**, and **review**.
-7. **Name the founding Mother and Father** — for a composition hybrid these are ordinary named root ancestors (a fresh lineage), just like a truebred.
+2. **ADD** the first member and enter its relative composition weight.
+3. **ADD** each additional member and enter a weight from **0 to 100**. For
+   example, Sergal **60**, Fennec **50**, and Kobold **20** are valid; comparison
+   normalizes these proportions to about 46.2%, 38.5%, and 15.4%.
+4. You can keep up to **9** members. Each member's button shows its weight.
+   Selecting a member **removes** it without changing the other members.
+5. Press **FINISH** (available once you have at least two members). If this exact
+   set of species already exists as a hybrid, you'll be sent back to adjust the
+   members (see §1).
+6. **Name** the species, then **review/adjust** the AI-suggested fertility values
+   and press **FINISH** (§2, §6); optionally add **descriptors**, and **review**.
+7. **Name the founding Mother and Father** — for a composition hybrid these are
+   ordinary named root ancestors (a fresh lineage), just like a truebred.
+
+---
 
 ## 6. The questions every species answers
 
-Whichever type you make, the wizard collects the same core details. It enforces sensible minimums/maximums for each and will re-ask if a value is out of range. These are pre-filled with the AI's suggested values right after naming (§2); on the review menu you can tap any one to change it, then press **FINISH**.
+Whichever type you make, the wizard collects the same core details. It enforces
+sensible minimums/maximums for each and will re-ask if a value is out of range.
+These are pre-filled with the AI's suggested values right after naming (§2); on
+the review menu you can tap any one to change it, then press **FINISH**.
 
 **Species specifics (reproductive profile):**
 
@@ -93,21 +180,38 @@ Whichever type you make, the wizard collects the same core details. It enforces 
 2. **Ovulation period** — the fertile window within the cycle.
 3. **Ovulation count** — how many ova can be released.
 4. **Gestation period** — how long a pregnancy lasts.
-5. **Growth period** — how long offspring take to mature (at least the ovulation cycle length).
-6. **Uterus size** — adult uterus volume in millilitres (an average adult human is ~60 ml, for reference).
-7. **Embryo size** — the maximum volume an embryo can reach (within a min/max the wizard derives from the uterus size and ovulation count).
+5. **Growth period** — how long offspring take to mature (at least the ovulation
+   cycle length).
+6. **Uterus size** — adult uterus volume in millilitres (an average adult human
+   is ~60 ml, for reference).
+7. **Embryo size** — the maximum volume an embryo can reach (within a min/max the
+   wizard derives from the uterus size and ovulation count).
 8. **Birth type** — how offspring are born:
    - **Live** (live birth)
    - **Ovum** (egg-laying)
 
-**Descriptors (optional):** appearance/behavior tags. Describe the species in your own words and the AI generates a tag list you can keep or skip.
+**Descriptors (optional):** appearance/behavior tags. Describe the species in your
+own words and the AI generates a tag list you can keep or skip.
 
-**Founding pair (Mother and Father):** every species is seeded with two original ancestors.
+**Taxonomy (optional, purebreds only):** choose **Taxonomy** on the review menu to select or
+create each rank from domain through species. A shared classification adds
+compatibility alongside lineage overlap. You can edit or clear this draft before the first save. After saving, a classification cannot be changed or cleared. An existing unclassified purebred can receive all eight ranks once through **Define taxonomy**. New
+ranks are saved with the species; existing ranks can be shared. Cloning a
+species also retains its classification. See
+[Species Compatibility](/system-guide/species-compatibility) for rank weights and scoring.
 
-- **Truebred and Composition hybrid:** you name a Mother and a Father who become the species' fresh root lineage.
-- **True hybrid:** you still name them, but their ancestry is bred from the two member species (see §4).
+**Founding pair (Mother and Father):** every species is seeded with two original
+ancestors.
 
-The species and its founding pair are always saved **together**, so a species is never left without its lineage.
+- **Truebred and Composition hybrid:** you name a Mother and a Father who become the
+  species' fresh root lineage.
+- **True hybrid:** you still name them, but their ancestry is bred from the two
+  member species (see §4).
+
+The species and its founding pair are always saved **together**, so a species is
+never left without its lineage.
+
+---
 
 ## 7. Cloning an existing species
 
@@ -117,23 +221,37 @@ If your new species is close to one that already exists:
 2. **Search and pick** the species to copy.
 3. Give the clone a **new name** and confirm.
 
-The clone copies the original's recipe and specifics as a starting point. (Note: you can't base a new hybrid on an existing *composition* hybrid as a member — composition hybrids aren't offered in the member search — but you can clone one directly.)
+The clone copies the original's recipe and specifics as a starting point.
+You can also use an existing truebred, true hybrid, or composition hybrid as a
+member when building a new hybrid; nested recipes are supported.
+
+---
 
 <a id="8-rules--tips-at-a-glance"></a>
 
 ## 8. Rules and tips at a glance
 
-- **The type follows the recipe:** 0 members = truebred, 2 = hybrid, 3+ = composition hybrid. You never pick the type label directly.
-- **AI presets save time.** Right after naming, accept the AI's suggested fertility values to skip the questions entirely, or customize them — the suggestions are always clamped to valid ranges.
-- **Shares always total 100%.** The first member you add holds the leftover, so you only type percentages for the *additional* members.
-- **Enter whole percentages** (e.g. `70`), greater than 0 and less than what's left. The first member can't drop to 0, so you can't give a later member the entire remaining share.
-- **FINISH appears only when the recipe is valid** — i.e. two or more members for a hybrid.
-- **Hybrids must be unique by their species set.** You can't FINISH a hybrid whose exact combination of member species already exists — percentages are ignored, only the set of species counts.
+- **The type follows the recipe:** 0 members = truebred, 2 = hybrid, 3+ =
+  composition hybrid. You never pick the type label directly.
+- **AI presets save time.** Right after naming, accept the AI's suggested fertility
+  values to skip the questions entirely, or customize them — the suggestions are
+  always clamped to valid ranges.
+- **Weights are relative.** Enter a number from **0 to 100** for every member.
+  They do not need to total 100; decimals are allowed. Positive values are
+  normalized when calculating compatibility.
+- **Birth matching uses every member**, including a zero-weight member. It
+  requires one registered hybrid with exactly the child's complete ancestry.
+- **FINISH appears only when the recipe is valid** — i.e. two or more members for
+  a hybrid.
+- **Hybrids must be unique by their species set.** You can't FINISH a hybrid whose
+  exact combination of member species already exists — weights are ignored,
+  only the set of species counts.
 - **Up to 9 members** in a composition.
-- **Remove a member** by selecting its button; its share returns to the first member.
-- **Names matter:** always give real Mother and Father names — for a true hybrid these label a pair whose ancestry is bred from both member species.
+- **Remove a member** by selecting its button; other weights stay unchanged.
+- **Names matter:** always give real Mother and Father names — for a true hybrid
+  these label a pair whose ancestry is bred from both member species.
 
-*In short: pick Purebred or Hybrid, (for a hybrid) add two or more member species with their percentages, answer the species' reproductive details, optionally tag its appearance, and name its founding Mother and Father. The number of members you add decides whether you've made a truebred, a hybrid, or a composition hybrid.*
+---
 
 ## Base stat budget for new species
 
@@ -145,8 +263,12 @@ This applies when creating a species. It does not rebalance existing species or 
 
 ## Editing a species you own
 
-In the [dashboard's species details](/system-guide/companion-dashboard), you can edit a species you own. You can change reproductive timing, sizes, birth type, and descriptive traits.
+In the [dashboard's species details](/system-guide/companion-dashboard), the species owner can change reproductive
+timing, sizes, birth type, and descriptive traits. This edits the **shared base
+species**, not just the current character, and may change other characters'
+values and pregnancy estimates.
 
-This changes the **shared base species**, not just your current character. It may affect other characters' values and pregnancy estimates. Review the values, acknowledge the impact on everyone using the species, and confirm the update.
-
-If the settings changed while you were editing, refresh and review the latest values before saving again. Character-specific overrides remain separate. Manage them from the [in-world character menu](/getting-started/operation/species-overriding).
+Review the values, acknowledge their impact on everyone using the species, and
+confirm the update. If the page says the settings changed while you were editing,
+refresh and review the latest values before saving again. Character-specific
+overrides remain separate and are managed from the [in-world character menu](/getting-started/operation/species-overriding).

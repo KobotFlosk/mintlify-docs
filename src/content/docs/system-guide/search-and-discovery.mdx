@@ -1,36 +1,111 @@
 ---
 title: "Search and discovery"
-description: "Find characters, active regions, fertile partners, profiles, and community breeding locations."
+description: "Find characters and gardens, understand ancestry and match explanations, and manage location listings."
 ---
 
-Click **Search** on the main menu to find other characters and community-registered breeding locations. The menu also shows recent regional activity and the total number of characters.
+The **Search** button on the main menu opens a short list of ways to look for
+other people using the system. The menu also tells you how many people have
+been active in the region recently and how many people have registered in total.
 
 ## Search scopes
 
 | Scope | What it shows |
 |---|---|
-| **Region** | Active characters in your region, gathered from recent activity and a direct nearby scan. |
-| **Global** | Regions with the most active characters. Select a region to teleport there when you wear a compatible teleport-assist device. |
-| **Online** | Characters active anywhere within the last hour, with a link to start an instant message. |
-| **Fertile** | Recently active characters who can currently conceive. |
-| **Gardens** | Public breeding-friendly gardens and forests, including recent activity and teleport options. |
-| **Profiles** | A character name search that works even when the character is offline. |
+| **Region** | Everyone currently active in your region, found two ways: a quick list from recent activity, and an active "ping" that asks nearby users' companions to respond directly (useful for people your region list hasn't picked up yet). |
+| **Global** | Which regions have the most people active right now, so you can decide where to go. Selecting a region offers to teleport you there (if you're wearing a compatible teleport-assist device). |
+| **Online** | Every character active anywhere in the last hour, with a link to start an instant message. |
+| **Fertile** | Same as Online, but narrowed to characters who are currently able to conceive — handy when you're specifically looking for a breeding partner. |
+| **Gardens** | A community directory of public locations that landowners have registered as breeding-friendly spots ("gardens" for smaller parcels, "forests" for large regions). Browse the list, see how busy a location has been, and teleport there. |
+| **Profiles** | Look up a specific character by (part of) their name, regardless of whether they're currently online. |
 
 ## Character results
 
-Select a character to see their name, gender, species, and shared location. Depending on the result and your relationship, you can:
+Selecting a character from Region, Online, or Fertile results opens a small
+card with their name, gender, species, and (if they've allowed it) their
+current location. From here, depending on the scope and your relationship
+with them, you may be able to:
 
-- Click **View Profile** to open their character sheet.
-- Click **Breed** to send a nearby compatible character an interaction request.
-- Click **Adopt** to offer a Master/Slave, Owner/Pet, or Parent/Child bond.
-- Click **Block** to hide the character from your future search results.
+- **View Profile** — see their full character sheet.
+- **Breed** — send a breeding request, if you're both nearby and biologically
+  compatible. See
+  [Interaction and Role-Play Lifecycle](/system-guide/interaction-and-roleplay) for how
+  breeding requests and auto-acceptance work.
+- **Adopt** — offer an adoption bond (Master/Slave, Owner/Pet, or Parent/Child).
+  See [Accounts and Profiles](/system-guide/accounts-and-profiles).
+- **Block** — exclude that person from your nearby, online, and fertile
+  character results. This does not hide them from the name-based profile lookup
+  or remove their activity from region totals. Blocking only affects your own
+  results; it doesn't notify the other person or restrict them from finding you
+  through other means.
 
-Blocking only changes your own results. It does not notify the other person or prevent them from finding you.
+## Character details in web Discover
+
+Where supported by your dashboard, a result can show the character's saved
+sexuality and picture. Unspecified details stay empty rather than being inferred
+from the character's body. See
+[Optional character identity](/system-guide/accounts-and-profiles#optional-character-identity)
+for editing your own details and their visibility to other people.
+
+A character's registered species and that species' recipe are not necessarily
+their personal ancestry. A descendant can inherit different proportions, or
+additional species, while retaining the same species name. An ancestry summary
+describes the character's own inherited makeup, independently of whom you are
+comparing them with. A named hybrid can still be a hybrid when its inherited
+ratios differ from the original recipe.
+
+A definition match compares both species identities and their proportions. It can be unknown even when individual ancestry is known. A different ratio can mean the recipe does not match without changing the character's hybrid classification.
+
+Incomplete ancestry is not proof of pure breeding. Some known shares may be
+shown while the overall classification remains unknown. Ancestry can also be
+available when no match percentage can be calculated. For the inheritance rules
+and worked examples, see
+[Ancestry and taxonomy](/system-guide/ancestry-and-taxonomy).
+
+## Match percentages in web Discover
+
+The **match** percentage compares the result with your active character using
+the same compatibility calculation as the in-world companion. It includes
+inherited species overlap, shared taxonomy, forced compatibility, garden and
+partner bonuses, and form/class differences. Two characters with no shared
+species ancestry can therefore have a positive match through shared taxonomy.
+Where offered, open the match explanation to see how each factor changes the
+running total.
+The contributions are percentage-point changes applied in order; raw factor
+percentages should not be added together. The explanation can name the shared
+species and related classifications that contribute positively, but it is not
+a complete ancestry list: a species with no contribution to this particular
+match can still be part of the character's ancestry.
+
+The value is an estimate for the two profiles; conception involving a particular
+ovum can differ because the ovum's donor and stored traits are used there.
 
 ## Register a garden or forest
 
-Landowners and managers can register suitable land from **Gardens** while standing on the parcel.
+You can register land you personally own, or land deeded to the group you have
+active while wearing your companion. Stand on the parcel and open **Gardens**.
+The parcel description must include AnE and its area must be at least 2,048
+square metres:
 
-- Moderate parcels register as a **Garden**. Large regions register as a **Forest**.
-- You can rename a listing, change its visibility, update its landing point, or remove it.
-- Recent activity affects the order of public listings.
+- Parcels below 32,768 square metres register as a **Garden**; larger parcels
+  register as a **Forest**.
+- New listings start private and use your current position as the arrival
+  point. Make the listing public when you want others to find it.
+- Once registered, you can rename it, mark it public or private, set (or
+  update) the exact spot visitors are teleported to, or remove the listing
+  entirely.
+- Listings you manage are ranked in the browse list by how much recent
+  activity they've seen, so active, welcoming locations surface first.
+
+Where your dashboard offers garden controls, you can also browse public
+listings and your own private listings, manage your registrations, and request
+a teleport. Keep the companion connected and teleport assistance enabled for
+teleporting. Registration and moving the arrival point require standing on the
+parcel; if you moved or the companion lost contact, return there and refresh.
+A successful teleport request is not a guarantee of arrival.
+
+Garden controls are separate from character discovery. If an older discovery view reports gardens as unavailable, use the dedicated **Gardens** panel where offered.
+
+## Next steps
+
+- [Manage your character identity](/system-guide/accounts-and-profiles#optional-character-identity)
+- [Understand species compatibility](/system-guide/species-compatibility)

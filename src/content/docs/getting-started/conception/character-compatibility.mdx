@@ -1,17 +1,13 @@
 ---
-title: "Character Compatibility"
+title: "Character compatibility"
 description: "Read the AnE guide to Character Compatibility."
 ---
 
-Species match is determined first.
-
-**Same species** → **100%**\
-**Different species** → **50%**\
-**If either species is a hybrid** → **25%**, unless both characters share the exact same hybrid species, which stays **100%**.
+Your species match uses your inherited composition and shared taxonomy. A species label alone does not establish a fixed match percentage. See [Species compatibility](/system-guide/species-compatibility) for the calculation and [Ancestry and taxonomy](/system-guide/ancestry-and-taxonomy) for worked examples.
 
 ***
 
-### Species Forced
+### Species forced
 
 Species Forced is gained through consecutive days of receiving that species’ semen by copulation or insemination.\
 The required number of days is:
@@ -24,9 +20,9 @@ Completing that full streak results in **100% forced compatibility** with that s
 
 <a id="class--form-compatibility"></a>
 
-### Class and Form Compatibility
+### Class and form compatibility
 
-Class and Form modify the species match using their complexity values.\
+Class and form modify the running score after species overlap, taxonomy, forced compatibility, garden, and partner bonuses, using their complexity values.\
 The compatibility factor uses the lower value divided by the higher value for both Class and Form:
 
 ```text
@@ -35,7 +31,7 @@ The compatibility factor uses the lower value divided by the higher value for bo
 
 ***
 
-#### Class Complexity
+#### Class complexity
 
 * Human — 1.0
 * Demon — 1.2
@@ -44,7 +40,7 @@ The compatibility factor uses the lower value divided by the higher value for bo
 * Synth — 100.0
 * Digital — 500.0
 
-#### Form Complexity
+#### Form complexity
 
 * Human — 1.0
 * Feral — 0.8
@@ -57,28 +53,26 @@ The compatibility factor uses the lower value divided by the higher value for bo
 
 ### Example
 
-Two characters share the same species and both are Feral.\
+Two characters have identical inherited compositions and both are Feral.\
 One has a Human class (1.0) and the other has a Daemon class (1.5).
 
-Base compatibility:
+With no other boosts, their final compatibility is:
 
 ```text
-100 * (1.0 / 1.5) * (0.8 / 0.8) = 66%
+100 * (1.0 / 1.5) * (0.8 / 0.8) = 66.67%
 ```
 
 ***
 
 <a id="breeding-forests--partners"></a>
 
-### Breeding Forests and Partners
+### Breeding forests and partners
 
-Breeding Forests and Partners can each add up to **50% of the remaining incompatibility**.
+Gardens and established partnerships can each close up to **50% of the remaining compatibility gap**, before form and class multipliers apply.
 
-Using the previous example:
+Starting from a 20% score before bonuses, one full bonus gives 60%, and two full bonuses give 80%. With a later class multiplier of `1 / 1.5` and matching forms, that 80% becomes approximately 53.33%.
 
-* Remaining incompatibility: **34%**
-* Partner bonus (100% partner compatibility): **17%**
-* Final compatibility: **83%**
+See [Garden and partner boosts](/system-guide/species-compatibility#9-garden-and-partner-boosts). The older illustration below is retained as a historical reference; use the current calculation above.
 
 <br />
 

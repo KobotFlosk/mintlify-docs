@@ -46,19 +46,20 @@ Architecture, then follow the topic links.
 | [Vitality & Stats](vitality-and-stats.md) | Stat changes, consciousness, death, and species stat budgets. |
 | [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) | Conception, pregnancy, birth, inheritance, and history visibility. |
 | [Species Compatibility](species-compatibility.md) | Inherited species composition and compatibility scoring. |
+| [Ancestry & Taxonomy Worked Guide](species-ancestry-and-taxonomy.md) | Diagrams and worked examples tracing species recipes and family trees into inherited percentages, weighted taxonomy, and compatibility. |
 | [Creating a Species](species-creation.md) | Creation wizard, founding lineage, web attributes, and owner editing. |
 | [Form Shapeshifters](form-shapeshifters.md) | Apparent form versus real biology. |
-| [Abilities](abilities.md) | Shift and Bite eligibility, grants, and effects. |
+| [Abilities](abilities.md) | Shift and Bite eligibility, grant deployment, effects, and regression coverage. |
 | [Attachable Items & Devices](attachable-items-and-devices.md) | Consumables, attachable plugins, and timed effects. |
-| [Accounts & Profiles](account-and-profiles.md) | Active characters, relationships, trust, and roles. |
+| [Accounts & Profiles](account-and-profiles.md) | Active characters, optional identity editing and visibility, relationships, trust, roles, and explicit tester eligibility. |
 | [Packs & Groups](packs-and-groups.md) | Group hierarchy, invitations, and birth inheritance. |
-| [Search & Discovery](search-and-discovery.md) | Character searches and community locations. |
+| [Search & Discovery](search-and-discovery.md) | Saved identity, individual ancestry versus species definitions, compatibility explanations, and garden registration/management. |
 | [The AI Role-Play Companion](ai-companion.md) | Narration, tools, choices, memory, and resilience. |
 | [Third-Party Integrations & Product Compatibility](third-party-integrations.md) | Optional service bridges and body add-on compatibility. |
 | [The Web Portal](web-portal.md) | One-off hand-offs for linking outside services. |
-| [The Companion Web Dashboard](companion-dashboard.md) | Tester entry, media controls, current location, character panels, and per-partner prompts. |
+| [The Companion Web Dashboard](companion-dashboard.md) | Signed entry and onboarding, identity and biology panels, discovery routing, outfit access, media controls, and per-partner prompts. |
 | [The Store & Rewards Economy](store-and-rewards.md) | In-world and browser purchases, Credits, rewards, and delivery/retry boundaries. |
-| [RLV-Driven Character & Outfit Control](rlv-and-control.md) | Automated outfits, bodies, and attachment protection. |
+| [RLV-Driven Character & Outfit Control](rlv-and-control.md) | Appearance automation, browser outfit/garment contracts, legacy controls, and attachment protection. |
 | [Command-Line Interaction](command-line-tooling.md) | Chat shortcuts, dispatch, and help. |
 | [Help & Support Menu](help-and-support.md) | Community support, manuals, updates, and language options. |
 
@@ -75,4 +76,5 @@ warrant it.
 
 - [Coverage record](DOCS_STATE.md) — the commit each pass covered, changelog,
   and deferred work.
+- [Database cloning](database-cloning.md) — replace test from production or local from test.
 - [This index](README.md) — document ownership and audience navigation.

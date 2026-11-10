@@ -199,8 +199,8 @@ some subsystem ──▶ AccountRewardsHelper::tryReward('event.name', ...)
 from the current session, not from a client-supplied account or character id.
 `AbstractAneState::on_initialized()` subscribes it in all states, and
 `__unserialize()` adds it to restored sessions. An active character and tester
-role are not checked by this helper; tester gating controls the dashboard
-opening route, not this API's authorization.
+role are not checked by this helper. Dashboard entry is available to every
+account and is not a substitute for this API's account-scoped authorization.
 
 | Request | Inputs and behavior |
 |---|---|

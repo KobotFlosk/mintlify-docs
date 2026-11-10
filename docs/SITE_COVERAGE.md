@@ -1,53 +1,133 @@
 # Published documentation coverage
 
-Reviewed on October 15, 2026 against all 23 Markdown files supplied in
-`/Volumes/LTS/docs`: 20 existing feature guides, one new technical abilities
-reference, and two maintenance documents. The unchanged source coverage record
-still reports September 26, 2026 and backend commit
-`74d1a6116c395ca0a4975c981447eee9d081e0e3`; it does not identify the revision
-behind the newly supplied changes.
-This maps their end-user sections to the Starlight site. Developer implementation
-sections remain engineering references in this folder, as specified in `README.md`.
-They are not missing player-facing pages. `README.md`, `DOCS_STATE.md`, and this
-coverage report are repository maintenance documents, not site content.
+Reviewed on November 9, 2026 against all 24 Markdown files in
+`/Volumes/Shared_Drive/docs`. All supplied files are preserved byte-for-byte in
+`docs/`. The supplied `DOCS_STATE.md` dates its pass November 10, 2026 and records
+covered backend revision `6401199269d330643a0eb9b29b30cff4272b418d`, compared with
+baseline `dce81e73b31f74d193867acbaff2b9c5d99cacf2`. These are source metadata,
+not an independent verification of that backend checkout or deployed behavior.
+
+Compared with the previous repository snapshot:
+
+- 11 existing files changed: `DOCS_STATE.md`, `README.md`, `abilities.md`,
+  `account-and-profiles.md`, `architecture.md`, `companion-dashboard.md`,
+  `rlv-and-control.md`, `search-and-discovery.md`, `species-compatibility.md`,
+  `species-creation.md`, and `store-and-rewards.md`.
+- Two files are new here: `species-ancestry-and-taxonomy.md` and
+  `database-cloning.md`. The supplied changelog's “Added / renamed: none” refers
+  to its own backend baseline, not to this site's older snapshot.
+- The other 11 supplied files are unchanged.
+- `species-abilities.md` was removed from the source set. Its schema, operations,
+  and regression details were consolidated into `abilities.md`; its public
+  Abilities route and feature remain available. No public page was removed.
+- `system-design.md` remains a project-local compatibility link to architecture.
+  This coverage report also remains project-local.
+
+## Topic mapping
+
+Only player guidance is published. Developer APIs, migrations, locking and
+transaction internals, signed demo context, semantic button metadata, database
+cloning, deployment commands, and regression details remain in the source
+references. The index and coverage records are maintenance documents.
 
 | Source | Published page | Review result |
 | --- | --- | --- |
-| [Architecture](architecture.md) | [System overview](../src/content/docs/system-guide/system-overview.mdx) | Updated the supported-dashboard scope and persistence limits; retained the existing published route. |
-| [Accounts and profiles](account-and-profiles.md) | [Accounts and profiles](../src/content/docs/system-guide/accounts-and-profiles.mdx) | Added profession titles, blocking, and relationship links to breeding auto-acceptance rules. |
-| [Interaction lifecycle](interaction-lifecycle.md) | [Interaction and role-play lifecycle](../src/content/docs/system-guide/interaction-and-roleplay.mdx) | Added browser auto-acceptance notices and scene choices; corrected Stop, FINISH, Resist, and initiator-only emergency-stop behavior, including other engagements. |
-| [Reproduction and genetics](reproduction-and-genetics.md) | [Reproduction and genetics lifecycle](../src/content/docs/system-guide/reproduction-and-genetics.mdx) | Added history visibility by character type, six-calendar-month limits, pregnancy visibility from 10%, and stale-view recovery. Existing birth and inheritance coverage retained. |
-| [Species compatibility](species-compatibility.md) | [Species compatibility](../src/content/docs/system-guide/species-compatibility.mdx) | Lineage, shared-slice calculation, examples, and FAQ covered. |
-| [Species creation](species-creation.md) | [Creating a species](../src/content/docs/system-guide/creating-a-species.mdx) | Added owner editing of shared base species, impact acknowledgement, stale edits, and the distinction from character overrides. Existing wizard and stat-budget coverage retained. |
-| [Abilities](abilities.md) | [Abilities](../src/content/docs/system-guide/abilities.mdx) | Added Transmute and Bite, eligibility, active-form behavior, target range, effects, and stale-target handling. Updated the older Character abilities page to point here. |
-| [Species abilities](species-abilities.md) | [Abilities](../src/content/docs/system-guide/abilities.mdx) | New technical reference retained in the project. Expanded the existing player guide with exact-species precedence, eligibility rules, target freshness/range, and precise Bite effects. |
-| [Form shapeshifters](form-shapeshifters.md) | [Form shapeshifters](../src/content/docs/system-guide/form-shapeshifters.mdx) | Appearance/biology distinction, form acquisition, fertility, and lineage covered; linked ability eligibility and connected outfits. |
-| [Items and devices](attachable-items-and-devices.md) | [Attachable items and devices](../src/content/docs/system-guide/attachable-items-and-devices.mdx) | Added connected outfit profiles, alternative appearances, switching controls, and coverage/accessibility behavior; removed unavailable spunk extractor and Ovipositor examples. |
-| [AI companion](ai-companion.md) | [AI role-play companion](../src/content/docs/system-guide/ai-companion.mdx) | Added Retry choices and touch-to-retry behavior while preserving scene progress. |
-| [Companion dashboard](companion-dashboard.md) | [Companion web dashboard](../src/content/docs/system-guide/companion-dashboard.mdx) | Updated Web/Start UI access for every account and automatic onboarding for accounts without profiles; retained the separate Tree view and existing panel guidance. |
-| [Web portal](web-portal.md) | [Web portal](../src/content/docs/system-guide/web-portal.mdx) | Aligned linking instructions with the source and removed unsupported credential-encryption assurances. |
-| [Search and discovery](search-and-discovery.md) | [Search and discovery](../src/content/docs/system-guide/search-and-discovery.mdx) | Scopes, results, blocking, and garden registration covered. |
-| [Packs and groups](packs-and-groups.md) | [Packs](../src/content/docs/getting-started/packs.mdx) | Replaced conflicting legacy rules: one Alpha, nine total members, first member Beta, succession, dissolution, and birth inheritance. |
-| [Store and rewards](store-and-rewards.md) | [AnE Store](../src/content/docs/getting-started/operation/ane-store.mdx) | Added browser purchases, changed-price handling, reward clearing without payout, and interrupted-purchase recovery. Marked old price tables as reference and linked the legacy route to the current guide. |
-| [RLV and control](rlv-and-control.md) | [RLV outfits](../src/content/docs/optional-add-ons/rlv-outfits.mdx) | Added optional setup, Characters mode, scene attachment protection, and pregnancy size changes. |
-| [Chat commands](command-line-tooling.md) | [Command Line](../src/content/docs/getting-started/command-line.mdx) | Added usage context, topic help, balance/OOC shortcuts, and admin access distinction. |
-| [Third-party integrations](third-party-integrations.md) | [Third-party integrations and product compatibility](../src/content/docs/system-guide/third-party-integrations.mdx) | Added dashboard attachment management and manual Override instructions. |
-| [Help and support](help-and-support.md) | [Help and support](../src/content/docs/overview/help-and-support.mdx) | Updated Changes to cover six months of history with pagination, full entry details, and a short reference when a summary is unavailable. |
-| [Vitality and stats](vitality-and-stats.md) | [Vitality and stats](../src/content/docs/system-guide/vitality-and-stats.mdx) | Vitals and recovery covered; linked Bite effects, stat-based auto-acceptance, and new-species stat budgets. |
+| [Architecture](architecture.md) | [System overview](../src/content/docs/system-guide/system-overview.mdx) | Added identity, ancestry, taxonomy distinctions, current dashboard entry, and dedicated garden routing. |
+| [Accounts and profiles](account-and-profiles.md) | [Accounts and profiles](../src/content/docs/system-guide/accounts-and-profiles.mdx) | Added optional identity, shared visibility, atomic rejection and stale-save guidance; corrected blocking scope. |
+| [Abilities](abilities.md) | [Abilities](../src/content/docs/system-guide/abilities.mdx) | Retained exact eligibility and percentage-point Bite effects; added unavailable dashboard entries and recent owner-location requirements. |
+| [Search and discovery](search-and-discovery.md) | [Search and discovery](../src/content/docs/system-guide/search-and-discovery.mdx) | Separated recipes, personal ancestry, uncertain definition matches, and pair-specific contributions; corrected garden ownership, area, privacy, arrival, and browser controls. |
+| [Companion dashboard](companion-dashboard.md) | [Companion dashboard](../src/content/docs/system-guide/companion-dashboard.mdx) | Removed advertised Tree access; added identity, fluid/compartment summaries, taxonomy, gardens, and outfits with links to their owning guides. |
+| [Species compatibility](species-compatibility.md) | [Species compatibility](../src/content/docs/system-guide/species-compatibility.mdx) | Added relative weights, complete-ancestry birth matching, taxonomy, capped garden/partner boosts, and affinity/arousal; distinguished overlap from final match. |
+| [Species creation](species-creation.md) | [Creating a species](../src/content/docs/system-guide/creating-a-species.mdx) | Replaced remainder-based percentages with independent weights; added nested members, birth rules, and immutable saved taxonomy. Retained stat-budget guidance. |
+| [Ancestry and taxonomy](species-ancestry-and-taxonomy.md) | [Ancestry and taxonomy](../src/content/docs/system-guide/ancestry-and-taxonomy.mdx) | New player guide in System Guide navigation; preserves worked inheritance, taxonomy, and scoring tables. All seven source Mermaid flowcharts render as static, theme-aware SVGs alongside the worked tables. The renderer reads the end-user diagrams directly from the supplied reference; long labels wrap without changing their content. Charts support horizontal scrolling and keyboard focus on narrow screens, with accessible text descriptions. |
+| [RLV and control](rlv-and-control.md) | [RLV outfits](../src/content/docs/optional-add-ons/rlv-outfits.mdx) | Added browser outfit controls, shared underwear, bulk-action scope, stale choices, and command-dispatch versus actual wear state. |
+| [Store and rewards](store-and-rewards.md) | [AnE Store](../src/content/docs/getting-started/operation/ane-store.mdx) | Changed source text is developer-only; existing player guidance already reflects access for every account. |
+| [Database cloning](database-cloning.md) | None | New developer-only operations reference; intentionally excluded from public navigation and search. |
+| [Reproduction and genetics](reproduction-and-genetics.md) | [Reproduction and genetics](../src/content/docs/system-guide/reproduction-and-genetics.mdx) | Source unchanged; linked the newer complete-ancestry birth selection rules from the species guides. |
+| [Interaction lifecycle](interaction-lifecycle.md) | [Interaction and role-play](../src/content/docs/system-guide/interaction-and-roleplay.mdx) | Source unchanged; existing coverage retained. |
+| [Form shapeshifters](form-shapeshifters.md) | [Form shapeshifters](../src/content/docs/system-guide/form-shapeshifters.mdx) | Source unchanged; existing coverage retained. |
+| [Items and devices](attachable-items-and-devices.md) | [Attachable items and devices](../src/content/docs/system-guide/attachable-items-and-devices.mdx) | Source unchanged; existing coverage retained. |
+| [AI companion](ai-companion.md) | [AI companion](../src/content/docs/system-guide/ai-companion.mdx) | Source unchanged; existing coverage retained. |
+| [Web portal](web-portal.md) | [Web portal](../src/content/docs/system-guide/web-portal.mdx) | Source unchanged; existing coverage retained. |
+| [Packs and groups](packs-and-groups.md) | [Packs](../src/content/docs/getting-started/packs.mdx) | Source unchanged; existing coverage retained. |
+| [Chat commands](command-line-tooling.md) | [Command line](../src/content/docs/getting-started/command-line.mdx) | Source unchanged; existing coverage retained. |
+| [Third-party integrations](third-party-integrations.md) | [Third-party integrations](../src/content/docs/system-guide/third-party-integrations.mdx) | Source unchanged; existing coverage retained. |
+| [Help and support](help-and-support.md) | [Help and support](../src/content/docs/overview/help-and-support.mdx) | Source unchanged; existing six-month history guidance retained. |
+| [Vitality and stats](vitality-and-stats.md) | [Vitality and stats](../src/content/docs/system-guide/vitality-and-stats.mdx) | Source unchanged; existing coverage retained. |
 
-## Scope of verification
+## Cross-page consistency and source conflicts
 
-This review checks coverage against the repository sources, not against a running
-AnE backend. Existing price tables and older historical pages are not a fresh
-verification of current game behavior. The primary Packs guide now follows the
-source of truth instead of its contradictory legacy text.
+Updated the older operation species-compatibility page and conception
+character-compatibility page. They incorrectly limited hybrids to their own
+species or assigned fixed 100/50/25 scores. Corrected the conception-probability
+page's extra hybrid-selection roll and the old example applying bonuses after
+form/class penalties. Retained the routes, anchors, and historical illustrations,
+with explanatory labels where an illustration may reflect older scoring.
 
-Page and section titles, sidebar labels, and linked document names use **and**
-instead of an ampersand. Existing page routes remain unchanged. Compatibility
-anchors preserve the old section links where a heading change alters its slug.
+The species creation source still has an older paragraph allowing taxonomy
+changes/clearing after creation. Its newer introductory rule and dedicated
+one-time-definition section, reinforced by the compatibility guide, explicitly
+prohibit changing saved classifications. Published guidance follows that newer
+contract. The source copies remain unchanged. Taxonomy suggestion limits and
+failure behavior also differ between developer sections; those internals are not
+published and still need upstream reconciliation.
 
-Run `npm run validate` after content or navigation updates to check the build,
-local links and anchors, and all original migrated routes.
+The taxonomy overview source describes inherited branch percentages in its
+player section but says the overview reports species classification, rather
+than individual genealogy, in its developer contract. Published overview wording
+uses species recipe percentages; individual ancestry is explained separately
+under discovery and the worked guide.
+
+Backend capability does not verify a deployed frontend. Conditional dashboard
+wording is retained. The source's deferred topics and privacy questions remain
+in `DOCS_STATE.md`; this pass does not claim a complete backend or live-game audit.
+
+## November 9 verification
+
+- All 24 supplied Markdown files match their local copies byte-for-byte.
+- Source links to sibling Markdown documents resolve; backend code/DDL links
+  intentionally point outside this documentation-only checkout.
+- `npm run validate` passed: zero type errors, warnings, or hints; 78 HTML pages;
+  6,490 local links/assets checked; all 69 retained migrated routes exist.
+- Compared every rendered page and ID with a fresh pre-edit build: no missing
+  pages or anchors. The ancestry guide is the only new public route.
+- Ran `npm run dev`; the updated species page returned HTTP 200 and contained
+  the revised relative-weight guidance.
+- Ran `npm run preview`; the new ancestry page returned HTTP 200. Queried the
+  HTTP-served Pagefind index for `Aster`, `relative weights`, `sexuality`,
+  `arrival point`, `underwear`, and `percentage points`; all found their expected
+  updated guides.
+- Visual browser inspection was unavailable: the dedicated browser host could
+  not connect, and automatic approval review rejected access to existing Chrome
+  windows because unrelated private tabs could be exposed. HTTP and search
+  checks do not establish visual layout or search-dialog behavior.
+- The sandboxed build crashed with macOS `SecItemCopyMatching failed -50`;
+  the baseline build and validation succeeded outside the sandbox.
+- No commit, push, deployment, or live-game verification was performed.
+
+## Flowchart restoration
+
+Restored all seven player-facing Mermaid diagrams to the ancestry guide after
+reviewing the supplied taxonomy screenshot. The new build-time component reads
+the original source blocks directly and emits inline SVG without client-side
+JavaScript or external font requests. Theme colors follow Starlight, long labels
+wrap, and wide charts scroll within a keyboard-accessible container. Each chart
+has a caption and a descriptive text alternative. SVG marker IDs are unique.
+The scoring diagram routes its direct overlap-to-base arrow above the other
+nodes so it does not cross the taxonomy box.
+
+Verification: all 51 source nodes and 47 directed edges, including their labels,
+are preserved across seven rendered charts. Light and dark SVG rasterizations
+were inspected. The dev and production previews serve all seven charts, and
+production Pagefind still returns the updated guide. `npm run validate` passes
+with 78 HTML pages, 6,490 checked local links/assets, and all 69 retained routes.
+The dedicated browser connection remains unavailable, so full-page browser
+layout and live theme switching were not visually verified.
+
+## Historical synchronization records
+
+The records below describe earlier snapshots and their verification results.
+They do not override the current mapping above.
 
 ## September 16 synchronization
 

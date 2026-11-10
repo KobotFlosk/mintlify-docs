@@ -60,6 +60,9 @@ export default defineConfig({
         "slug": "system-guide/species-compatibility"
       },
       {
+        "slug": "system-guide/ancestry-and-taxonomy"
+      },
+      {
         "slug": "system-guide/creating-a-species"
       },
       {

@@ -1,6 +1,6 @@
 ---
 audience: mixed
-summary: Browser access to character details, media controls, the Store, and per-partner scene choices.
+summary: Browser access to character identity and biology, discovery, outfits, the Store, and per-partner scene choices.
 ---
 
 # The Companion Web Dashboard
@@ -15,14 +15,14 @@ from the web portal, which only helps you link an outside service.
 
 ### How you open it
 
-The **Web** button opens the test dashboard if you have been granted tester
-access; otherwise it opens the published help. Pressing it again closes the
-in-world browser. The **Tree** option on a character's profile is a separate
-way to open that character's web view.
+The **Web** button opens the dashboard for every account. Pressing it again closes the
+in-world browser.
 
-Testers can also choose **UI** from the **Start** menu before activating a
+You can also choose **UI** from the **Start** menu before activating a
 character. That option opens the dashboard again rather than toggling it closed.
-It disappears if tester access is removed.
+When the companion initializes, accounts with no characters automatically open
+the dashboard for onboarding. Having existing characters but none active does
+not trigger that automatic opening.
 
 If an opening link has expired, open the view again from the companion.
 
@@ -42,7 +42,9 @@ and allow it to reconnect before trying again.
   chat).
 - **Character sheet** — your name, species, gender, form, class, birthplace, and
   parents, plus your core stats (vitality, arousal, stamina, essence, strength,
-  defense), fertility/pregnancy flags, and body growth.
+  defense), fertility/pregnancy flags, and body growth. Where offered, edit your
+  optional sexuality and character picture; these can be shared in discovery
+  results. See [Optional character identity](account-and-profiles.md#optional-character-identity).
 - **Abilities** — any special ability your character currently has access to
   (for example, a shapeshifter's Shift ability, or Bite), with the same
   controls as the in-world menu.
@@ -50,7 +52,9 @@ and allow it to reconnect before trying again.
   pregnancies, and histories. You can remove an existing trust or dissolve a
   partnership; dissolving it removes the relationship for both characters.
   Nearby partnership invitations and character-specific species overrides
-  still use the in-world menus.
+  still use the in-world menus. The profile view also supports your character's
+  own fluid characteristics and the contents and occupied space of its
+  reproductive and digestive compartments, without identifying fluid donors.
 - **Genetics, pregnancies & births** — visibility depends on your character;
   see [Character histories](reproduction-and-genetics.md#viewing-character-histories).
   Pregnancy progress appears once development reaches 10%, with an estimated
@@ -68,8 +72,12 @@ and allow it to reconnect before trying again.
   editable directly from the page.
 - **Search & discovery** — other active characters nearby, online, or
   currently fertile, each with a compatibility percentage against your active
-  character, plus a "Breed" button that sends the same breeding request the
-  in-world Search menu would send.
+  character when available. Saved identity and inherited ancestry can appear
+  alongside the species name; see [Search & Discovery](search-and-discovery.md).
+  Nearby eligible results can offer a "Breed" button that sends the same
+  request as the in-world Search menu.
+- **Gardens** — where offered, browse registered community locations and manage
+  your own listings; see [Registering a Garden or Forest](search-and-discovery.md#registering-a-garden-or-forest).
 - **World presence** — a snapshot of overall community activity: how many
   characters are online, the busiest regions, and the most common species.
 - **Current location** — your latest reported region, separate from your
@@ -77,6 +85,11 @@ and allow it to reconnect before trying again.
 - **Store** — supported browser controls list products, spend Credits, claim
   rewards, and clear unclaimed rewards; see
   [Using the browser Store](store-and-rewards.md#using-the-browser-store).
+- **Outfits** — where offered, switch outfits and put on or remove clothing
+  pieces. Availability depends on your active character and appearance support;
+  FullArray-managed appearances use their own controls. See
+  [Using browser outfit controls](rlv-and-control.md#using-browser-outfit-controls)
+  for bulk-control effects and refresh guidance.
 
 ### Answering scene choices
 
@@ -140,9 +153,17 @@ describe supported interactions, not a verified inventory of deployed panels.
 - **`RunningState::touch_root()`** (`src/classes/states/RunningState.php`,
   `button09`) closes an already-open media browser; otherwise, it opens
   the UI through `WebUiHelper::open()` (`src/classes/helpers/WebUiHelper.php`)
-  for every account. The URL uses `UI_PROTOCOL` and `UI_HOST`, with a `test.`
-  host prefix on test domains, and a signed token containing the account's
-  `uuid` and `name`. The default expiry is ten minutes.
+  for every account, with a signed token containing the account's `uuid` and
+  `name`, and boolean `demo`. `AbstractAneState::isDemo()` derives the latter
+  strictly from the HUD version parameter `mode=demo`, not an account flag.
+  The signed claim is launch context; this repository does not verify how the
+  separate frontend consumes it. The default expiry is ten minutes.
+  `WebUiHelper::getHost()` reads `UI_HOST` (default `localhost:3000`) and
+  prefixes `test.` when `DomainHelper::isTest()` is true; `getProtocol()` reads
+  `UI_PROTOCOL` (default `https`). Both settings disable query overrides.
+  The resulting destination is `{protocol}://{host}/?token=<jwt>`, not the
+  `HTTPS_ANEHUD_TEST_UI` constant. A non-test domain uses the configured host
+  without a test prefix; tester roles do not select the destination.
 - **`InitialState`** (`src/classes/states/InitialState.php`) adds `ACTION_UI`
   to the Start dialog for every account. Selection opens the same signed UI
   regardless of tester role or administrator status. This path requires no
@@ -150,11 +171,17 @@ describe supported interactions, not a verified inventory of deployed panels.
   During system initialization, accounts with no profiles automatically open
   the same signed Web UI for onboarding. Accounts with existing profiles do not
   auto-open it, even if no profile is currently active.
-- **`ProfileDialog::menu_profile_dialog()`** (`PROFILE_TREE` button) mints a
+- **Legacy Tree handler:** `ProfileDialog::buildButtons()` no longer offers the
+  Tree button. The retained `ProfileDialog::menu_profile_dialog()`
+  `PROFILE_TREE` branch mints a
   short-lived signed token via `TokenHelper::createUrlToken()` carrying
   `target` (the profile id being viewed) and `viewer` (the caller's owner
   key), and opens `{ui.protocol}://{ui.host}/?token=<jwt>` in the in-world
   media browser (`MediaModule::openMediaBrowserAndDialog()`).
+  This path still reads `ui.protocol` and `ui.host` directly and does not call
+  `WebUiHelper` or its test-host selection. Whether both entry paths should be
+  unified or the unused branch removed is a maintainer decision; it is not a
+  currently advertised entry point.
 - **`TokenHelper`** (`src/classes/helpers/TokenHelper.php`) centralises JWT
   creation (`firebase/php-jwt`, `HS256`, signed with the `jwt.secret`
   application setting). `createToken()`/`createUrlToken()` always stamp
@@ -175,13 +202,12 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
    resolves `/api?class=ApiHelper&segments=state,account,profile,...` by
    splitting the `segments` query param and fanning each name out to a fixed
    helper (`state`, `account`, `headers`, `profile`, `species`, `plugins`,
-   `genetics`, `fluids`, `stats`, `attachments`, `pregnancies`, `births`,
+   `outfits`, `genetics`, `fluids`, `stats`, `attachments`, `pregnancies`, `births`,
    `token`). Requested `state`/`account`/`headers` segments resolve in every
    state; other requested segments return null in `InitialState`.
    This is a state gate, not a substitute for each helper's ownership checks.
-   An `outfits` segment name is also recognised
-   but currently just returns an empty payload — it's a reserved placeholder,
-   not a working panel yet.
+   The `outfits` segment delegates to `OutfitsHelper` for both reads and
+   mutations; it is no longer an empty placeholder.
 2. **Direct per-class endpoints** — most dashboard panels are their own
    top-level `ApiSubscriber`, resolved by short class name
    (`/api?class=<ClassName>`), for example:
@@ -230,7 +256,9 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
    - `ItemHelper` — the Items panel; wraps
      `ItemService::discoverItemObjects(notifyAgent: false, clearCache: true)`,
      the same scan as the in-world `touch → Items` button, with
-     `notifyAgent` suppressed so it doesn't spam local chat.
+     `notifyAgent` suppressed so it doesn't spam local chat. It also exposes
+     item-specific details and actions through `WebItem` implementations;
+     the full action-by-action browser contract remains a documentation gap.
    - `SettingHelper` — the account Settings page; collapses `SettingsDialog`'s
      blue-dialog tree into a schema-driven surface. `GET ?group=<name>`
      returns the group's field schema (label/description/type/bounds/default)
@@ -244,17 +272,17 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
      (AI role-play narration limits), `privacy` (location broadcasting),
      `rlv` (movement/auto-strip/detachable/character-switching/relay
      restrictions), `access` (public access).
-   - `DiscoveryHelper` — the Search panel; `/api?class=DiscoveryHelper&scope=<scope>`
-     collapses the in-world Search dialog tree (Region/Global/Online/
-     Garden/Fertile — see [Search & Discovery](search-and-discovery.md)) into
-     one scoped endpoint. `region`/`online`/`fertile`
-     return profile rows (name, species, gender, region, fertility, and
-     lineage-aware breeding compatibility against the caller's active
-     character via `SpeciesAffinityHelper`); `region` additionally carries
-     proximity/`canCopulate` (whether a breeding request can be sent, mirroring
-     `CopulateModule`'s in-world range gate); `global` returns busiest-region
-     counts; `garden` returns an explicit "unavailable on the web" marker
-     because it needs an in-world parcel/sensor scan.
+   - `DiscoveryHelper` — scoped character rows with saved identity, species
+     definitions, individual ancestry, and canonical pair compatibility;
+     `global` returns region activity. See
+     [Web discovery rows](search-and-discovery.md#web-discovery-rows) for field
+     contracts, precision, nulls, proximity, and privacy differences from HUD
+     dialogs. Its legacy `garden` scope remains unavailable.
+   - `GardenHelper` — a separate, working directory and management surface;
+     clients must use it instead of the legacy discovery garden scope. It
+     shares live parcel registration checks with the HUD and restores its API
+     subscription for existing sessions. See
+     [Browser garden requests](search-and-discovery.md#browser-garden-requests).
    - `CopulateModule::on_api()` — `POST /api?class=CopulateModule&target=<agentKey>`:
      the Search panel's "Breed" button. Validates the target resolves to a
      real, currently-active character within `Constants::COPULATION_RANGE`,
@@ -277,10 +305,12 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
    - `CopulationInteractionHelper::on_api()` — explicit initiator-only
      emergency stop for one existing engagement; see
      [Emergency-stop requests](interaction-lifecycle.md#emergency-stop-requests).
-   - `RlvSharedFoldersModule` — a read-only listing
-     (`list=folders|outfits|garments|all`) of the character's shared folders,
-     current outfit, and worn/unworn garments, each flagged active/inactive;
-     see [RLV-Driven Character & Outfit Control](rlv-and-control.md).
+   - `OutfitsHelper` — owner-scoped outfit and garment reads and explicit
+     clothing actions, with capability, stale-view, and inventory-name checks.
+     The older `RlvSharedFoldersModule` API remains separate and supports
+     mutations as well as listings; it does not inherit these new guards.
+     See [Browser outfit requests](rlv-and-control.md#browser-outfit-requests)
+     and [Legacy API and dialogs](rlv-and-control.md#chat-commands--dialogs).
 
 ### Live scene mirroring
 
@@ -318,6 +348,8 @@ checks owner routing and preservation of the current prompt. Web UI entry and
 location behavior are covered by
 `tests/e2e/cases/WebButtonAllAccountsReceiveSignedTokenTest.php` and
 `tests/e2e/cases/StatusRegionFollowsHeaderPreservesBirthRegionTest.php`.
+`tests/integration/helpers/WebUiHelperTest.php` checks configured/default host
+and protocol selection with and without a test-domain prefix.
 
 > **Restored-session boundary:** `MediaHelper` and `DialogInteractionHelper`
 > are subscribed in `AbstractAneState::on_initialized()` but are not explicitly
@@ -343,16 +375,32 @@ return errors; unexpected failures are logged with a generic client message.
 | `trusts` | Current trusted profiles and removal actions. | `revoke-trust`, targeting an existing trusted profile. |
 | `partners` | Living current partners with relationship date. | `dissolve-partnership`, targeting a current relation; both directions are removed transactionally. |
 | `family` | Recorded parents, visible births, children, siblings sharing an actual parent, and adoption relations. | None. |
-| `species` | Base identity, effective reproductive specifics, separate base specifics when overridden, and an owner-only settings panel. | `save-species-settings`; see [Species creation](species-creation.md#editing-base-species-settings). |
+| `species` | Base identity, effective reproductive specifics, separate base specifics when overridden, taxonomy of the selected species definition, and eligible editing/definition panels. | `save-species-settings`, `define-species-taxonomy`, `define-species-composition`; each has its own ownership/eligibility and stale-view checks. See [Species creation](species-creation.md) and [Species taxonomy](species-compatibility.md#species-taxonomy-overview-api). |
 | `pregnancies` | Only pregnancies at least 10% developed, sorted by expected delivery, with bounded progress, UTC estimate, remaining days, and developing/labor/delivery status. Hidden early pregnancies are excluded from the count too. | None. |
 | `change` | Race and gender summary plus directions back to the HUD. | None. |
 | `genetics`, `births` | Delegates to the read-only history helpers. | None; see [History APIs](reproduction-and-genetics.md#history-api-visibility). |
-| `profile` | No GET panel in this helper. | `switch-character`, only in `RunningState`; transactionally leaves the current profile and checks arrival in `InitialState`. |
+| `profile` | Optional identity, personal fluid definitions, and incubator contents/volumes. | `save-profile-identity`; also `switch-character`, only in `RunningState`, which transactionally leaves the current profile and checks arrival in `InitialState`. |
 
-GET panels use `groups` with labelled `details`, `entries`, and action metadata.
+Most GET panels use `groups` with labelled `details`, `entries`, and action metadata.
 Most mutations require a nonempty `targetId` in addition to `characterId`; the
-switch action does not. The frontend must re-read panels after successful
+switch and identity-save actions do not. The frontend must re-read panels after successful
 mutations rather than assuming a submitted action is still available.
+
+The `profile` GET is not a grouped panel: it returns `identity`, `fluids`, and
+`incubators` alongside `characterId` and `section`. Identity validation, versioning,
+and atomic saves are owned by
+[Web profile identity](account-and-profiles.md#web-profile-identity).
+Fluid rows describe existing definitions for the base character's gender
+(type/label, color, scent, flavor, acidity, viscosity, and translucency); missing
+definitions are skipped. This read does not create fluid definitions.
+
+Incubator rows cover uterus when the character has a vagina, colon, and stomach.
+Positive fluid holdings are grouped by fluid type with volume and a representative
+color from the first holding. `otherVolumeMl` includes pregnancy volume and stored
+ova volume; `usedMl` adds those volumes to total fluid volume. Donor identities
+and snapshot identifiers are not returned. This view does not turn the separate
+pregnancy panel's 10% visibility threshold into a general volume filter.
+See `tests/e2e/cases/MyCharacterProfileReportsOwnFluidDefinitionsAndIncubatorsTest.php`.
 
 ### Shared story dialogs
 
@@ -372,7 +420,11 @@ this surface calls the same native story callback as the HUD.
    `CopulateState`, with an existing shared engagement, has a visible snapshot.
 3. Rendering is cached for that presentation, including generated AI choices.
    Its snapshot contains `id`, partner `targetId`, `kind` (`buttons` or `text`),
-   decoded `message`, exact rendered `buttons`, and nullable UTC `expiresAt`.
+   decoded `message`, exact rendered `buttons`, `buttonActions`, and nullable
+   UTC `expiresAt`. Each `buttonActions` entry maps a rendered `label` to its
+   semantic `action` key after translation, numbering, and truncation. Text
+   dialogs have no button-action entries. This metadata supports presentation;
+   POST still submits the exact rendered response label, not the action key.
    Redis open/close events use `Constants::REDIS_INTERACTION_EVENT`, routed to
    the owner; close events identify the handle with `dialogId`.
 4. GET returns `dialog` or null, recovering the session-owned prompt if an

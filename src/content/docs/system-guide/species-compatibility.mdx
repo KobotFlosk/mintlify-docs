@@ -3,7 +3,7 @@ title: "How species compatibility works"
 description: "A plain-language guide to the compatibility percentage you see when checking two characters."
 ---
 
-How the system decides how compatible two characters are, species-wise — the number you see when you check breeding/mating compatibility. No math background needed; if you can read a pie chart, you're set.
+Species compatibility combines inherited species overlap with optional taxonomy. The examples in sections 1–7 explain the overlap component; taxonomy and other breeding modifiers then affect the final match. See [Ancestry and taxonomy](/system-guide/ancestry-and-taxonomy) for a complete worked example.
 
 ## 1. Every character has a "species makeup"
 
@@ -24,7 +24,7 @@ The rule is simple:
 
 > **You are 50% your mother's makeup and 50% your father's makeup.**
 
-Apply that at every generation and it naturally blends down to the original **purebred ancestors** at the top of the tree.
+Apply that at every generation. Founders and parentless characters use their selected species recipe. With only one known parent, scoring uses that parent's composition, but discovery still treats the ancestry as incomplete. Your selected species name adds no extra share to inherited ancestry.
 
 ### A quick example
 
@@ -47,7 +47,7 @@ You'll see species described one of three ways. It just depends on how many ingr
 | **True Hybrid** | exactly 2 species | Fenser = Sergal + Fennec |
 | **Composite Hybrid** | 3 or more species | Fenserbold = Sergal + Fennec + Kobold |
 
-Each ingredient has a **percentage** (its slice of the pie), and the slices always add up to 100%.
+Recipe inputs are **relative weights** from 0 to 100. They do not need to total 100. Compatibility normalizes positive weights into percentages; weights 60 and 60 become equal 50% slices. These weights do not select birth species.
 
 - **Fenser** (true hybrid): **30% Sergal, 70% Fennec**
 - **Fenserbold** (composite): **30% Sergal, 50% Fennec, 20% Kobold**
@@ -56,7 +56,7 @@ Each ingredient has a **percentage** (its slice of the pie), and the slices alwa
 
 To compare two characters, we line up their pie charts and look at the species they **both** have. For each shared species, we count **the smaller of the two slices** — because compatibility is limited by whoever brings *less* of it. Then we add those shared amounts up.
 
-> **Compatibility = add up the overlapping slice of every species you share.**
+> **Lineage overlap = add up the overlapping slice of every species you share.**
 > For each shared species, use the **smaller** of the two percentages.
 
 That's it. The more species you share — and the bigger those shared slices — the higher the score.
@@ -80,7 +80,7 @@ Let's use three characters:
 | Sergal | 30% | 30% | **30%** |
 | Fennec | 70% | 50% | **50%** |
 | Kobold | — | 20% | 0% (A has none) |
-| | | **Total** | **80% compatible** |
+| | | **Total** | **80% overlap** |
 
 They share Sergal **and** Fennec, so the score is high. Kobold doesn't count — only **B** has it.
 
@@ -90,7 +90,7 @@ They share Sergal **and** Fennec, so the score is high. Kobold doesn't count —
 |---------|----|------|------------------|
 | Sergal | 30% | — | 0% (C has none) |
 | Fennec | 70% | 100% | **70%** |
-| | | **Total** | **70% compatible** |
+| | | **Total** | **70% overlap** |
 
 They only overlap on Fennec, so the score is just that overlap: **70%**.
 
@@ -106,12 +106,12 @@ Breed A with C, and separately breed A with B, and you get two new characters:
 | Sergal | 15% | 30% | **15%** |
 | Fennec | 85% | 60% | **60%** |
 | Kobold | — | 10% | 0% |
-| | | **Total** | **75% compatible** |
+| | | **Total** | **75% overlap** |
 
 ## 6. Things that are good to know
 
 - **Same species = perfectly compatible.** Two purebred Fennecs share 100% Fennec → **100%**.
-- **No shared species = zero.** A pure Kobold and a pure Husky have nothing in common → **0%**.
+- **No shared species = zero lineage overlap.** Shared taxonomy and other breeding modifiers can still produce a positive overall match.
 - **It's mutual.** Compatibility of A with B is always the same as B with A.
 - **The score can't go over 100%.** It's a percentage of genuine overlap.
 - **More shared species helps.** Sharing two species (Example 1) beats sharing one (Example 2), even when the headline species is strong — that's the system rewarding a richer common ancestry.
@@ -129,6 +129,117 @@ The system always rewards shared species. In Example 1 the second shared species
 Only the **overlapping** part counts. Being 90% Fennec doesn't help against someone with 0% Fennec — there's nothing to match. Compatibility is about what you have **in common**, not how strong any one trait is on its own.
 
 **Q: Can two very different characters still score high?**
-Only if they genuinely share a lot. Two characters that are mirror opposites (say, 90% Fennec / 10% Sergal vs. 10% Fennec / 90% Sergal) overlap only on the small matching parts — about **20%** — which correctly reads as "not very compatible," even though they technically contain the same two species.
+Yes. Opposite 90/10 and 10/90 mixtures have only **20% lineage overlap**, but taxonomy and other breeding modifiers can raise their final compatibility.
 
-*In one sentence: we turn each character into a pie chart of species, overlap the two pies, and add up the shared slices — bigger and more numerous shared slices mean higher compatibility.*
+
+## Birth species uses the complete ancestry
+
+After conception succeeds, the system collects **every truebred species** in
+both parents' ancestry. Shared species appear once. It then expands registered
+hybrid definitions the same way and looks for an **exact match**.
+
+For example, Wolf/Sergal × Sergal/Dragon gives **Wolf + Sergal + Dragon**. A
+hybrid missing Wolf or adding Fox does not match. A nested recipe can match,
+but exactly one registered definition must fit the complete set. No match,
+multiple matching definitions, or incomplete ancestry keeps the ovum donor's
+species. A surrogate host does not change whose ancestry is used.
+
+Birth matching includes every listed member, even one with weight zero. It
+does not use composition weights as another probability roll. Compatibility
+continues to use the weighted calculations above; its rules are unchanged.
+
+## 8. Optional taxonomy compatibility
+
+A purebred species creator can choose **Taxonomy** on the creation review menu.
+The selector walks from domain through kingdom, phylum, class, order, family,
+genus, and species. At each rank, select an existing entry or create one. A new
+species can remain unclassified. Before creation is saved, its draft can still
+be edited or cleared.
+
+Saved classifications are immutable to users. An existing unclassified purebred
+can be classified once by its owner through **Define taxonomy**, in the web
+Species section or HUD species management. This requires all eight ranks and
+cannot replace or clear any existing classification, including partial legacy
+or dangling stored references. The normal species settings editor excludes
+taxonomy entirely.
+
+Sharing a taxonomy rank adds compatibility even when the species names differ.
+For example, two different species in the same genus get a default 50% taxonomy
+score. The closest shared rank wins; broader ranks are not added together.
+This score fills part of the gap left by lineage overlap: 50% lineage overlap
+and 50% taxonomy give a 75% base score. The usual breeding modifiers still apply.
+Leaving taxonomy unset preserves the existing lineage-based calculation.
+
+True hybrids and composition species have no taxonomy definition of their own.
+Their taxonomy compatibility comes from the classifications of their member
+species, following nested compositions and their weights. For example, a
+50% fox / 50% unclassified composition compared with a canid that shares the
+fox's family gets `50% × 25% = 12.5%` taxonomy compatibility. The unclassified
+half contributes zero; it does not increase the fox's share.
+
+For a character with parents, these taxonomy weights follow the character's
+inherited makeup, including grandparents and earlier generations. The selected
+species supplies a founding or parentless character's recipe; it does not add an
+extra share on top of inherited ancestry. For example, a child of a pure fox and
+a 60% fox / 40% wolf parent is 80% fox / 20% wolf for both species overlap and
+taxonomy comparisons, whatever species name the child carries. Taxonomy measures
+how related those ingredients are; it does not create additional ancestry.
+
+The web **Species** section displays each defined rank and how many user
+profiles share it. Counts include your current character, inactive characters,
+and deceased characters, across all accounts; system progenitors and ownerless
+profiles are excluded. A count includes descendants of that rank. A hybrid
+profile counts once when any positive-weight member shares the classification,
+even if several of its members share it. Counts are whole profiles, not weighted
+population estimates, and overlapping rows must not be added together.
+
+For hybrids, the species view lists the purebred source branches and their recipe
+percentages, including nested compositions. For your individual inherited makeup,
+use the ancestry summary in discovery. Unclassified or cyclic shares remain
+unclassified. The separate rank compatibility percentages describe the closest
+shared rank rule; they are not added to the population counts or to each other.
+
+## 9. Garden and partner boosts
+
+Garden activity and an established partnership can each close **up to half of
+the remaining compatibility gap**. A missing bonus adds nothing. Increasing a
+bonus helps until its 50% cap, and the two bonuses stack with diminishing returns.
+The default partner bonus grows over 14 days to its full 50%; the garden bonus
+uses the garden's share of active HUD sessions, capped at 50% when scoring.
+
+| Base after lineage, taxonomy, and forced compatibility | No bonuses | One full bonus | Both full bonuses |
+|---|---:|---:|---:|
+| 0% | 0% | 50% | 75% |
+| 20% | 20% | 60% | 80% |
+| 50% | 50% | 75% | 87.5% |
+
+These examples assume matching form and class. Form and class differences still
+reduce the result after bonuses. This allows bonuses to help even unrelated
+species without making a garden alone guarantee conception.
+
+Character compatibility compares the two characters. Conception checks the
+actual ovum, which can belong to a different donor: its donor supplies the
+species inputs, its stored form and class supply the biological traits, and its
+current host supplies garden and partner bonuses. A compatible host does not
+make every ovum they carry equally compatible with the other character.
+
+## 10. Species affinity and arousal
+
+Species **affinity** uses the same inherited species overlap and taxonomy as
+Matching, before garden/forest, partnership, forced compatibility, form, or
+class modifiers. Taxonomy still includes biological class as a rank; the
+excluded class modifier refers to character classes such as Living or Deity.
+
+Looking toward a nearby character with compatible breeding organs can raise
+arousal when affinity is **greater than 50%**. Each affinity percentage point
+above 50% permits one arousal percentage point: 51% affinity permits 1%
+arousal, 75% permits 25%, and 100% permits the maximum 50%. Affinity increases
+arousal by up to five percentage points per HUD ping until that limit. It does
+not lower arousal already above the limit or stack limits across nearby users.
+The strongest eligible affinity applies, and the arousal message names the
+character and species affinity as the reason. Gender interests are not applied.
+
+## Next steps
+
+- [Work through ancestry and taxonomy](/system-guide/ancestry-and-taxonomy)
+- [Create a species](/system-guide/creating-a-species)

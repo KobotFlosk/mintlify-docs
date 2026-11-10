@@ -15,8 +15,8 @@ mirrored on the [dashboard](companion-dashboard.md)'s Abilities panel).
 Whether your character has access to a given ability depends on your
 character's species, current form, and class — it's something the
 world/story runner configures, not something you toggle yourself. If your
-character doesn't currently qualify for an ability, its menu simply won't
-offer it.
+character doesn't currently qualify for an ability, the in-world menu won't
+offer it; the dashboard can list it as unavailable.
 
 The abilities available today:
 
@@ -31,14 +31,19 @@ Choose **Bite** from the Abilities menu (or the dashboard's Abilities panel),
 then pick a character within range from the list offered — only characters
 seen nearby recently are listed. Biting them:
 
-- Costs the target roughly 5% of their vitality (health) and 10% of their
-  defense.
+- Lowers the target's vitality (health) by 5 percentage points and defense by
+  10 percentage points, without taking either below zero. For example, 60%
+  health becomes 55%.
 - Gives you a small taste of their blood, described by its flavor.
 - Notifies the target that they were bitten and what they lost.
 
 If the character you picked has moved out of range or stopped being available
 since the menu opened, you'll be asked to search again rather than the bite
 silently failing or landing on the wrong person.
+
+If no targets appear in the browser, keep your companion worn and let it update
+your location before searching again; both you and the target need recent
+in-world activity.
 
 ### Things to keep in mind
 
@@ -169,9 +174,11 @@ by the enum's backing value, and returns them ordered by that value.
    eligibility, range, and that the selected target still matches the
    expected profile id (so a stale menu can't bite whoever happens to occupy
    that slot now), then in one transaction: deposits 1ml of the target's
-   blood fluid into the biter's mouth (`FluidsHelper::persistFluid()`, see
+   actual blood snapshot through the biter's mouth into the stomach
+   (`FluidsHelper::persistFluid()`, see
    [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)), and
-   reduces the target's vitality by 5% and defense by 10%
+   reduces the target's vitality by 5 percentage points and defense by 10
+   percentage points, clamped at zero
    (`StatsHelper::adjustStatByPercent()`, see [Vitality & Stats](vitality-and-stats.md)).
    The blood's flavor is read back for the biter's confirmation message.
 3. The bite is announced to the target via
@@ -182,12 +189,71 @@ by the enum's backing value, and returns them ordered by that value.
    the sender's transaction already committed them, which protects against a
    redelivered interaction re-biting the same target.
 4. `on_api()` mirrors the same flow for the dashboard: `GET` reports
-   availability + targets, `POST` (`target`, `profileId`) performs the bite.
+   availability + targets (`key`, `profileId`, `label`), `POST` (`target`,
+   `profileId`) performs the bite and returns `ok` plus a message or error.
+
+Target lookup also rejects an origin header older than five minutes or missing
+its region/local position. The framework installs the owner's stored HUD headers
+for web requests; browser-supplied location is not a replacement for recent
+in-world presence. The same check applies when submitting the selection.
+
+Blood persistence and stat changes share one transaction, so a failed fluid
+write rolls back both actors' database effects. Notification follows the commit.
+`FluidSnapshotModelImpl` (`src/classes/models/FluidSnapshotModelImpl.php`) reads
+the character UUID from `fs_detail.profile`; new snapshots leave the deprecated
+integer `fs_profile_id` null. `FluidsHelper` uses the supplied victim profile for
+fluid ownership and identity rather than the current request's biter.
 
 In-world, `ProfileAbilitiesDialog` lists only the abilities
 `SpeciesAbilityHelper::fetchAbilities()` currently returns for the active
 profile and routes `ability.bite` to `BiteAbilityDialog` (the target picker)
 and `ability.shift` to `ShiftAbilityDialog`.
+
+### Grant persistence and deployment
+
+The grant entities live under `src/classes/models/`; the repositories under
+`src/classes/repos/` implement the matching rules above. Species selectors match
+the exact species ID, not its hybrid ancestors. Deleting a species cascades to
+its overrides without creating global grants. Removing the last override for an
+ability restores that species' use of defaults.
+
+Both grant entities construct UUID v4 primary keys (`ab_id` and `sa_id`, mapped
+as Doctrine `guid`). Direct SQL inserts must supply those UUIDs. The generated
+scope columns normalize null selectors to `*` and separate selector values with
+`:`, so future selector values must not contain either reserved character.
+PostgreSQL and the SQLite test harness use the same generated expressions.
+
+Deploy the schema before code that reads these tables. For a fresh installation,
+review and apply `ddl/Abilities.sql` and `ddl/SpeciesAbilities.sql`; the existing
+`php bin/doctrine ddl:sync --dump-sql` command previews mapped schema changes.
+Do not run the fresh CREATE statements on existing tables. An older integer-ID
+installation needs new UUIDs for existing rows and removal of its integer
+default/sequence; integer values cannot simply be cast to UUIDs.
+
+Neither lookup nor deployment seeds grants: empty tables mean no abilities,
+including Shift and Bite. Configure the intended rules explicitly. Persist
+`AbilityModelImpl` for defaults or `SpeciesAbilityModelImpl` for an override,
+with optional form/class selectors and a required species for the latter.
+Change a rule by removing and replacing it transactionally. Override precedence
+itself needs no schema migration on installations already using these tables,
+but existing restrictive overrides should be reviewed for lost default access.
+
+### Regression coverage
+
+The cases under `tests/e2e/cases/` include:
+
+- `SpeciesAbilityWildcardRulesMatchAndRejectDuplicatesTest.php` and
+  `AbilityDefaultsWithSpeciesOverridesMatchAndRejectDuplicatesTest.php`:
+  wildcard combinations, UUIDs, uniqueness, exact species matching, precedence,
+  and deduplication.
+- `SpeciesAbilityOverridesReplaceDefaultsAcrossFormsAndClassesTest.php` and
+  `SpeciesAbilityManualGrantsDriveApiAndShiftedFormsTest.php`: alternatives,
+  broader/restrictive overrides, empty grants, revocation, HUD/API agreement,
+  and shifting back.
+- The `Bite` cases: actual blood snapshots, notification redelivery, stale,
+  blocked, distant or changed targets, stat clamping, and rollback on fluid
+  failure. `BiteWebRequestsUseStoredHudPositionTest.php` covers the browser's
+  dependency on valid owner headers.
 
 ### Extension points
 

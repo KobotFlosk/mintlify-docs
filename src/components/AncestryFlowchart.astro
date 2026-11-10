@@ -1,0 +1,105 @@
+---
+import { renderMermaidSVG } from 'beautiful-mermaid';
+import source from '../../docs/species-ancestry-and-taxonomy.md?raw';
+
+interface Props {
+  index: number;
+  title: string;
+  description: string;
+}
+
+const { index, title, description } = Astro.props;
+// Read only the player section so the diagrams stay aligned with the supplied source.
+const diagrams = [...source.split('## For developers')[0].matchAll(/```mermaid\n([\s\S]*?)```/g)];
+const diagram = diagrams[index - 1]?.[1];
+if (!diagram) throw new Error(`Missing ancestry flowchart ${index}`);
+
+// Wrap long labels without changing their wording, values, or connections.
+const wrapped = diagram.replace(/\["([^"]+)"\]/g, (_, label: string) => {
+  const lines = [''];
+  for (const word of label.split(' ')) {
+    const last = lines.length - 1;
+    if (lines[last] && lines[last].length + word.length + 1 > 32) lines.push(word);
+    else lines[last] += (lines[last] ? ' ' : '') + word;
+  }
+  return `["${lines.join('\\n')}"]`;
+});
+
+const id = `ancestry-flowchart-${index}`;
+let svg = renderMermaidSVG(wrapped, {
+  font: 'Arial',
+  padding: 24,
+  transparent: true,
+  bg: 'var(--sl-color-bg-nav)',
+  fg: 'var(--sl-color-text)',
+})
+  // Keep font loading and styling local; the renderer's default stylesheet imports a web font.
+  .replace(/<style>[\s\S]*?<\/style>/g, '')
+  .replace(/(?<=\s)id="([^"]+)"/g, `id="${id}-$1"`)
+  .replace(/url\(#([^)]+)\)/g, `url(#${id}-$1)`);
+
+// Route the direct overlap contribution around the scoring diagram. The default
+// layout sends this long edge through the taxonomy box instead of around it.
+if (index === 6) {
+  const topCenter = (node: string) => {
+    const box = svg.match(new RegExp(`<g class="node" data-id="${node}"[^>]*>\\s*<rect x="([^"]+)" y="([^"]+)" width="([^"]+)"`));
+    if (!box) throw new Error(`Missing scoring diagram node ${node}`);
+    return [Number(box[1]) + Number(box[3]) / 2, Number(box[2])];
+  };
+  const [startX, startY] = topCenter('Overlap');
+  const [endX, endY] = topCenter('Base');
+  svg = svg.replace(
+    /(<polyline class="edge" data-from="Overlap" data-to="Base"[^>]*points=")[^"]+/,
+    `$1${startX},${startY} ${startX},8 ${endX},8 ${endX},${endY}`,
+  );
+}
+---
+
+<figure class="flowchart">
+  <figcaption id={`${id}-caption`}>{title}</figcaption>
+  <div class="chart-scroll" tabindex="0" role="region" aria-labelledby={`${id}-caption`}>
+    <div role="img" aria-label={description} set:html={svg} />
+  </div>
+</figure>
+
+<style>
+  .flowchart {
+    margin: 1.5rem 0;
+    min-width: 0;
+  }
+  figcaption {
+    margin-bottom: 0.5rem;
+    color: var(--sl-color-white);
+    font-weight: 600;
+  }
+  .chart-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.4rem;
+    background: var(--sl-color-bg-nav);
+  }
+  .chart-scroll:focus-visible {
+    outline: 2px solid var(--sl-color-accent-high);
+    outline-offset: 3px;
+  }
+  .chart-scroll > div {
+    width: max-content;
+    min-width: 100%;
+  }
+  .flowchart :global(svg) {
+    display: block;
+    max-width: none;
+    margin: 0 auto;
+    --_text: var(--sl-color-text);
+    --_text-sec: var(--sl-color-gray-2);
+    --_text-muted: var(--sl-color-gray-2);
+    --_line: var(--sl-color-gray-2);
+    --_arrow: var(--sl-color-gray-2);
+    --_node-fill: var(--sl-color-bg);
+    --_node-stroke: var(--sl-color-gray-3);
+    --_inner-stroke: var(--sl-color-gray-5);
+  }
+  .flowchart :global(text) {
+    font-family: Arial, system-ui, sans-serif;
+  }
+</style>

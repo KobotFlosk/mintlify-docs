@@ -1,6 +1,6 @@
 ---
 audience: mixed
-summary: Accounts, active characters, relationships, trust, and access permissions.
+summary: Accounts, active characters, optional character identity, relationships, trust, and access permissions.
 ---
 
 # Accounts & Profiles
@@ -29,6 +29,25 @@ Two different things are tracked for every person who uses the system:
   existing one.
 - Some characters can also be "assumed" from a nearby egg or another
   hand-off, which is how a newly born character gets picked up and played.
+
+### Optional character identity
+
+Where your dashboard offers **Character → Profile → Change**, you can save a
+sexuality and character picture for your active character. The sexuality choices
+are Straight, Gay, Lesbian, Bi, Pan, Asexual, Demisexual, and Questioning; leaving
+it unspecified is also supported. These are character identity details, not
+changes to reproductive biology or breeding compatibility.
+
+These details belong to the character, so changing appearance through
+shapeshifting does not replace them. They can appear in the character overview
+and other people's discovery results: only save details you intend to share.
+Leaving a detail blank clears it.
+
+If you change characters while editing, refresh before saving. If another edit
+has already changed the same details, reload the latest values rather than
+overwriting them from an old view. A rejected picture or sexuality leaves both
+details unchanged. A picture that saves successfully may still be unavailable
+to display.
 
 ### Relationships and trust
 
@@ -64,10 +83,12 @@ title is simply recorded on your character.
 
 ### Blocking
 
-You can block another character from appearing in any of your search results.
+You can block another person from your nearby, online, and fertile character
+results.
 Blocking is one-directional — it only affects what you see, doesn't notify the
 other person, and doesn't stop them from finding or contacting you through
-other means. See [Search & Discovery](search-and-discovery.md) for where
+other means. Name-based profile searches and region activity totals are not
+hidden by this block. See [Search & Discovery](search-and-discovery.md) for where
 blocking is offered.
 
 ### Special roles and permissions
@@ -177,10 +198,17 @@ marker today.
 ### Roles and permissions
 
 - `AccountRoleEnum` (`src/classes/enums/AccountRoleEnum.php`): `ADMINISTRATOR`,
-  `AFFILIATE`, `DEVELOPER`, `TASKFORCE`, `AI_PRIVILEGED`. Roles are rows in
+  `AFFILIATE`, `DEVELOPER`, `TESTER`, `TASKFORCE`, `AI_PRIVILEGED`. Roles are rows in
   `AccountRoleModelImpl`, checked via `AccountHelper::hasRole(...)`. Notably,
   `AI_PRIVILEGED` gates access to the AI-driven scene (`ChoiceStory`) — see
   [The AI Role-Play Companion](ai-companion.md).
+- `AccountHelper::isTester()` checks the supplied account's role collection,
+  defaulting to the current account, for an explicit `TESTER` enum value.
+  Administrator status does not opt an account into testing. This check no
+  longer gates dashboard entry: Web and the Start-menu UI option are available
+  to every account. See
+  [Dashboard entry](companion-dashboard.md#entry-point--hand-off) for
+  environment-aware routing.
 - `AccountPermissionEnum` (`src/classes/enums/AccountPermissionEnum.php`):
   fine-grained permissions such as `PERM_ACCOUNT_BAN`, `PERM_CAN_DEBUG`,
   `PERM_CLI_FORWARD_COMMAND`, `PERM_CLI_SEND_COMMAND`, `PERM_GRANT_PERM`,
@@ -216,3 +244,69 @@ into the broader state machine.
 - How a profile's biology drives scenes → [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)
 - How a profile's genetics/species are inherited → [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)
 - The optional AI narrator and its access gating → [The AI Role-Play Companion](ai-companion.md)
+
+### Web profile identity
+
+`ProfileModel` / `ProfileModelImpl` now expose nullable `sexuality` and
+`imageUuid` fields. `sexuality` maps to `ane_profiles.p_sexuality` (`VARCHAR(80)`)
+and uses the nullable PHP `SexualityTypeEnum` through Doctrine's `enumType`
+mapping. Its string backing values are `sexuality.straight`, `sexuality.gay`,
+`sexuality.lesbian`, `sexuality.bi`, `sexuality.pan`, `sexuality.asexual`,
+`sexuality.demisexual`, and `sexuality.questioning`. Null means Not specified;
+custom text and unknown keys are rejected. The SQL column remains a nullable
+string, consistent with the other PHP-backed enums. `imageUuid` maps to `p_image`
+(`UUID` / Doctrine `guid`) and accepts nonzero Second Life texture keys,
+including keys without RFC version/variant bits. New and migrated characters
+have neither field set. Shifted forms read and write the base character's
+identity, independently of the body's species and reproductive traits.
+
+Apply `ddl/ProfileIdentity.sql` before deploying this model change. It is an
+additive PostgreSQL migration; no live database is modified by the code change.
+
+`ProfileIdentityHelper` (`src/classes/helpers/ProfileIdentityHelper.php`) owns
+normalization and persistence. The dashboard integration targets Character →
+Profile → Change; the separate frontend is not present here, so its deployed
+editor and image preview cannot be verified from this repository.
+`MyCharacterHelper` (`src/classes/helpers/MyCharacterHelper.php`) profile GET
+includes
+`identity: { sexuality, sexualityOptions, imageUuid, version }`. `sexuality` is
+the enum's backing value or null. `sexualityOptions` is the enum-derived list of
+`{ value, label }` choices used by the editor. Labels are not used as stored keys
+and are excluded from the version hash. POST with `section=profile` and
+`do=save-profile-identity` takes
+`{ characterId, version, values: { sexuality, imageUuid } }`, normalizes both
+values before changing the model, and returns `{ ok, characterId, identity,
+message }` on success. Both keys must be present, with no extra keys inside
+`values`. Null or blank clears either field; image keys are trimmed and
+lowercased. Requests cannot select an inactive or foreign character; the
+authenticated account is locked
+and its active character is rechecked before saving. The version is a hash of
+the character ID and current identity values, checked after refreshing the
+locked profile to reject stale editors. `ProfileHelper::lockAndRefresh()` locks
+the profile row first and then refreshes it without a lock mode, avoiding
+PostgreSQL's rejection of locks on nullable outer-joined associations.
+The transaction changes both identity fields together; validation, stale-view,
+and active-character failures leave them unchanged and return
+`{ ok: false, error }`. Unexpected failures are caught by `MyCharacterHelper`
+and reported with its generic refresh message.
+
+`StatusHelper.character` supplies the readable sexuality label and image UUID
+for the Overview. `DiscoveryHelper` exposes the same saved details for other
+accounts' active characters in Region, Online, and Fertile results; unset values
+remain null. It does not expose identity from an account's inactive characters.
+These reads do not offer a separate per-field privacy gate, so clients must not
+present the editor as private storage. See
+[Discovery response fields](search-and-discovery.md#web-discovery-rows).
+Image validation checks syntax only, not whether the texture exists, belongs to
+the account, or can be previewed.
+
+Coverage: `ProfileIdentityHelperTest`,
+`ProfileIdentityEditsPersistAndRejectStaleOrForeignRequestsTest`, and
+`ProfileIdentityMigrationPreservesExistingCharactersTest` (under
+`tests/unit/` and `tests/e2e/cases/`) verify validation,
+shifted identity, persistence, status, active-character scoping, stale saves,
+clearing, enum hydration for every predefined value, and preservation of existing rows.
+`tests/e2e/cases/DiscoveryProfileIdentityFieldsExposeSavedValuesTest.php` covers
+every sexuality label, missing values, inactive accounts, and subsequent updates.
+`tests/integration/helpers/ProfileLockRefreshTest.php` covers the separate
+lock-and-refresh sequence.

@@ -32,12 +32,30 @@ add** to its recipe — you never set the "type" directly:
 > **Each hybrid must use a unique set of species.** If a hybrid — true *or*
 > composition — already exists with the **exact same set** of member species, the
 > wizard won't let you create another one. Only *which* species are in the mix
-> matters; the percentages are ignored. The check runs the moment you press
+> matters; the weights are ignored. The check runs the moment you press
 > **FINISH**, and you'll be told which existing species already uses that
 > combination so you can adjust the members.
 
-Every member in a hybrid recipe has a **percentage** (its share of the mix), and
-the shares always add up to **100%**.
+Every member has a **relative composition weight** from **0 to 100**. The
+weights do not need to total 100: **60 Sergal and 60 Dragon** compares as equal
+parts, or 50% each, when the species recipe is used for compatibility. Stored
+values stay as entered; positive weights are normalized during comparison.
+
+After conception succeeds, the child's species is selected by matching the
+complete set of truebred ancestors from both parents to a registered hybrid's
+expanded recipe. Exactly one matching definition selects that hybrid. No match,
+multiple matches, or incomplete ancestry retains the ovum donor's species.
+There is no additional maternal-species probability roll. A listed member with
+weight zero still belongs to the set used for birth matching.
+
+Only purebreds define their own taxonomy. Once a species classification is saved,
+users cannot change or clear it. An existing unclassified purebred's owner can
+use **Define taxonomy** to set all eight ranks exactly once. True hybrids and composition hybrids
+derive taxonomy from their member species, including nested compositions.
+Species overlap and taxonomy keep their existing normalized-weight calculations;
+birth matching uses complete membership separately. See
+[taxonomy compatibility](species-compatibility.md#8-optional-taxonomy-compatibility)
+for the weighting rules and examples.
 
 ---
 
@@ -90,14 +108,13 @@ recipe.
 A **true hybrid** blends **exactly two** species.
 
 1. Choose **Basic → Hybrid** to open the composition builder.
-2. **ADD** your **first** member species. The first member automatically holds
-   the **remainder** of the mix, so you aren't asked for a percentage yet.
-3. **ADD** your **second** member species. Now you're asked **what percentage**
-   this species makes up — enter a whole number greater than 0 and less than the
-   remaining amount. The first member's share shrinks automatically so the total
-   stays 100%.
-   - *Example:* add Sergal first, then add Fennec at **70%** → the recipe becomes
-     **Sergal 30% / Fennec 70%** (Sergal takes the leftover 30%).
+2. **ADD** your **first** member species and enter its relative composition
+   weight from **0 to 100**.
+3. **ADD** your **second** member species and enter its weight. Changing
+   one value does not change the other.
+   - *Example:* Sergal **60** / Dragon **40** gives a species recipe of 60%
+     Sergal and 40% Dragon for compatibility. A born character's makeup still
+     follows their actual parents; the recipe weights do not choose birth species.
 4. With two members in the recipe, the **FINISH** button appears. Press it.
    (If those two species already form an existing hybrid, the wizard sends you
    back to adjust the members — see the uniqueness rule in §1.)
@@ -130,15 +147,12 @@ A **composition hybrid** blends **three or more** species. The steps are the sam
 as a true hybrid, you just keep adding members.
 
 1. Choose **Basic → Hybrid**.
-2. **ADD** the first member (it holds the remainder — no percentage asked).
-3. **ADD** each additional member and give it a **percentage** (greater than 0,
-   less than what's left). The first member keeps shrinking to hold the leftover
-   so the total is always 100%.
-   - *Example:* Sergal (first), then Fennec **50%**, then Kobold **20%** →
-     **Sergal 30% / Fennec 50% / Kobold 20%**.
-4. You can keep up to **9** members. Each member's button shows its current
-   percentage so you can see the mix at a glance. Selecting a member **removes**
-   it (and its share returns to the first member).
+2. **ADD** the first member and enter its relative composition weight.
+3. **ADD** each additional member and enter a weight from **0 to 100**. For
+   example, Sergal **60**, Fennec **50**, and Kobold **20** are valid; comparison
+   normalizes these proportions to about 46.2%, 38.5%, and 15.4%.
+4. You can keep up to **9** members. Each member's button shows its weight.
+   Selecting a member **removes** it without changing the other members.
 5. Press **FINISH** (available once you have at least two members). If this exact
    set of species already exists as a hybrid, you'll be sent back to adjust the
    members (see §1).
@@ -175,6 +189,14 @@ the review menu you can tap any one to change it, then press **FINISH**.
 **Descriptors (optional):** appearance/behavior tags. Describe the species in your
 own words and the AI generates a tag list you can keep or skip.
 
+**Taxonomy (optional):** choose **Taxonomy** on the review menu to select or
+create each rank from domain through species. A shared classification adds
+compatibility alongside lineage overlap. You can also assign or change it in
+species management, or use **Clear** to leave the species unclassified. New
+ranks are saved with the species; existing ranks can be shared. Cloning a
+species also retains its classification. See
+[Species Compatibility](species-compatibility.md) for rank weights and scoring.
+
 **Founding pair (Mother & Father):** every species is seeded with two original
 ancestors.
 
@@ -196,10 +218,9 @@ If your new species is close to one that already exists:
 2. **Search and pick** the species to copy.
 3. Give the clone a **new name** and confirm.
 
-The clone copies the original's recipe and specifics as a starting point. (Note:
-you can't base a new hybrid on an existing *composition* hybrid as a member —
-composition hybrids aren't offered in the member search — but you can clone one
-directly.)
+The clone copies the original's recipe and specifics as a starting point.
+You can also use an existing truebred, true hybrid, or composition hybrid as a
+member when building a new hybrid; nested recipes are supported.
 
 ---
 
@@ -210,26 +231,25 @@ directly.)
 - **AI presets save time.** Right after naming, accept the AI's suggested fertility
   values to skip the questions entirely, or customize them — the suggestions are
   always clamped to valid ranges.
-- **Shares always total 100%.** The first member you add holds the leftover, so
-  you only type percentages for the *additional* members.
-- **Enter whole percentages** (e.g. `70`), greater than 0 and less than what's
-  left. The first member can't drop to 0, so you can't give a later member the
-  entire remaining share.
+- **Weights are relative.** Enter a number from **0 to 100** for every member.
+  They do not need to total 100; decimals are allowed. Positive values are
+  normalized when calculating compatibility.
+- **Birth matching uses every member**, including a zero-weight member. It
+  requires one registered hybrid with exactly the child's complete ancestry.
 - **FINISH appears only when the recipe is valid** — i.e. two or more members for
   a hybrid.
 - **Hybrids must be unique by their species set.** You can't FINISH a hybrid whose
-  exact combination of member species already exists — percentages are ignored,
+  exact combination of member species already exists — weights are ignored,
   only the set of species counts.
 - **Up to 9 members** in a composition.
-- **Remove a member** by selecting its button; its share returns to the first
-  member.
+- **Remove a member** by selecting its button; other weights stay unchanged.
 - **Names matter:** always give real Mother and Father names — for a true hybrid
   these label a pair whose ancestry is bred from both member species.
 
 ---
 
 *In short: pick Purebred or Hybrid, (for a hybrid) add two or more member species
-with their percentages, answer the species' reproductive details, optionally tag
+with their relative weights, answer the species' reproductive details, optionally tag
 its appearance, and name its founding Mother and Father. The number of members
 you add decides whether you've made a truebred, a hybrid, or a composition
 hybrid.*
@@ -250,6 +270,31 @@ overrides remain separate and are managed from the in-world character menu.
 
 ## For developers
 
+### Identifying a born character as a new hybrid
+
+Character → Species offers **Identify as a hybrid** when two different parent
+species have no registered hybrid for the child's complete ancestry. Either
+parent may be a truebred, a true hybrid, or a composition hybrid. The parent
+species must have valid definitions and complete canonical founding pairs.
+
+When no hybrid is selected at conception, the child keeps the ovum donor's
+species. If that maternal species is already a hybrid, its existing recipe does
+not prevent the child from defining the new parent combination. An already
+defined, different hybrid assigned to the child cannot be replaced through this
+action. Legacy hybrids with missing composition remain eligible for the
+existing completion flow.
+
+The user names the new species, supplies a relative composition weight for
+each fixed parent species, and explicitly identifies the character as a hybrid.
+Saving creates a new user-owned species with those two direct members. The
+stored recipe does not flatten hybrid parents into their underlying members.
+Birth matching expands the complete ancestry separately and ignores weights.
+
+The species' new founding mother is member A's founding mother × member B's
+founding father; its founding father is member A's founding father × member B's
+founding mother. The character retains its actual birth parents. Existing
+species definitions and other characters remain unchanged.
+
 ### The wizard
 
 The whole flow lives in one dialog class,
@@ -262,7 +307,7 @@ methods chained via the framework's dialog/`CallableReference` machinery:
 | Clone or Basic | `menu_step_init` | `ACTION_CLONE` opens `SpeciesSearchDialog`; `ACTION_BASIC` continues to purebred/hybrid choice. |
 | Clone an existing species | `menu_clone_species` → `clone_naming_dialog` | Clones the entity (`clone $existingSpecies`), clears its id/fluids, rebuilds `hybridComposition` as fresh `SpeciesHybridModelImpl` entries so originals aren't re-parented. |
 | Purebred vs Hybrid | `menu_breed_species` | Purebred goes straight to naming; Hybrid opens the composition loop (`dialogHybridSpecies`). |
-| Composition loop | `menu_species_hybrid`, `menu_species_select`, `menu_species_probability` | `ACTION_ADD` opens `SpeciesSearchDialog` (composition hybrids excluded as candidate members); selecting an existing button removes that member. |
+| Composition loop | `menu_species_hybrid`, `menu_species_select`, `menu_species_probability` | `ACTION_ADD` opens `SpeciesSearchDialog` (including composition hybrids as candidate members); selecting an existing button removes that member. |
 | Naming | `menu_species_name` | Rejects duplicate names via `SpeciesHelper::fetchSpeciesByName`. |
 | AI presets review | `species_presets_dialog` / `species_presets_render` / `menu_species_presets` | `SpeciesHelper::generateFertilityPresets()` (AI) or `applyFertilityPresets($model, [])` (fallback defaults) seed the model; a `DialogButtonsDynamic` menu lets each field be edited individually via `SpeciesSpecificsHelper::valid*`/`adjustSpecies()` validators, returning to the same menu (`getReturnDialog()`). |
 | Descriptors | `dialogDescriptorsPrompt`, `menu_species_descriptors_*` | Optional; `SpeciesHelper::generateDescriptors($description, $model)` turns free text into tags via AI. |
@@ -283,19 +328,42 @@ The wizard never sets a "type" field directly. `HybridTypeEnum` (truebred /
   is checked at `menu_species_profile_father` / `menu_confirm_final` time to
   branch into the true-hybrid-specific founding-pair breeding path.
 
-### Percentage bookkeeping
+### Relative-weight validation and storage
 
-`SpeciesHybridCompatibilityHelper` owns the remainder/share math used by the
-wizard: `remainingShare()` (100% minus every explicit member's share),
-`isValidMemberShare($share, $remaining)` (bounds check), and
-`applyRemainderToFirst()` (re-pins the first member's `probability` so the
-composition always totals exactly `1.0`), called after every add/remove.
+The existing `probability` names remain in the storage and API contract.
+`SpeciesHybridCompatibilityHelper::probabilityIsValid()` accepts finite numeric
+weights from `0.0` to `1.0`, inclusive. `probabilitiesAreValid()` also requires
+at least two member species. There is no sum constraint, remainder, or automatic
+redistribution. `buildComposition()` preserves valid inputs and rejects invalid
+ones instead of clamping them. The HUD and hybrid-identification form use a
+0–100 input scale; storage keeps the corresponding 0–1 values. When API values
+are omitted, `defaultProbabilities()` assigns `0.5` to every member. Existing
+stored values are not migrated or rewritten.
+
+### Birth species from complete ancestry
+
+After conception, `PregnancyHelper::resolveOffspringSpecies()` uses the ovum
+donor and father, including their actual ancestors. `SpeciesAncestryMembershipHelper`
+recursively expands both parent lineages and each registered hybrid recipe into
+sorted truebred-ID sets. Founders and parentless profiles use their selected
+species recipe; born profiles with both parents use their actual pedigree.
+
+The union must equal a hybrid's entire expanded set: no missing or extra species.
+Wolf/Sergal × Sergal/Dragon produces `{Wolf, Sergal, Dragon}`. A matching flat or
+nested definition qualifies, but two equivalent definitions are ambiguous.
+Exactly one complete match selects the hybrid; otherwise the ovum donor's
+species is retained. Unknown, dangling, incomplete, cyclic, or excessively deep
+ancestry also falls back. Surrogate hosts do not replace the genetic donor.
+
+All listed members count, including zero-weight members. There is no additional
+selection roll using the stored weights. This matching path is separate from
+the existing weighted species-overlap and taxonomy calculations.
 
 ### Hybrid-set uniqueness
 
 `menu_species_hybrid`'s `ACTION_CON` branch calls
 `SpeciesHelper::findDuplicateHybrid($this->getSpeciesModel())` immediately on
-FINISH; if a hybrid with the identical member-species **set** (percentages
+FINISH; if a hybrid with the identical member-species **set** (weights
 ignored) already exists, the user is told which one and sent back into the
 composition loop rather than being allowed to create a duplicate.
 
@@ -371,6 +439,78 @@ transaction as the species and founding lineage. Omitted fluids retain the
 usual defaults. Uterus and embryo volumes accept fractional values; the
 overview's default embryo size is derived from the minimum size multiplier
 rather than a fixed literal.
+
+### AI taxonomy suggestions
+
+The web taxonomy editor accepts optional **reference species**: real or fictional
+creatures the user feels resemble their species. The guidance accompanies both
+AI passes and helps retrieve relevant existing database branches.
+
+With one to seven populated ranks, the action completes the missing ranks using
+the supplied entries as fixed anchors. It does not replace an authored taxon with
+a different name or synonym. Case and whitespace may be canonicalized. An empty
+draft or all eight populated ranks requests a fresh complete classification; the
+previous complete tree is discarded before lookup, inference, and catalog search.
+An initial AI reply that contradicts a supplied anchor is rejected, rather than
+spliced into a potentially unrelated hierarchy.
+
+The prompt prefers established scientific classification for real species,
+appropriate existing database taxonomy, and then a fitting inferred lineage.
+For fictional species, it uses the user's reference species and available online
+descriptions to infer a biological analogue or coherent fantasy classification.
+Provider-independent Wikipedia searches supply a small, bounded collection of
+actual reference excerpts before inference. Their titles and links are returned
+separately from the AI proposal; the model cannot invent source links. A failed or
+empty lookup is explicitly marked and does not prevent draft-only inference.
+Online descriptions are evidence about a creature, not proof of scientific taxonomy.
+
+The initial proposal is compared with relevant existing database branches. New
+names are appropriate when existing choices do not fit or another classification
+is more correct. Scientific or worldbuilding fit takes priority over maximizing
+compatibility, and catalog reuse cannot override the user's partial draft.
+Candidate parent chains must agree with every authored rank they contain; an
+invented fixed domain with no saved match therefore skips database reconciliation.
+Inferred names remain flexible so existing scientific synonyms can still be
+considered. The catalog retains complete ancestry and is limited to 64 nodes and
+24 KiB; relevant matches are not padded with unrelated branches. Broad fallback
+context is only used when there are neither authored anchors nor relevant matches.
+
+Real species use scientific classification; fictional species may use a suitable
+biological analogue or a coherent invented lineage. The result is an editable
+proposal. Neither lookup nor either AI step creates or changes taxonomy rows; saving the species
+still reuses only exact normalized names under the selected parent chain.
+If the database comparison fails or contradicts a supplied anchor, the editor
+returns the validated first proposal with an explicit warning to review it before
+saving. Failure of the initial inference still reports an error.
+
+### Defining an existing species taxonomy once
+
+An existing purebred with no saved taxonomy offers its owner **Define taxonomy**
+in the web Species section. The modal accepts all eight ranks, with the same
+existing-entry selection and AI assistance as creation. Saving is permanent:
+users cannot edit or clear the classification afterward. Partial historical
+classifications and dangling stored references count as existing definitions.
+Hybrids continue to derive taxonomy from their members.
+
+The separate `define-species-taxonomy` action uses `targetId`, `version`, and
+`values` containing exactly the eight `taxonomy.<rank>` strings. The server
+locks and reloads the species, then rechecks ownership, species identity, its
+purebred status, the absence of a saved taxonomy, and the form version before
+resolving canonical entries. A stale or concurrent second submission cannot
+replace the first definition. The HUD uses this same guarded save path.
+
+Taxonomy remains editable while creating a new species, before its first save.
+The ordinary `save-species-settings` action has no taxonomy fields and rejects
+submitted taxonomy keys, including requests from older editors.
+
+### Viewing species taxonomy
+
+The read-only taxonomy overview in the web Species section is available to every
+account viewing its active character, including accounts that do not own that
+species. It shows the purebred's classification, or the weighted purebred source
+branches for a hybrid, together with global user-profile counts at each rank.
+See [taxonomy compatibility](species-compatibility.md#8-optional-taxonomy-compatibility)
+for count scope and hybrid behavior.
 
 ### Editing base species settings
 

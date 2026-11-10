@@ -1,6 +1,6 @@
 ---
 audience: mixed
-summary: Optional automated outfit changes, character appearance, and attachment protection.
+summary: Optional appearance automation, browser outfit controls, and attachment protection.
 ---
 
 # RLV-Driven Character & Outfit Control
@@ -30,8 +30,8 @@ isn't available; you'll just manage your outfits by hand.
 3. **Set up your folders.** The companion tells you the exact folder structure
    it expects (ask it, or check its help) — a top-level folder for the system,
    one per character, and inside each character folder a base body and any
-   number of named outfits, each with its own underwear and clothing pieces.
-   Once your outfits are organized that way, everything else is automatic.
+   number of named outfits with clothing pieces, plus a shared underwear
+   collection for that character.
 4. **Switch outfits, redress, or strip** using the in-world menu or a typed
    command — the companion detaches what's no longer needed and attaches the
    new selection for you.
@@ -42,8 +42,34 @@ isn't available; you'll just manage your outfits by hand.
    a matching belly attachment for that size is swapped in automatically, if
    you have one prepared for each size step.
 
-If your folders aren't set up correctly, the companion lets you know instead
-of guessing, so nothing gets left in a broken state.
+If an outfit cannot be found, check your setup and refresh the available choices.
+Sending a clothing command does not guarantee that your viewer has finished
+changing your appearance.
+
+### Using browser outfit controls
+
+Where available in the [companion dashboard](companion-dashboard.md), outfit
+controls show your available outfits, the selected outfit, and which clothing
+pieces are worn. A partially worn piece also counts as worn.
+
+1. Keep the companion worn, activate your character, and enable the appearance
+   controls described above. If FullArray manages your appearance, use its own
+   companion controls instead.
+2. Choose an outfit. You can then put on or remove individual clothing or
+   underwear pieces, dress the outfit, change to underwear, or reset the outfit
+   to its remembered selection (or its full contents if none was remembered).
+3. Check the scope before using a bulk control: changing to underwear removes
+   your outer clothing, and stripping underwear removes both outer clothing and
+   underwear. Dressing the whole outfit removes the shared underwear selection.
+   Individual-piece controls affect the selected piece instead.
+4. After a command is sent, allow the viewer to respond and refresh to check
+   what is actually worn. Repeating an individual put-on or remove request keeps
+   the same direction rather than reversing it.
+
+If your character or outfit changed while the page was open, refresh before
+trying again. A choice that is no longer available must be selected again from
+the refreshed list. If controls remain unavailable, check that a character is
+active and that your viewer and companion appearance controls are enabled.
 
 ---
 
@@ -91,10 +117,11 @@ Folders live under a fixed root inside the viewer's `#RLV` shared folder:
   `getOutfitsUnderwearFolder()`, `getOutfitGarmentFolder()`, and the
   `.on_attach`/`.on_detach` variants (`getFolderOnAttach()`/
   `getFolderOnDetach()`) all build these paths from a `ProfileModelImpl`.
-- `.on_attach` / `.on_detach` subfolders are attached (not detached) whenever
-  the parent folder is put on or taken off, letting a garment carry
-  side-effect attachments (e.g. a jiggle physics layer) without extra domain
-  logic.
+- For explicit garment wear, `setFolderWorn()` first detaches `.on_attach`
+  recursively, then attaches the parent recursively. For removal, it detaches
+  the parent recursively, then attaches `.on_detach` recursively. These
+  side-effect folders therefore have different command sequences, not identical
+  attach-on-every-change behavior.
 
 ### Command flow
 
@@ -105,25 +132,104 @@ like `RlvGetInv`/`RlvGetInvWorn`). Representative commands used:
 `RlvDetachAll`, `RlvAttachAllOver`, `RlvAttachOver`, `RlvDetach`,
 `RlvDetachForce`, `RlvClear`, `RlvDetachMe`.
 
-Key entry points, each gated by `checkSharedFoldersEnabled()` (throws
-`SharedFoldersNotEnabledException` if the account hasn't enabled RLV +
-"characters" mode):
+Domain-level dress, strip, switch, and reset entry points call
+`checkSharedFoldersEnabled()` (throws `SharedFoldersNotEnabledException` if the
+account hasn't enabled RLV + "characters" mode). Low-level folder methods such
+as `setFolderWorn()` do not perform that check themselves:
 
 | Method | Effect |
 |---|---|
 | `switchActiveOutfitTo(string $nextOutfit, ...)` | Validates the outfit folder exists, detaches the current underwear/base/outfit, re-attaches the new outfit's base + memorized garments (or everything, if nothing was memorized), and updates `ProfileModelImpl::setOutfit(...)`. |
 | `resetCharacter(...)` | Full re-sync: prevents HUD detachment (unless the account allows it), recalculates and applies abdomen size (`RolePlayService::calculateAbdomenSize()`), and re-attaches the base body + current outfit. |
-| `resetActiveOutfit(...)` | Detaches and re-attaches genitalia/underwear/outfit to fix a desynced state, and refreshes abdomen size. |
+| `resetActiveOutfit(...)` | Detaches genitalia and shared underwear, refreshes abdomen size, then restores memorized garments or attaches the whole outfit and its base. |
 | `stripActiveOutfit(...)` / `stripActiveUnderwear(...)` | Detach the outfit (and/or underwear), attaching underwear or genitalia back as appropriate. |
 | `dressActiveOutfit(...)` / `dressActiveUnderwear(...)` | The inverse — attach outfit/underwear, detaching whatever was covering the equivalent slot. |
 | `updateAbdomenSize(float\|int $abdomenSize, ...)` | Detaches the current `.abdomen` folder and attaches the one matching the new size step, called after pregnancy/other stat changes. |
 | `toggleOutfitGarmentFolder(...)` / `toggleOutfitsUnderwearGarmentFolder(...)` / `toggleFolderStatus(...)` | Attach-if-detached / detach-if-attached toggles used by the per-garment dialog (`render_clothing_garment()`, `dialog_clothing_garment()`). |
+| `setFolderWorn(...)` | Sends an explicit wear/remove command sequence without reading and inverting current wear state; also used by the native toggle after its inventory read. |
 | `memorizeOutfit(...)` / `handledMemorizedOutfit(...)` | Reads/writes which garment folders were worn under an outfit (`ProfileSettingHelper` JSON setting `SETTING_RLV_CHARACTERS_OUTFITS`) so a partial garment selection survives an outfit switch. |
 | `outfitOverride(...)` / `hasOutfitOverride(...)` | Per-outfit flag (memorized the same way) that makes an outfit manage its own genitalia folder instead of the profile-wide one — for outfits with a built-in body variant. |
 
 `hasOutfitOverride()`/`outfitOverride()` and the memorized-outfit settings are
 stored per-outfit under `ProfileSettingHelper`, keeping this state with the
 profile rather than the RLV module.
+
+Outfit switching resolves names case-insensitively but preserves the spelling
+returned by viewer inventory in `ProfileModelImpl::setOutfit()`. When the prior
+outfit is null or empty, it skips the old outfit/base detach commands and the
+old outfit's removal hook rather than interpreting the missing name as the
+entire outfits directory.
+Shared underwear is still detached before the new outfit is attached.
+
+### Browser outfit requests
+
+`OutfitsHelper` (`src/classes/helpers/OutfitsHelper.php`) owns the browser
+contract; it reuses `RlvSharedFoldersModule` rather than maintaining a separate
+wardrobe. Direct requests use `/api?class=OutfitsHelper`; `ApiHelper` also
+delegates its `outfits` segment here, except that all profile-specific segments
+return null in `InitialState`. Direct GET can instead report an inactive mode.
+
+GET resolves the current account's active profile, never a browser-supplied
+target. It returns `mode` and the arrays `outfits`, `garments`, and
+`undergarments`:
+
+| Mode | Behavior |
+|---|---|
+| `fullarray` | Checked first when `FullArrayPlugin::hasInstance()` is true; arrays remain empty and POST directs the caller to the FullArray HUD. |
+| `inactive` | No active profile; arrays remain empty and POST asks for character activation. |
+| `disabled` | Active profile without both RLV and shared-character support; arrays remain empty and POST asks for those capabilities. |
+| `rlv` | Reads available outfits and shared underwear; reads current-outfit garments only if the outfit name passes validation. |
+
+The last two modes also include `profileId`, nullable `outfit`, and `folder`
+(the computed outfits root prefixed with `#RLV/`). FullArray and inactive
+responses do not supply these fields. Outfit entries carry `name` and `active`
+(case-insensitive comparison with the current outfit); garment entries carry
+`name` and `worn`. Lists are naturally sorted without case sensitivity.
+`serializeGarments()` interprets either inventory status digit of 2 or 3 as
+worn, including partial wear or items in subfolders, rather than promising that
+every item in a garment folder is attached.
+
+POST requires body fields `profileId` and `outfit` to exactly match the current
+context, plus `action` and, for a named selection, `name`. These values guard
+against a stale page; they do not select a different profile or inventory root.
+
+| Action | Delegated operation |
+|---|---|
+| `switch-outfit` | Switch to an exact name from a fresh available-outfit listing. |
+| `dress-garments` | Dress the current outfit, removing shared underwear and genitalia attachments first. |
+| `dress-undergarments` | Remove the current outfit and genitalia attachments, then attach shared underwear. |
+| `strip-undergarments` | Remove both the current outfit and shared underwear, then restore the applicable genitalia attachments. |
+| `reset-outfit` | Restore the current outfit through `resetActiveOutfit()`. |
+| `wear-garment`, `remove-garment` | Explicitly wear/remove one listed current-outfit garment. |
+| `wear-undergarment`, `remove-undergarment` | Explicitly wear/remove one listed shared-underwear garment. |
+
+All actions except switching require a valid selected outfit, including
+underwear actions. Named actions re-read the relevant inventory and require an
+exact name match. `isFolderName()` rejects nonstrings, blank names, dot-prefixed
+names, slashes/backslashes, commas, colons, equals signs, at signs, pipes, and
+ASCII control characters. Reads filter out these names too, so hidden control
+folders and path/command fragments cannot become selectable entries.
+
+The helper builds paths from the resolved profile and validated inventory name,
+and executes with that profile's account and `handleNow: true`. Success returns
+`ok: true` and a message acknowledging command dispatch, not viewer completion.
+Expected validation failures and unsupported verbs return `ok: false` with an
+error; inventory or dispatch exceptions are not caught inside this helper.
+There is no helper-level tester check, idle-state restriction, delivery
+acknowledgement, transaction, or deduplication record. Explicit wear/remove
+preserves direction on repetition but still dispatches another command batch.
+
+> **Verification boundary:** `AbstractAneState::on_initialized()` registers
+> the direct subscriber, but `__unserialize()` does not explicitly add it to
+> older sessions. Restored-session discovery and exception-to-response handling
+> depend on the shared framework. Authentication must establish the account
+> before dispatch; the helper's local scope checks do not verify that bridge.
+
+Coverage resides in `tests/unit/OutfitsHelperTest.php` (modes, dispatch,
+validation, worn status), `tests/integration/helpers/OutfitsApiWiringTest.php`
+(routing and switch guards), and
+`tests/e2e/cases/OutfitFoldersExplicitWearAndRemovePreserveHooksTest.php`
+(owner profile resolution and repeated explicit command sequences).
 
 ### Chat commands & dialogs
 
@@ -137,11 +243,17 @@ profile rather than the RLV module.
 - `on_command_help(array $params)` (implements `CommandHelpSubscriber`)
   answers `folders`/`shared-folders` by printing the expected folder layout
   (`saySharedFolders()`).
-- `on_api(ApiEvent)` (implements `ApiSubscriber`) exposes a read-only `GET`
-  listing (`list=folders|outfits|garments|all`) of the character's folders,
-  current outfit, and worn/unworn garments, each flagged with whether it is
-  currently active — used by the
-  [companion web dashboard](companion-dashboard.md).
+- The older `on_api(ApiEvent)` surface is **not read-only**. GET accepts
+  `list=folders|outfits|garments|undergarments|all` and returns name-to-boolean
+  maps. POST uses query parameters `action` and, when needed, `name` for
+  `reset`, `reset-outfit`, `switch-outfit`, `dress-garments`, `strip-garments`,
+  `dress-undergarments`, `strip-undergarments`, `toggle-garment`, and
+  `toggle-undergarment`. It resolves `ApiEvent::getTarget()` and does not apply
+  the new helper's stale-view, name-filter, or FullArray guards. Its response
+  is an empty value object rather than the new success/error contract.
+  Browser integrations should use the dedicated helper described above;
+  authorization of this legacy target-based surface needs verification at the
+  shared API boundary.
 - Dialogs: `showCharacterOutfitsDialog()`/`returnCharacterOutfitsDialog()`
   (pick an outfit), `returnCharacterClothingDialogDynamic()`/
   `render_clothing_garment()`/`dialog_clothing_garment()` (toggle individual
