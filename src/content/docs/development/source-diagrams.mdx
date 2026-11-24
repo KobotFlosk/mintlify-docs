@@ -1,0 +1,66 @@
+---
+title: "Technical flow diagrams"
+description: "Source diagrams for ability eligibility, scene choices, requests, reproduction, service linking, purchases, rewards, and commands."
+---
+
+import SourceDiagram from '../../../components/SourceDiagram.astro';
+
+Follow how AnE resolves abilities, handles scene choices, and processes requests, reproduction, purchases, and rewards.
+
+For inheritance and compatibility diagrams, see [Ancestry and taxonomy](/system-guide/ancestry-and-taxonomy).
+
+## Ability eligibility
+
+The resolver evaluates your base profile and worn form, then checks the prerequisites and anatomy route for Oviposit. See [Abilities](/system-guide/abilities) and [Oviposit rules](/system-guide/oviposit-rules) for player guidance.
+
+<SourceDiagram file="abilities.md" title="Resolve abilities for base and shifted forms" description="Resolve the base character's abilities and Shift grant. If Shift is granted, check for an active shifted form and resolve its abilities while retaining Shift. Each branch then applies base prerequisites and resolves Oviposit using both profiles." />
+
+## Shared scene choices
+
+The HUD and browser show the same pending choice for a selected partner. A valid reply consumes that choice before advancing the story. See [Answering scene choices](/system-guide/companion-dashboard#answering-scene-choices).
+
+<SourceDiagram file="companion-dashboard.md" title="One scene choice across the HUD and browser" description="An active partner story creates one cached presentation, shown in the HUD and browser. Both reply paths check the owner, handle, and response, then close the handle, run the callback, and return to the story." />
+
+## Request lifecycle
+
+The companion sends an in-world event to the backend and executes the returned actions. See [System overview](/system-guide/system-overview).
+
+<SourceDiagram file="architecture.md" title="From an in-world request to returned actions" description="The in-world object sends HTTP input to the application, which resolves the account, session, and active profile. The current state handles the input and returns actions for the object to execute." />
+
+## Reproduction pipeline
+
+These helpers coordinate fluid transfer, ovulation, conception, pregnancy, and birth. See [Reproduction and genetics](/system-guide/reproduction-and-genetics).
+
+<SourceDiagram file="reproduction-and-genetics.md" title="From fluid emission to birth" description="Fluid emission and transfer resolve the receiving incubator. Ovulation and conception checks can lead to pregnancy and birth, with genetics recorded along the way." />
+
+## Interaction states
+
+The state loop separates onboarding, idle activity, scenes, and delivery. See [Interaction and role-play lifecycle](/system-guide/interaction-and-roleplay).
+
+<SourceDiagram file="interaction-lifecycle.md" title="The interaction state loop" description="InitialState leads to RunningState. Active scenes use CopulateState and delivery uses BirthingState, returning to RunningState afterward." />
+
+## Service linking
+
+The one-off portal connects a selected external service and returns to its caller. See [Web portal](/system-guide/web-portal) for the player steps.
+
+<SourceDiagram file="web-portal.md" title="Open, complete, and close a service-linking portal" description="The in-world dialog creates a portal handle and opens the browser. The page submits the response, the service processes the matching handle, and a successful result closes the browser and returns to the caller." />
+
+## Purchases and rewards
+
+Purchases check the balance and record a debit before delivering an item. Credit rewards can be paid immediately, while product rewards can remain available to claim later. See [AnE Store](/getting-started/operation/ane-store).
+
+<SourceDiagram file="store-and-rewards.md" index={1} title="Purchase confirmation and delivery" description="Browse a product, review its price, confirm the transaction, and check funds. A successful debit leads to item delivery; insufficient funds prevent the purchase." />
+
+<SourceDiagram file="store-and-rewards.md" index={2} title="Grant and claim a reward" description="Find and evaluate rewards, then either process credit rewards immediately or save product rewards unclaimed until the player claims them." />
+
+## Chat commands
+
+Subscribed handlers receive a command until one claims it. See [Command line](/getting-started/command-line).
+
+<SourceDiagram file="command-line-tooling.md" title="Dispatch a chat command" description="A typed command reaches the backend, which passes separate event copies to handlers in subscription order until one claims it or none recognize it." />
+
+## Shared-folder layout
+
+This source layout shows the RLV folders used for character bodies, outfits, clothing, and attach/detach hooks. See [RLV outfits](/optional-add-ons/rlv-outfits) for setup and controls.
+
+<SourceDiagram file="rlv-and-control.md" title="RLV shared-folder layout" description="Under the AnE root, each character has base body folders and outfit folders, including underwear and clothing with optional attach and detach hooks." />
