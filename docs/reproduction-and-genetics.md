@@ -28,10 +28,8 @@ summary: Reproductive progression, inherited traits, and visibility of character
 A birth doesn't have to stay with its parent. Once it's ready, it can be
 **offered** to a nearby person with no active character of their own, who can
 accept or decline becoming that child. Accepting instantly makes the birth
-their new active character, inheriting everything it was born with —
-including its parent's pack membership, if any (see
-[Packs & Groups](packs-and-groups.md)). Declining, or letting the offer time
-out, leaves the birth unclaimed for later.
+their new active character, inheriting its birth traits and lineage.
+Declining, or letting the offer time out, leaves the birth unclaimed for later.
 
 ### Where things land
 

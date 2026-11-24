@@ -34,6 +34,10 @@ Backend support alone does not verify a feature's deployed frontend presentation
 
 ---
 
+## Player guides
+
+- [Oviposit rules](oviposit-rules.md) explains which forms can deposit eggs and how they do it.
+
 ## Mixed audience — product and subsystem guides
 
 Each guide below has separate end-user and developer sections. Start with
@@ -45,19 +49,18 @@ Architecture, then follow the topic links.
 | [Interaction & Role-Play Lifecycle](interaction-lifecycle.md) | Startup, scenes, turns, automatic acceptance, notifications, and engagement stopping. |
 | [Vitality & Stats](vitality-and-stats.md) | Stat changes, consciousness, death, and species stat budgets. |
 | [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md) | Conception, pregnancy, birth, inheritance, and history visibility. |
-| [Species Compatibility](species-compatibility.md) | Inherited species composition and compatibility scoring. |
+| [Species Compatibility](species-compatibility.md) | Inherited composition, breeding compatibility, personal species attraction preferences, and gaze notices. |
 | [Ancestry & Taxonomy Worked Guide](species-ancestry-and-taxonomy.md) | Diagrams and worked examples tracing species recipes and family trees into inherited percentages, weighted taxonomy, and compatibility. |
 | [Creating a Species](species-creation.md) | Creation wizard, founding lineage, web attributes, and owner editing. |
 | [Form Shapeshifters](form-shapeshifters.md) | Apparent form versus real biology. |
 | [Abilities](abilities.md) | Shift and Bite eligibility, grant deployment, effects, and regression coverage. |
 | [Attachable Items & Devices](attachable-items-and-devices.md) | Consumables, attachable plugins, and timed effects. |
-| [Accounts & Profiles](account-and-profiles.md) | Active characters, optional identity editing and visibility, relationships, trust, roles, and explicit tester eligibility. |
-| [Packs & Groups](packs-and-groups.md) | Group hierarchy, invitations, and birth inheritance. |
-| [Search & Discovery](search-and-discovery.md) | Saved identity, individual ancestry versus species definitions, compatibility explanations, and garden registration/management. |
+| [Accounts & Profiles](account-and-profiles.md) | Active characters, native/browser identity editing and visibility, relationships, trust, roles, and explicit tester eligibility. |
+| [Search & Discovery](search-and-discovery.md) | Saved filters, identity/activity, individual ancestry versus species definitions, compatibility explanations, and gardens. |
 | [The AI Role-Play Companion](ai-companion.md) | Narration, tools, choices, memory, and resilience. |
 | [Third-Party Integrations & Product Compatibility](third-party-integrations.md) | Optional service bridges and body add-on compatibility. |
 | [The Web Portal](web-portal.md) | One-off hand-offs for linking outside services. |
-| [The Companion Web Dashboard](companion-dashboard.md) | Signed entry and onboarding, identity and biology panels, discovery routing, outfit access, media controls, and per-partner prompts. |
+| [The Companion Web Dashboard](companion-dashboard.md) | Signed entry, onboarding and browser restoration, character panels, discovery routing, media controls, and per-partner prompts. |
 | [The Store & Rewards Economy](store-and-rewards.md) | In-world and browser purchases, Credits, rewards, and delivery/retry boundaries. |
 | [RLV-Driven Character & Outfit Control](rlv-and-control.md) | Appearance automation, browser outfit/garment contracts, legacy controls, and attachment protection. |
 | [Command-Line Interaction](command-line-tooling.md) | Chat shortcuts, dispatch, and help. |

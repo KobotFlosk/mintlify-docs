@@ -57,6 +57,9 @@ export default defineConfig({
         "slug": "system-guide/reproduction-and-genetics"
       },
       {
+        "slug": "system-guide/oviposit-rules"
+      },
+      {
         "slug": "system-guide/species-compatibility"
       },
       {
@@ -156,9 +159,6 @@ export default defineConfig({
         "slug": "getting-started/adoptions"
       },
       {
-        "slug": "getting-started/packs"
-      },
-      {
         "slug": "getting-started/command-line"
       },
       {
@@ -237,6 +237,9 @@ export default defineConfig({
       },
       {
         "slug": "development/developers-api"
+      },
+      {
+        "slug": "development/source-diagrams"
       },
       {
         "slug": "development/builders-kit"

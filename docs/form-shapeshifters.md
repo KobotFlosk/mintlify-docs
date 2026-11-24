@@ -16,7 +16,7 @@ summary: How a shapeshifter's apparent form remains distinct from real biology.
 ### The three-axis model
 
 Before this feature, shifting only swapped cosmetic attributes (class, race,
-form, height, weight, species, pack role) — everything else, including
+form, height, weight, species) — everything else, including
 **gender**, stayed hardwired to the base profile. A shifter who took a male
 form still failed every participation check gated on having a penis, because
 those checks resolved against the unchanged real biology.
@@ -41,7 +41,7 @@ construction, so non-shifted behavior is unchanged.
 - `ShiftProfileModel::getApparentGender()` — overrides to return
   `self::call($this->shiftProfile, 'getGender')` (the active shifted form's
   gender), using the same delegation pattern that already powers
-  class/race/form/height/weight/species/pack-role.
+  class/race/form/height/weight/species.
 
 ### The apparent-gender resolver (`ProfileHelper::resolveApparentGender`)
 
@@ -240,7 +240,7 @@ stub-shifted profile in both directions, the incubator-rerouting resolver, and
 - **Lineage stays on the shifted form.** `getGeneA()` / `getGeneB()` still
   route to the shifted form on `ShiftProfileModel` — intentional, since a
   displayed parent species is part of the cover story a shifter is trying to
-  maintain. `getPackRole()` is in the same bucket.
+  maintain.
 
 ---
 

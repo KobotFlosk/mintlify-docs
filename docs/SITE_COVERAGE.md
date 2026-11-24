@@ -1,5 +1,142 @@
 # Published documentation coverage
 
+## November 24, 2026 synchronization
+
+Compared the full `/Volumes/Personal-Drive/docs` directory with this repository's
+previous snapshot at `f17618f`. All 24 supplied Markdown files are now preserved
+byte-for-byte in `docs/`; imported frontmatter, tables, and backend code links
+were not rewritten. Published player guidance remains in `src/content/docs/`.
+This pass is local and uncommitted; nothing was staged, pushed, or deployed.
+
+The supplied `DOCS_STATE.md` dates its upstream pass November 14, 2026 and records
+covered revision `3e3f13e567e0114da008049b8bbe33ca3edb1275`, compared with baseline
+`6401199269d330643a0eb9b29b30cff4272b418d`. These are supplied metadata, not an
+independent verification of backend code or deployed behavior. Its changelog
+and deferred-work list do not describe every file now supplied: this sync uses
+the actual directory comparison, including the newer Oviposit and exchange guides.
+
+### Source inventory
+
+- **13 changed:** `DOCS_STATE.md`, `README.md`, `abilities.md`,
+  `account-and-profiles.md`, `architecture.md`, `attachable-items-and-devices.md`,
+  `companion-dashboard.md`, `form-shapeshifters.md`,
+  `reproduction-and-genetics.md`, `search-and-discovery.md`,
+  `species-compatibility.md`, `species-creation.md`, and
+  `third-party-integrations.md`.
+- **Two added:** `oviposit-rules.md` and `interaction-exchanges.md`.
+- **Nine unchanged:** `ai-companion.md`, `command-line-tooling.md`,
+  `help-and-support.md`, `interaction-lifecycle.md`, `rlv-and-control.md`,
+  `species-ancestry-and-taxonomy.md`, `store-and-rewards.md`,
+  `vitality-and-stats.md`, and `web-portal.md`.
+- **Removed:** `packs-and-groups.md` is absent from the supplied directory and
+  `DOCS_STATE.md` explicitly confirms removal of both the feature and guide.
+  Removed the obsolete engineering guide. The public Packs route remains as a
+  retirement notice, with all previous anchors intact.
+- **Retained locally:** `database-cloning.md` is absent from this source folder,
+  but its supplied README still links to it. Kept the previous developer-only
+  reference unchanged; absence alone does not establish feature removal.
+  `system-design.md` remains a local compatibility link, and this report remains
+  a local maintenance record.
+
+### Player-site changes
+
+| Topic | Updated coverage |
+| --- | --- |
+| [Oviposit rules](../src/content/docs/system-guide/oviposit-rules.mdx) | New System Guide page: true and shifted form eligibility, anatomy used, eligible self-produced eggs and pregnancies through 30% gestation, 10 m search/5 m deposit range, arousal/defense changes, stretch thresholds, and worked vitality example. |
+| [Abilities](../src/content/docs/system-guide/abilities.mdx) | Added Oviposit, the 40% ancestry threshold, permanent owner assignments and slots, direct versus inherited Ovum requirements, transfer choices, completion/failure guidance, and links to detailed form/stat rules. Retained Bite and Shift guidance. |
+| [Accounts and profiles](../src/content/docs/system-guide/accounts-and-profiles.mdx) | Added native sexuality/image editing, clear-versus-cancel behavior, stale-save recovery, attraction links, and filtered-result blocking. Replaced Packs instructions with a removal notice. |
+| [Species compatibility](../src/content/docs/system-guide/species-compatibility.mdx) | Replaced outdated anatomy-only gaze eligibility with sexuality/presented-gender rules. Added personal species preferences, limits and save behavior, directional attraction, encounter notices, and the separate observer explanation cooldown. Breeding-match calculations are unchanged. |
+| [Search and discovery](../src/content/docs/system-guide/search-and-discovery.mdx) | Added engagement indicators and their limits, filter combinations and scope, up to 20 account-owned named searches, stale-save recovery, legacy search changes, and separation from attraction preferences. |
+| [Companion dashboard](../src/content/docs/system-guide/companion-dashboard.mdx) | Added restoration of an already-open browser, species preference controls, permanent ability assignment links, Oviposit, filtered discovery, saved searches, and engagement indicators. |
+| [Creating a species](../src/content/docs/system-guide/creating-a-species.mdx) | Added hybrid birth-type choice and inheritance rules, plus the direct Oviposit assignment lock and ability-authoring link. |
+| [Form shapeshifters](../src/content/docs/system-guide/form-shapeshifters.mdx) | Linked ancestry-based ability eligibility and Oviposit's form/anatomy exceptions to their owning guides. |
+| [Reproduction and genetics](../src/content/docs/system-guide/reproduction-and-genetics.mdx) | Removed inherited pack membership; linked the new egg/early-pregnancy transfer guidance. |
+| [System overview](../src/content/docs/system-guide/system-overview.mdx) | Updated identity/attraction relationships, saved discovery and browser restoration; added Oviposit and removed the Packs recommendation. |
+| [Packs](../src/content/docs/getting-started/packs.mdx) | Replaced obsolete instructions with retirement guidance, removed the sidebar and Getting Started links, and retained the route and every anchor for bookmarks. |
+| [Oviposition plugin](../src/content/docs/plugins/oviposition-plugin.mdx) and [Ovum Exchanger](../src/content/docs/plugins/ovum-exchanger.mdx) | Added links distinguishing the new character ability from the existing egg-laying plugin and exchange device. |
+| [Ancestry and taxonomy](../src/content/docs/system-guide/ancestry-and-taxonomy.mdx) | Source, published guide, and renderer are unchanged. All seven existing flowcharts remain; rendered SVG markup matches the fresh pre-edit build exactly. |
+
+The Oviposit rules and Technical flow diagrams pages are the two new public routes. No existing public route or
+anchor was removed. Other unchanged-source player guides retain their existing
+coverage. The attachments and third-party source changes are in developer
+sections, so those player pages did not need a rewrite.
+
+### Engineering-reference updates and source limits
+
+- Added [shared interaction exchanges](interaction-exchanges.md): framework/ANE
+  ownership, lifecycle, expiry, immutable submission, transactional claims,
+  transport limits, and coordinated migrations/dependency deployment. It is
+  entirely an engineering contract, lacks audience frontmatter, and is omitted
+  from the supplied index. Preserved it exactly and recorded ownership here;
+  did not expose it as a player guide.
+- Updated ability inheritance/grants, authoring, use-history records, Oviposit
+  exchanges and migrations; native identity and preference save contracts;
+  filtered discovery and browser restoration contracts.
+- Updated architecture deployment announcements, anatomy-access integration in
+  attachable devices, and the third-party attachment protocol audit. Removed
+  obsolete pack references in the supplied architecture and shapeshifter sources.
+  Developer SQL, deployment details, and protocol commands stay in engineering
+  references. At the user’s explicit request, source diagrams, including their
+  implementation labels, are also published on the technical diagrams page.
+- The new exchange guide explicitly limits transactional guarantees to database
+  work, while ability prose has broader retry/side-effect claims. Player guidance
+  describes confirmed transfer results and failure handling without promising
+  exactly-once delivery of every notice or stat effect.
+- Existing taxonomy authoring/overview source inconsistencies recorded below
+  remain. This pass does not alter the already-reconciled taxonomy guidance.
+  Gaze wording is scoped to idle glances; it does not promise that every arousal
+  path shares these gates or that blocking universally suppresses gaze notices.
+- Backend documentation does not verify a deployed dashboard. Conditional
+  controls remain conditional; no live-game behavior was tested in this pass.
+
+### Diagram migration follow-up
+
+Audited all 24 supplied files for Mermaid, text flow diagrams, and structural
+layouts. All nine Mermaid diagrams are now represented on the site: the existing
+seven ancestry charts plus the ability resolver and shared scene-choice charts.
+The [Technical flow diagrams](../src/content/docs/development/source-diagrams.mdx)
+page also preserves all seven text flow diagrams (request lifecycle,
+reproduction, interaction states, service linking, purchase, reward, and command
+dispatch) and the RLV shared-folder layout. Related player guides and the
+Development navigation link to the relevant sections.
+
+The new component reads diagram blocks directly from `docs/`, renders Mermaid
+as static theme-aware SVG, and renders text diagrams with their original spacing
+and arrows. Source Markdown files retain every original diagram byte-for-byte.
+The existing ancestry renderer and its seven diagrams are unchanged. This
+explicitly requested diagram publication does not publish the surrounding
+engineering documents in full.
+
+### Verification
+
+- All 24 supplied files match the imported copies byte-for-byte.
+- `npm run validate` passed: zero Astro errors, warnings, or hints; 80 rendered
+  HTML files; 6,805 local links/assets checked; all 69 migrated routes retained.
+  Build logs contain the same pre-existing empty-i18n/missing-404-content notices
+  as the baseline build; they did not fail validation.
+- Compared every rendered page and ID against a fresh pre-edit production build:
+  no missing existing pages or anchors. Compared inline SVG markup on the
+  ancestry page: unchanged, including all seven flowcharts.
+- Ran `npm run dev`, refreshed the stale local development server, and confirmed
+  the new Oviposit page responds HTTP 200 at `http://127.0.0.1:4323`.
+- Ran `npm run preview` and confirmed the new page responds HTTP 200 at
+  `http://127.0.0.1:4324`. Exercised the generated Pagefind module against this
+  server: Oviposit, saved searches, species preferences, Assign permanently,
+  ancestry, and Technical flow diagrams all return their expected guides.
+- The technical diagrams page responds HTTP 200 on both local previews. Verified
+  all 17 nodes and 19 edges in its two Mermaid charts, including every source
+  node label and connection. All eight text blocks preserve exact text and
+  spacing. Rendered the two new SVGs to images and inspected their layout;
+  full browser interaction and responsive behavior remain unverified.
+- Browser automation reported that its browser access host is unavailable.
+  Visual layout and interactive browser review remain for local user review;
+  the HTTP, rendered-link, SVG, and search-module checks above are not a visual
+  browser test.
+
+## November 9 synchronization record
+
+The following records describe earlier snapshots, not the current source inventory.
+
 Reviewed on November 9, 2026 against all 24 Markdown files in
 `/Volumes/Shared_Drive/docs`. All supplied files are preserved byte-for-byte in
 `docs/`. The supplied `DOCS_STATE.md` dates its pass November 10, 2026 and records
@@ -49,7 +186,7 @@ references. The index and coverage records are maintenance documents.
 | [Items and devices](attachable-items-and-devices.md) | [Attachable items and devices](../src/content/docs/system-guide/attachable-items-and-devices.mdx) | Source unchanged; existing coverage retained. |
 | [AI companion](ai-companion.md) | [AI companion](../src/content/docs/system-guide/ai-companion.mdx) | Source unchanged; existing coverage retained. |
 | [Web portal](web-portal.md) | [Web portal](../src/content/docs/system-guide/web-portal.mdx) | Source unchanged; existing coverage retained. |
-| [Packs and groups](packs-and-groups.md) | [Packs](../src/content/docs/getting-started/packs.mdx) | Source unchanged; existing coverage retained. |
+| `packs-and-groups.md` (removed November 24) | [Packs](../src/content/docs/getting-started/packs.mdx) | Source unchanged; existing coverage retained. |
 | [Chat commands](command-line-tooling.md) | [Command line](../src/content/docs/getting-started/command-line.mdx) | Source unchanged; existing coverage retained. |
 | [Third-party integrations](third-party-integrations.md) | [Third-party integrations](../src/content/docs/system-guide/third-party-integrations.mdx) | Source unchanged; existing coverage retained. |
 | [Help and support](help-and-support.md) | [Help and support](../src/content/docs/overview/help-and-support.mdx) | Source unchanged; existing six-month history guidance retained. |

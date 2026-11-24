@@ -111,6 +111,56 @@ declared without both bounds, or any other unsupported kind, throws
 fails as soon as the attachment class is reflected rather than producing a
 bad control entry.
 
+#### Attachment protocol audit — 2026-11-14
+
+The command wrappers were checked against the primary sources below. Tests
+verify emitted messages, channels, callback handling and state transitions;
+they do not execute the receiving scripts in Second Life. Match the adapter
+to the product generation: commands supported by one model are not necessarily
+supported by another model from the same vendor.
+
+| Family | Transport | Sources and implemented coverage |
+|---|---|---|
+| SKNK Heracles | Channel `71`, `dong-` prefix | [Heracles manual](https://wiki.sknk.pw/slmanuals/heracles_cock): states, angles, swinging, fluid effects, visibility, parts, foreskin, shaft/glans, length/offset, options, textures, state requests, and the documented physics/bed workarounds. `doBallRotation()` uses the `brot` spelling from the 1.1 changelog; `doBalls()` preserves the older spelling. |
+| PsiCorp v6 | Channel `5`; vaginal commands use `vag ` | [Anthro manual](https://psicorp.freshdesk.com/support/solutions/articles/4000054233-anthro-penis) and each concrete class's `@see` manual: state/effect commands plus color, materials, glow, autohide, intensity, tilt, physics and fractional ball scaling. |
+| PsiCorp Animesh | Channel `5` | Product manuals, including [Equine](https://psicorp.freshdesk.com/support/solutions/articles/4000143063-animesh-equine-penis), [Dragon](https://psicorp.freshdesk.com/support/solutions/articles/4000143064-animesh-dragon-penis), [Natural Canine](https://psicorp.freshdesk.com/support/solutions/articles/4000176419-animesh-natural-canine-penis) and [Bento Sergal Vagina](https://psicorp.freshdesk.com/support/solutions/articles/4000229480-bento-vagina-sergal): motion, effects and model-specific knot, flare, girth, length, barbs and sheath commands. Throb toggles/modes and `raised_high`/`raisedhigh` spellings follow the individual manuals; Animesh cleanup uses `mess off`. Sergal toy arguments are space-separated and oviposition is `vag ovi`. Its documented `pre` and `effects off` commands have no `vag` prefix. |
+| PsiCorp CCS | Channel `-555`, directed to the registered HUD object | [CCS developer API](https://psicorp.freshdesk.com/support/solutions/articles/4000054298-chastity-control-system-ccs-api-developer-documentation): discovery, registration, removal and `doCcsCommand()` for the documented lock, state, outfit, pregnancy, sample, climax and child commands. Arguments are CSV-encoded. `getCcsReply()` retains valid pregnancy-status and sample responses from the registered target. Unregister uses the AnE controller's object UUID. |
+| Sensations | Bento/legacy channel `9`; current Animesh cock channel `8` | [Legacy cock help](https://www.buysensations.com/helpview.php?type=cock2), supplied [Cock notecard](<thirdparty/Sensations/Sensations (Cock).raw>) and [Vagina notecard](<thirdparty/Sensations/Sensations (Vagina).raw>): menus, poses, fluid toggles, moisture, bending/animation, knot/throb, vaginal states, BoM and material commands. `BentoCock`, `AnimeshCock` and `Vagina` select the current documented protocols; the existing named cock classes retain their legacy dialects. |
+| ZAF | Channel `55` or secondary `-55`; masturbation routine on `1` | Supplied [Feline/Canine Animesh notecard](<thirdparty/ZAF/ZAF (Feline Canine Animesh).raw>) and [Dragon Animesh notecard](<thirdparty/ZAF/ZAF (Dragon Animesh).raw>): states through 18, speed/special poses, effects, sound, customization, particles, textures and channel switching. Hide and piercing layouts differ by model. Texture helpers preserve the alpha/specular/final face slots; `doZedit()` also accepts comma-separated face lists. |
+| Good Moaning Interact | Input `1482784366`, notices `1482784365`, directed to the wearer | [Interact API](https://goodmoaning.bdx9.com/dev/interact/interact) and [gesture API](https://goodmoaning.bdx9.com/dev/gestures/create): arousal query/update and slap inputs; owned arousal, slap, rub, hair-pull and climax notices are validated and cached for callers/dashboard serialization. These cached values do not automatically overwrite AnE's arousal stat. |
+| Good Moaning vocals | Existing remote-drive transport | [Remote-drive API](https://goodmoaning.bdx9.com/dev/voice-huds/remote-drive): the existing implementation and unit coverage already include its documented command set; no protocol change was needed. |
+| JASX BARE / StripFight | Owner-derived private channel from the vendor plugin | [Official plugin source](https://github.com/without-ordinary/stripfight/blob/master/stripfight_plugin.lsl): duel acceptance, buttons, quit, punishment, abilities, style, status and camera tasks use JSON objects. Incoming JSON damage updates AnE stats; history keeps the newest ten events. Server tasks must be spaced at least five seconds apart by the caller, as required by the vendor. Deprecated preference tasks `0`–`2` are not reintroduced. |
+
+The audit also searched for Spunked, Orange Nova Skadi and Snaggletooth Vagoo
+command documentation, but did not locate a public primary API reference.
+Their existing wire protocols remain the basis of their adapters:
+
+- Spunked keeps channel `4953` and `Request*…` messages. The previously empty
+  cover callbacks now delegate to existing region commands. Belly maps to
+  chest, and butt/thigh map to groin as coarse application-level fallbacks;
+  these are not additional vendor commands. Custom color/glow support remains
+  unverified.
+- Orange Nova keeps channel `-1246875312`; its listener now recognizes the
+  `particles,cumin`/`cumout` and heavy variants already emitted by its adapter.
+- Vagoo keeps channel `-623`, including the first initialization command.
+  Existing `vagoo cumstate` and `vagoo texturechange` constants now have
+  callable wrappers.
+
+Additional notecards are still needed to certify those three protocols and
+the older ZAF variants. The supplied Sensations Ass/Anus/Clit notecards are
+reference material; this audit covers the attachment types already represented
+here, plus concrete adapters for the existing Sensations penis/vagina bases.
+New concrete adapters must be added to the deployment's attachment catalog
+(`a_class`) before users can select them; this change does not migrate catalog
+rows or switch existing users to another product generation.
+
+Regression coverage lives in `tests/unit/AttachmentProtocolCommandsTest.php`,
+`tests/integration/thirdparty/AttachmentCommandMetadataTest.php`, and the
+`AttachmentCommandsInitializedRouteToDocumentedChannelsTest` /
+`AttachmentNoticesOwnedAndMalformedPreserveStateTest` e2e cases. It covers
+command payloads, invalid inputs, initialization, ownership, scoped echo
+suppression, CCS replies, channel changes, override behavior and detach cleanup.
+
 #### Manual override (user-driven control)
 
 Every attachment can be switched into a per-session **user override**

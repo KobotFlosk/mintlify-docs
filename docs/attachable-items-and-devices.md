@@ -128,7 +128,7 @@ Notable concrete plugins/devices:
 
 | Class | `getShortName()` | Role |
 |---|---|---|
-| `NectarExtractorPlugin` | Nectar Extractor | Extends `AbstractExtractorPlugin`; captures nectar-type fluid during penetration events. |
+| `NectarExtractorPlugin` | Nectar Extractor | Captures nectar and claims exclusive vaginal access while attached. |
 | `SpunkExtractorPlugin` | (extractor) | Same pattern for semen-type fluid; present in code but **commented out** of the plugin factory in `Application::doInitialize()`, so not currently attachable. |
 | `OvipositionPlugin` | Oviposition | Drives egg-laying via `BirthHelper`, producing `ItemObjectBirthEgg` items and `BirthEvent`s. |
 | `OvipositorPlugin` | Ovipositor | A stub companion add-on for the oviposition flow; it has no behaviour beyond its handle/label yet, and is **not** registered in the plugin factory below, so it cannot currently be attached in production. |
@@ -139,7 +139,7 @@ Notable concrete plugins/devices:
 | `NaniteTesiPlugin` | (Nanite-Systems TESI integration) | Implements `OpenTransferSubscriber`; bridges to the third-party Nanite Systems TESI protocol. |
 | `SexRifleDevice` | (rifle device) | Holds a `FluidContainerHolder`-backed fluid container; a projectile-style fluid device that can be loaded from and drained into other fluid containers. |
 | `external/ProjectArousalPlugin` | Project Arousal 1/2 | Bridges to the third-party "Project Arousal" HUD/attachment. |
-| `fullarray/FullArrayPlugin` | (full-array outfit controller) | Tracks outfit/genital visibility state and reacts to `AbilityShiftEvent`/penetration events for full-array-style avatars; see [FullArray profile & appearance linking](#fullarray-profile--appearance-linking) below for its character-linking system. |
+| `fullarray/FullArrayPlugin` | (full-array outfit controller) | Tracks outfit coverage and reacts to `AbilityShiftEvent` for full-array-style avatars. See [FullArray profile & appearance linking](#fullarray-profile--appearance-linking). |
 | `projectile/ExtractorProjectileDevice`, `projectile/InjectorProjectileDevice` | (projectile devices) | Concrete handles (`device.projectile.extractor`, `device.projectile.injector`) over `AbstractFluidExtractorProjectileDevice` / `AbstractFluidInjectorProjectileDevice`. |
 
 Devices are resolved by handle through a factory closure registered with
@@ -148,6 +148,14 @@ each `getHandle()` to its class. Only plugins registered in that closure are
 attachable at runtime (see the commented-out `SpunkExtractorPlugin` line, and
 the entirely unregistered `OvipositorPlugin`, as examples of defined-but-inactive
 plugins).
+
+In an `AbstractAnePlugin` subclass, set `OCCUPIED_ANATOMY` to the orifices
+or stimulators the plugin needs while attached. Attachment checks each part,
+and reconnecting checks all other occupants. A role-play subscriber can implement `AnatomyBlocker` and
+return its current restrictions from `blockedAnatomy()`. HUD features can
+call `RolePlayService::getInstance()->anatomyAccessible($part, $profile)`
+before starting a new use. A story or transfer already using a reserved part
+can check `AnatomyAccess::isExternallyBlocked()` for obstructions on either participant.
 
 ### FullArray profile & appearance linking
 
@@ -160,9 +168,8 @@ currently-selected FullArray profile (`currentProfile`, refreshed from
 repository so it survives outside a live session) and outfit exposure state
 (`torsoExposed`/`crotchExposed`, derived from `FullArray.Outfit` messages via
 `updateStates(...)`), which is what backs `isTorsoExposed()`/
-`isCrotchExposed()`/`isStimulatorExposed(...)`/`isOrificeExposed(...)` — the
-same exposure checks `on_roleplay_event(...)` answers for
-`OrificePenetratedQueryEvent`/`StimulatorPenetratedQueryEvent`.
+`isCrotchExposed()`/`isStimulatorExposed(...)`/`isOrificeExposed(...)` and
+the clothing restrictions it reports through `AnatomyBlocker`.
 
 Links are persisted in the `fullarray.profiles` account setting (a JSON tree
 keyed by FullArray profile id and AnE profile/form id, read/written through

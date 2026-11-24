@@ -1,6 +1,6 @@
 ---
 audience: mixed
-summary: Character discovery, saved identity, inherited ancestry, compatibility explanations, and community locations.
+summary: Character discovery, saved filters, identity and activity, inherited ancestry, compatibility explanations, and community locations.
 ---
 
 # Search & Discovery
@@ -38,7 +38,7 @@ with them, you may be able to:
   breeding requests and auto-acceptance work.
 - **Adopt** — offer an adoption bond (Master/Slave, Owner/Pet, or Parent/Child).
   See [Accounts & Profiles](account-and-profiles.md).
-- **Block** — exclude that person from your nearby, online, and fertile
+- **Block** — exclude that person from your nearby, online, fertile, and filtered
   character results. This does not hide them from the name-based profile lookup
   or remove their activity from region totals. Blocking only affects your own
   results; it doesn't notify the other person or restrict them from finding you
@@ -51,6 +51,11 @@ sexuality and picture. Unspecified details stay empty rather than being inferred
 from the character's body. See
 [Optional character identity](account-and-profiles.md#optional-character-identity)
 for editing your own details and their visibility to other people.
+
+Results can also indicate whether a character is already in an intimate
+engagement. This is separate from fertility, attraction, and whether they are
+close enough to receive a request; it does not imply consent or availability.
+The indicator does not identify their partner.
 
 A character's registered species and that species' recipe are not necessarily
 their personal ancestry. A descendant can inherit different proportions, or
@@ -82,6 +87,35 @@ match can still be part of the character's ancestry.
 
 The value is an estimate for the two profiles; conception involving a particular
 ovum can differ because the ovum's donor and stored traits are used there.
+Personal species attraction preferences do not change this match percentage.
+
+### Filtered discovery and saved searches
+
+Where your dashboard offers filtered discovery, combine a name search, species
+name, gender, sexuality, form, class, fertility, and a minimum match percentage.
+You can choose several values within a category: any selected value in that
+category matches, but every category you constrain must match. Leaving a category
+empty means no restriction.
+
+Filtered discovery searches people active during the last hour across all
+regions, excludes yourself and people you blocked, and does not impose a distance
+limit. A distant match need not be available for a nearby interaction. Species
+text matches the character's registered species name, not every part of their
+ancestry. A missing detail cannot satisfy a restriction on that detail. Even a
+minimum match of zero requires a calculable comparison and an active character
+of your own.
+
+Try a search before saving it; searching alone does not create a saved preset.
+You can keep up to 20 named presets, edit them, and delete ones you no longer
+need. Names must be distinct, ignoring capitalization, and no longer than 60
+characters. Saved searches belong to your account and remain available when
+you switch characters, though match percentages use the newly active character.
+
+If another view changed your saved searches, reload before saving or deleting.
+Rejected changes leave existing presets intact. An unreadable saved-search list
+is reported rather than silently replaced; seek support if reloading does not
+help. Older saved searches retain their names and choices but no longer restrict
+results by region or distance, so they may find more people than before.
 
 ### Registering a Garden or Forest
 
@@ -143,13 +177,13 @@ Profiles name search are not equivalent blocked-account lists.
 ### Web discovery rows
 
 `DiscoveryHelper` (`src/classes/helpers/DiscoveryHelper.php`) serves
-`/api?class=DiscoveryHelper&scope=<scope>`. Region, Online, and Fertile use the
+`/api?class=DiscoveryHelper&scope=<scope>`. Region, Online, Fertile, and filtered searches use the
 one-hour `Constants::DATETIME_INTERVAL_ONLINE` window, exclude the caller, and
 apply the caller's block list. The web Region scope therefore differs from the
 native Region dialog's two-minute window. Fertile additionally requires an
 active profile whose `ProfileHelper::maybeFertile()` is true.
 
-Region and Online retain accounts with no active profile, using the agent name,
+Region, Online, and unconstrained filtered searches retain accounts with no active profile, using the agent name,
 null identity/ancestry/compatibility fields, and an empty species composition;
 Fertile excludes them. An error constructing one
 active profile row is logged and that row is skipped. Unknown scopes return an
@@ -162,9 +196,11 @@ message.
 | `species`, `speciesHybridType`, `speciesComposition` | The registered species name, its kind, and names of its direct recipe members. These are species-definition data, not flattened inherited proportions. |
 | `ancestry` | The individual's weighted inherited species; see below. |
 | `gender`, `sexuality`, `imageUuid` | Stored character gender label, saved sexuality label, and optional texture UUID. Sexuality uses `SexualityTypeEnum::toLabel()`, not the enum backing key used by the editor; unset sexuality/image values remain null. |
+| `genderKey`, `sexualityKey`, `formKey`, `classKey`, `form`, `class` | Active-profile rows include canonical enum backing values for filter matching and readable form/class labels. These fields are absent from rows without an active profile; clients must tolerate absence rather than invent a default. |
 | `region`, `fertile` | Stored profile region and current fertility estimate. The region is not the latest HUD location and does not apply the native Online dialog's locatable-setting check. |
+| `copulating` | Boolean from `ProfileCopulationHelper::hasCopulations()` for a concrete active profile; false without one. It reports existing engagement records, not a pending invitation, fertility, or account state. It exposes no partner IDs or scene details. |
 | `compatibility`, `compatibilityBreakdown` | Nullable canonical pair score and explanation against the caller's active character. |
-| `distance`, `canCopulate` | Region/Online only calculate proximity through `CopulateModule::copulationProximity()` when the caller has an active profile. Fertile leaves these null/false. A true flag is a range check, not consent or guaranteed acceptance. |
+| `distance`, `canCopulate` | Region, Online, and filtered searches calculate proximity through `CopulateModule::copulationProximity()` when the caller has an active profile. Fertile leaves these null/false. A true flag is a range check, not consent or guaranteed acceptance. |
 
 `global` instead uses `HeaderRepositoryImpl::groupActiveHeadersByRegion(60)`
 and returns cleaned region names and header counts. These are activity counts,
@@ -177,6 +213,67 @@ restriction.
 > profile region described above, not the native dialog's location-visibility
 > contract. Whether those reads should share an additional visibility setting
 > requires maintainer confirmation.
+
+`tests/e2e/cases/DiscoveryCopulationActivityReflectsActiveEngagementsTest.php`
+checks activity flags across character scopes, including an engagement where
+the visible character is the receiver, removal, and accounts without profiles.
+
+### Filter requests and persistence
+
+`scope=filter` delegates to `DiscoveryFilterHelper` and
+`DiscoveryFilterDefinition` in `src/classes/helpers/`. It filters the same
+blocked/self-excluding online candidate rows as the Online scope, after building
+identity, ancestry, compatibility, activity, and proximity. It is not a separate
+database search or a way to inspect inactive characters.
+
+| Request | Inputs and result |
+|---|---|
+| GET | Returns `filters`, `revision`, enum-derived `options`, and `maxFilters` (20); does not write a setting or perform a search. Each preset has `id`, `name`, and `criteria`. |
+| POST `action=search` | Takes validated `criteria` directly, not a saved ID, and returns `scope: filter` and `results`. It requires no revision and does not save the draft. |
+| POST `action=save` | Takes the current `revision` and `filter` containing `name`, `criteria`, and optional `id`. Omitting the ID creates a server-generated ID; supplying one replaces an existing caller-owned preset. Returns the updated filter state. |
+| POST `action=delete` | Takes `revision` and an existing caller-owned `id`; removes only that preset and returns the updated state. |
+
+Unsupported verbs/actions, invalid criteria, and rejected mutations return
+`scope: filter`, empty `results`, and `error`, rather than an `ok` flag.
+An empty successful search has empty results without an error.
+
+Criteria are validated data, never executable expressions:
+
+| Criterion | Validation and matching |
+|---|---|
+| `query` | Trimmed UTF-8 text, at most 100 characters; case-insensitive substring of character name, agent name, or agent key. |
+| `species` | Same text validation; substring of the registered species name, not composition members. |
+| `gender`, `sexuality`, `form`, `class` | Lists of the respective enum backing strings, not labels or scalars. Duplicate choices are removed; empty lists impose no constraint. Any selected value within a field matches; all constrained fields must match. |
+| `fertile` | Literal boolean. False requires an active character with false fertility, not an account lacking a character. |
+| `minCompatibility` | Finite JSON number from 0 through 100, compared with the fraction-valued row score after division by 100. Null compatibility fails even a zero threshold. |
+
+Unknown fields, including retired `scope`, `region`, and `maxDistance`, are
+rejected in new criteria. Text rejects control characters. Missing enum keys
+cannot match a selection; no separate "unspecified sexuality" filter value is
+provided. Empty criteria are serialized as an object, including in revision
+hashes, not as a list.
+
+All presets live in the authenticated account's `discovery.filters` JSON
+setting, currently document version 2. Names are nonempty trimmed UTF-8 text of
+at most 60 characters and case-insensitively unique on save. IDs are 32 lowercase
+hexadecimal characters. Mutations lock the account transactionally, re-read the
+document, and compare its SHA-256 revision before changing it. This serializes
+first-setting creation too; foreign/missing IDs, stale revisions, invalid input,
+and exceeding 20 presets do not replace existing definitions.
+
+Reads accept stored version 1 and convert scalar enum choices into lists,
+validate then remove old location restrictions, and preserve preset IDs/names.
+A location-only preset becomes unconstrained. GET performs this upgrade only
+in memory; the next successful save or delete persists the whole version 2
+document. Malformed or unsupported-version documents fail visibly and are
+never automatically reset.
+
+Coverage: `tests/unit/DiscoveryFilterDefinitionTest.php` and the E2E cases
+`DiscoveryFiltersPersistPerAccountAndValidateChangesTest.php`,
+`DiscoveryFilterSearchPreservesPrivacyAndMatchesCriteriaTest.php`, and
+`DiscoveryFiltersLegacySettingsUpgradeToMultipleChoicesTest.php` under
+`tests/e2e/cases/` cover validation, privacy boundaries, multi-choice matching,
+account isolation, stale edits, limits, and migration.
 
 ### Individual ancestry in discovery
 

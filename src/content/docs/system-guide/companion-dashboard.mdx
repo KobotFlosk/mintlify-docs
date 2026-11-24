@@ -11,7 +11,7 @@ The **Web** button opens the dashboard for every account. You do not need tester
 
 You can also choose **UI** from the **Start** menu before activating a character. This opens the dashboard again instead of toggling it closed.
 
-If your account has no character profiles, the dashboard opens automatically during startup to help you get started. If you already have profiles, it does not open automatically, even when none is active.
+If your account has no character profiles, the dashboard opens automatically during startup to help you get started. Otherwise, an already-open browser view is restored, including when you have profiles but none active. A previously closed browser stays closed.
 
 If an opening link expires, open the view again from the companion.
 
@@ -27,14 +27,15 @@ The dashboard can show:
 
 - **Live status** — whether the companion is active and, during a scene, a live narration of what is happening.
 - **Character sheet** — identity, species, form, class, birthplace, parents, stats, fertility, pregnancy, and body growth. Where offered, you can edit your [optional sexuality and character picture](/system-guide/accounts-and-profiles#optional-character-identity). Saved details can appear in discovery results.
-- **Abilities** — available actions such as Transmute (Shift) and Bite, with the same controls as the in-world menu. The dashboard can also list unavailable abilities. See [Abilities](/system-guide/abilities).
+- **Species attraction preferences** — where offered, adjust your active character's attraction toward selected species. These preferences do not change breeding compatibility. See [Personal species preferences](/system-guide/species-compatibility#11-personal-species-preferences).
+- **Abilities** — available actions such as Transmute (Shift), Oviposit, and Bite, with the same controls as the in-world menu. The dashboard can also list unavailable abilities. See [Abilities](/system-guide/abilities).
 - **Character details** — trusted characters, partners, family, species, pregnancies, and histories. You can remove an existing trust or dissolve a partnership. Dissolving a partnership removes it for both characters. Nearby partnership invitations and character-specific species overrides still use the in-world menus. The profile can also show your character's fluid characteristics, compartment contents, and occupied space without identifying fluid donors.
 - **Genetics, pregnancies, and births** — visibility depends on your character. See [Viewing character histories](/system-guide/reproduction-and-genetics#viewing-character-histories). Pregnancy progress and estimated delivery time appear from 10% development. Delivery remains in-world.
-- **Species settings** — if you own a species, you can edit its shared base settings after acknowledging the impact on other characters. See [Editing a species you own](/system-guide/creating-a-species#editing-a-species-you-own). The species view also shows [taxonomy and profile counts](/system-guide/species-compatibility#8-optional-taxonomy-compatibility).
+- **Species settings** — if you own a species, you can edit its shared base settings after acknowledging the impact on other characters. See [Editing a species you own](/system-guide/creating-a-species#editing-a-species-you-own). The species view also shows [taxonomy and profile counts](/system-guide/species-compatibility#8-optional-taxonomy-compatibility). Eligible owners can [assign permanent species abilities](/system-guide/abilities#assign-species-abilities).
 - **Items and devices** — nearby usable items and management controls for worn devices.
 - **Attachments** — add or remove managed products and switch a supported attachment to manual **Override** to use its controls yourself.
 - **Settings** — account preferences, privacy controls, movement or RLV restrictions, and access permissions.
-- **Search and discovery** — nearby, online, or fertile characters with saved identity, inherited ancestry, compatibility explanations, and interaction controls. See [Search and discovery](/system-guide/search-and-discovery).
+- **Search and discovery** — nearby, online, or fertile characters with saved identity, inherited ancestry, compatibility explanations, engagement indicators, and interaction controls. Where offered, combine filters and save searches for reuse. See [Search and discovery](/system-guide/search-and-discovery).
 - **Gardens** — a separate directory for browsing community locations and managing your own listings. See [Register a garden or forest](/system-guide/search-and-discovery#register-a-garden-or-forest).
 - **Outfits** — where offered, switch outfits and put on or remove clothing pieces. FullArray-managed appearances use their own controls. See [Using browser outfit controls](/optional-add-ons/rlv-outfits#using-browser-outfit-controls).
 - **World presence** — community activity, busy regions, and common species.
@@ -70,3 +71,5 @@ Open your own web view from the companion instead of sharing opening links. Revi
 Open **Attachments** to see the products your companion manages and the available add/remove controls. Turn on **Override** for an attachment to pause its automatic reactions and use its individual controls or test commands. Manual controls require Override to be enabled.
 
 Turn **Override** off when you want automatic reactions to resume. See [Third-party integrations](/system-guide/third-party-integrations#manual-attachment-controls).
+
+For implementation details, see [Shared scene choice diagram](/development/source-diagrams#shared-scene-choices).

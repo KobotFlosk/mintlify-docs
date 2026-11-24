@@ -1,6 +1,6 @@
 ---
 title: "Abilities"
-description: "Use Transmute and Bite, understand ability eligibility, and find nearby targets."
+description: "Use Transmute, Oviposit, and Bite, understand inherited abilities, and assign permanent species abilities."
 ---
 
 Abilities are special character actions available from **MyProfile → Abilities** in-world and the **Abilities** panel on the [companion web dashboard](/system-guide/companion-dashboard).
@@ -10,19 +10,47 @@ Abilities are special character actions available from **MyProfile → Abilities
 | Ability | What it does |
 | --- | --- |
 | **Transmute (Shift)** | Switch between forms you have learned. See [Form shapeshifters](/system-guide/form-shapeshifters) for how appearance differs from your real biology. |
+| **Oviposit** | Transfer a chosen number of your eggs or eligible pregnancies into another character. See [Oviposit rules](/system-guide/oviposit-rules) for form requirements and stat effects. |
 | **Bite** | Bite a nearby character, reducing their health and defense and sampling their blood. |
 
 ## Which abilities you can use
 
-Your species, form, and class determine eligibility under rules configured for the experience. You cannot grant yourself an ability through a setting. The in-world menu only offers abilities you currently qualify for. The dashboard may also list abilities you cannot currently use as unavailable.
+To use a species-granted ability, you need at least **40% ancestry from the granting species**, plus a matching form and class. The in-world menu only offers abilities you currently qualify for. The dashboard may also list unavailable abilities.
 
-Rules for your exact species take precedence over general rules for the same ability. If your species has its own rules, you must qualify under those rules; the general rules do not provide a fallback. Hybrid ancestry does not automatically give you a parent species' abilities.
+Each granting species must meet the threshold separately. A character with exactly 40% Fox ancestry can qualify for a Fox ability; a grandchild with 25% cannot, even if their selected species is Fox. Your character's own inherited shares determine eligibility, which can differ from the recipe shown on the **Species** page.
 
-Each ability is checked separately. If your species has several rules for an ability, meeting any one is enough. A rule that specifies both form and class requires both to match. Without a configured grant, an ability is unavailable.
+Each ability is checked separately. Meeting one matching rule from a qualifying species is enough; when a rule requires both form and class, both must match. Species rules can supersede general ability defaults, so falling below the ancestry threshold does not guarantee access through a default rule.
 
 Physical abilities such as Bite follow your active form. A disguise may give you access to Bite or remove it while you wear that form. Your ability to Shift is checked against your base character, so changing form does not remove your ability to change back.
 
 Having Transmute does not mean you already know alternate forms. You still need to acquire them.
+
+## Assign species abilities
+
+If you own a purebred species, open **Character → Species → Species abilities** in the dashboard. Choose an ability and each eligible form/class combination, then select **Assign permanently**. Both the ability and its combinations are permanent.
+
+One assignment uses one slot regardless of how many combinations it covers. Inherited abilities use no slots. Check the allowance and eligibility shown by your species editor before confirming.
+
+To assign Oviposit directly, set **Embryo type** to **Ovum** first. Direct assignment locks that setting in both the dashboard and HUD. An older direct assignment with Live births can be corrected to Ovum.
+
+A hybrid that inherits Oviposit can choose **Live** or **Ovum** births at creation and change it later. With Live births, the Species page marks the inherited ability as requiring Ovum births. Switching to Ovum lets qualifying characters use it again. Either birth type can pass the granting ancestry to descendants.
+
+## Use Oviposit
+
+1. Open **Abilities → Oviposit** and choose an active, unblocked nearby character. Search lists characters within **10 metres**; stand within **5 metres** when selecting **Deposit**.
+2. Wait for their HUD to report available openings. Covered, occupied, and nonexistent openings cannot be selected.
+3. Choose an opening, either unfertilized eggs or pregnancies, and a whole-number quantity. The browser keeps these choices together; the native HUD offers the same controls.
+4. Select **Deposit** and wait for the completion result. The receiving HUD checks your eligibility and the opening again before transferring the full quantity.
+
+Your true form must have a vagina and your true species must have Ovum births. Which species must grant the ability and which anatomy you use depend on your current form. Check the [form-by-form Oviposit rules](/system-guide/oviposit-rules#can-my-character-use-oviposit).
+
+You can transfer only eggs you produced and still carry, or pregnancies you conceived, still carry, and have developed no further than **30%**. You cannot pass on someone else's deposited egg. Eggs and pregnancies have separate choices and counts; the oldest eligible entries transfer first.
+
+Transfers preserve the original parents, inherited traits, and creation or conception date. A failed or expired transfer moves nothing; refresh and try again. Changing to an ineligible form while waiting also prevents the transfer.
+
+Each egg or pregnancy raises the recipient's arousal by **5 percentage points** and lowers defense by **10 percentage points**, within the usual stat limits. Wide eggs can also reduce remaining vitality, potentially fatally. Read the [stretch thresholds and worked example](/system-guide/oviposit-rules#how-does-a-deposit-affect-my-stats) before depositing.
+
+After success, your result confirms the count and opening. The recipient's HUD gives an anonymous whisper about the deposit without naming you. Failed transfers have no success notice or stat effects.
 
 ## Use Bite
 
@@ -36,6 +64,9 @@ If no browser targets appear, keep your companion worn and let it update your lo
 
 ## Next steps
 
+- [Check Oviposit form requirements and effects](/system-guide/oviposit-rules)
 - [Learn about shifted forms](/system-guide/form-shapeshifters)
 - [Understand vitality and recovery](/system-guide/vitality-and-stats)
 - [Open the companion dashboard](/system-guide/companion-dashboard)
+
+For implementation details, see [Ability eligibility diagram](/development/source-diagrams#ability-eligibility).

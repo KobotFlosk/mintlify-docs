@@ -186,6 +186,10 @@ the review menu you can tap any one to change it, then press **FINISH**.
    - **Live** (live birth)
    - **Ovum** (egg-laying)
 
+   A hybrid owner can choose either birth type and change it later. If the hybrid
+   inherits Oviposit, characters need Ovum births to use it. A Live hybrid still
+   passes the granting species’ ancestry to descendants.
+
 **Descriptors (optional):** appearance/behavior tags. Describe the species in your
 own words and the AI generates a tag list you can keep or skip.
 
@@ -285,7 +289,8 @@ action. Legacy hybrids with missing composition remain eligible for the
 existing completion flow.
 
 The user names the new species, supplies a relative composition weight for
-each fixed parent species, and explicitly identifies the character as a hybrid.
+each fixed parent species, chooses its birth type, and explicitly identifies
+the character as a hybrid. Birth type defaults to the character’s current species.
 Saving creates a new user-owned species with those two direct members. The
 stored recipe does not flatten hybrid parents into their underlying members.
 Birth matching expands the complete ancestry separately and ignores weights.

@@ -1,16 +1,16 @@
 ---
 audience: mixed
-summary: Species ancestry, taxonomy, inherited composition, and compatibility scoring.
+summary: Species ancestry, taxonomy, compatibility scoring, and personal attraction preferences.
 ---
 
 # Species Compatibility — How It Works
+
+## For end-users
 
 Species compatibility has two independent components: the **lineage overlap**
 explained below, and an optional **taxonomy** classification. The existing
 lineage calculations and examples remain unchanged. Taxonomy adds compatibility
 between separately named species that share a biological rank; see §8.
-
-## For end-users
 
 *A plain-language guide for players.* No math background needed; if you can
 read a pie chart, you're set.
@@ -290,19 +290,68 @@ make every ovum they carry equally compatible with the other character.
 
 ### 10. Species affinity and arousal
 
-Species **affinity** uses the same inherited species overlap and taxonomy as
+Species **affinity** starts with the same inherited species overlap and taxonomy as
 Matching, before garden/forest, partnership, forced compatibility, form, or
 class modifiers. Taxonomy still includes biological class as a rank; the
 excluded class modifier refers to character classes such as Living or Deity.
+Your personal preference for the other character's registered species then
+raises or lowers this attraction, without changing breeding compatibility.
 
-Looking toward a nearby character with compatible breeding organs can raise
-arousal when affinity is **greater than 50%**. Each affinity percentage point
+While idle, looking toward a nearby character whose presented gender matches your sexuality
+can raise arousal when affinity is **greater than 50%**. Each affinity percentage point
 above 50% permits one arousal percentage point: 51% affinity permits 1%
 arousal, 75% permits 25%, and 100% permits the maximum 50%. Affinity increases
-arousal by up to five percentage points per HUD ping until that limit. It does
+arousal by up to five percentage points per companion update until that limit. It does
 not lower arousal already above the limit or stack limits across nearby users.
 The strongest eligible affinity applies, and the arousal message names the
-character and species affinity as the reason. Gender interests are not applied.
+character and species affinity as the reason. This explanation appears at most
+once every fifteen minutes for your character, even if you look away and start
+another encounter. Arousal can continue increasing between explanations.
+Breeding anatomy and the other
+character's sexuality do not gate your attraction.
+
+Straight characters respond to opposite masculine/feminine presentation, Gay
+characters to shared presentation, and Lesbian characters to feminine presentation
+when they also present as feminine. Male/Andromorph are masculine,
+Female/Gynomorph are feminine, and Hermaphrodite matches both. Neutral matches
+neither of those groups. Bi, Pan, Demisexual, Questioning, and Not specified
+allow any gender (including Neutral); Asexual disables automatic affinity arousal.
+These are gameplay rules for glances; Demisexual does not require a bond check.
+Shapeshifters use their presented genders for this assessment.
+
+Every attractive character in view receives a private notice identifying who
+is looking their way, even when attraction is one-sided or the observer is
+already at the arousal cap. Receiving the notice does not raise their arousal.
+The notice happens once per encounter: looking away, moving out of view,
+changing regions, or a gap of more than two minutes between gaze assessments
+allows a new notice. This notice is separate from your fifteen-minute explanation
+cooldown; reaching your arousal cap does not prevent someone newly in view from
+being notified.
+
+### 11. Personal species preferences
+
+Where the dashboard offers species affinity controls for your active character,
+choose a species and an attraction adjustment from −100% to +100%, in steps of
+5%. Positive values increase attraction; negative values reduce it. The
+adjustment adds or subtracts percentage points from the starting affinity, with
+the result kept between 0% and 100%. For example, a starting affinity of 40%
+with a +25% preference becomes 65%, permitting up to 15% arousal from that glance.
+
+Preferences are one-way: your preference does not change the other character's
+interest in you. They match that character's registered species, not every
+species in their family tree or every member of a hybrid's recipe. They do not
+alter inherited ancestry, fertility, the displayed breeding match, or the
+sexuality rules above.
+
+You can normally save up to ten species preferences, one per species; use the
+allowance shown by your editor. Remove a species preference, or set it to zero,
+to stop adjusting attraction for that species. A zero preference still occupies
+one of your available entries. Saving an empty list clears all your preferences.
+These choices belong to the active character, not all characters on your account.
+
+If you switched characters, another view changed the preferences, or a selected
+species is no longer available, reload before saving again. Invalid changes do
+not partially replace your saved list.
 
 ---
 
@@ -480,8 +529,10 @@ its host's garden/relationship context. Ovum eligibility uses these same
 compositions; matching selected labels alone cannot grant eligibility. The
 species-only ovum overload compares donor ancestry against the supplied recipe.
 
-`SpeciesAffinityHelper` and `GeneticsHelper::calcSpeciesCompatibilityOf()` still
-return the lineage component alone. `SpeciesHelper::calcTaxonomicCompatibility()`
+`SpeciesAffinityHelper::compatibilityOfProfiles()` and
+`GeneticsHelper::calcSpeciesCompatibilityOf()` return the lineage component
+alone; the separate `affinityOfProfiles()` is an attraction score.
+`SpeciesHelper::calcTaxonomicCompatibility()`
 uses `TaxonomicHelper::speciesCompatibility()` for both purebreds and hybrids.
 `TaxonomicHelper::profileCompatibility()` and `profileSpeciesCompatibility()`
 provide the corresponding ancestry-aware comparisons. Profile and ovum scorers
@@ -520,7 +571,8 @@ execution remains part of deployment.
 ### `SpeciesAffinityHelper` (lineage-aware compatibility)
 
 `src/classes/helpers/SpeciesAffinityHelper.php` is the pure (no `EntityManager`
-access), unit-testable implementation of everything described above:
+access), unit-testable facade for composition overlap and attraction. Full
+breeding compatibility additionally uses the pipeline described earlier:
 
 - **`decompose(SpeciesModel $species): array`** — expands a species into a
   normalized `{baseSpeciesId => weight}` vector by recursively walking its
@@ -539,13 +591,117 @@ access), unit-testable implementation of everything described above:
   vectors, clamped to `[0, 1]`. This is the "smaller of the two shared slices,
   summed" rule verbatim.
 - **`compatibilityOfProfiles(ProfileModelImpl $a, ProfileModelImpl $b): float`**
-  — `compatibility(affinity($a), affinity($b))`; the two-character score shown
-  to players.
+  — the two characters' inherited species overlap, using one shared resolver;
+  not the full dashboard match score, which includes taxonomy and other modifiers.
 - **`compatibilityWithSpecies(ProfileModelImpl $profile, SpeciesModel $species): float`**
   — a character's lineage affinity intersected with a candidate species'
   decomposition (used, for example, when matching an ovum's gene-parent
   against a candidate breeder species; see
   [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)).
+
+### Personal attraction preferences and gaze processing
+
+`SpeciesAffinityHelper::affinityOfProfiles()` combines inherited overlap and
+weighted taxonomy by closing the remaining gap, then adds the observer's saved
+adjustment for the target's `getSpecies()`. Matching uses species object identity
+or persisted ID, not species names, ancestry leaves, or a separate preference
+for each hybrid member. The adjustment is divided by 100 and the final result
+clamped to `[0, 1]`. It is directional and does not modify
+`ProfileHelper::calcCompatibility()` or conception scoring.
+
+`ProfileHelper::isSexuallyAttractedTo()` in
+`src/classes/helpers/ProfileHelper.php` applies the observer-only sexuality
+rules described above using `resolveApparentGender()` for both characters.
+It does not check reciprocal attraction, a relationship, or breeding anatomy.
+
+`RolePlayService::on_system_ping()` in
+`src/classes/services/RolePlayService.php` assesses gaze only in `RunningState`.
+Candidates have active profiles and headers within two minutes in the same
+region, at a nonzero distance up to 25 metres and within 45 degrees of the
+observer's forward direction. These limits come from `HEADERS_WITHIN_MINUTES`
+and the arousal range/angle constants in `src/interfaces/Constants.php`.
+
+`affinityArousalIncrease()` then:
+
+1. Applies sexuality eligibility and requires attraction strictly above `0.5`.
+2. Sends each newly encountered qualifying target an owner-directed
+   `CommRegionSayTo` notice, even if the observer is already at the arousal cap.
+3. Persists the visible target IDs, region, and last-seen time in the observer's
+   `affinity.gaze.encounter` profile setting. Targets leaving view are pruned;
+   a region change or a gap over two minutes starts a new encounter. Non-running
+   active states clear encounter memory on their ping.
+4. Uses only the strongest eligible attraction for the arousal increment:
+   at most `0.05` per ping, bounded by `SpeciesAffinityHelper::arousalLimit()`
+   minus current arousal. Current arousal here includes any pending contribution
+   from watching another engagement.
+5. When the increment is positive, emits the observer's `CommOwnerSay` explanation
+   only if fifteen minutes have elapsed since `affinity.gaze.owner.notice`.
+   That timestamp is profile-scoped and persisted across encounters and requests;
+   suppressing narration never suppresses the increment or target notices.
+
+> **Boundary:** the separate arousal path for watching an ongoing engagement
+> does not use the sexuality gate or this observer-message cooldown. The gaze
+> candidate query also does not apply discovery's account block list; do not
+> advertise search blocking as a general interaction or attraction block.
+
+### Species preference storage and browser contract
+
+`ProfileSpeciesAffinitiesHelper` in
+`src/classes/helpers/ProfileSpeciesAffinitiesHelper.php` owns read state,
+validation, the allowance policy, and atomic replacement of preferences.
+`MyCharacterHelper` routes GET with `section=affinities` and the current
+`characterId`, returning `characterId`, `section`, `affinities`, `maxEntries`,
+and `version`. Entries contain `speciesId`, `speciesName`, and integer `affinity`,
+sorted by species ID. The version hashes the character ID and ordered ID/value
+pairs, not species names or the current allowance.
+
+POST to `/api?class=MyCharacterHelper&section=affinities&do=save` takes
+`characterId`, `version`, and the complete replacement `affinities` list; no
+`targetId` is needed. Each entry must contain only a positive integer
+`speciesId` and integer `affinity` in `[-100, 100]`, divisible by five.
+Duplicate or nonexistent species are rejected. An empty list clears preferences;
+zero values persist and count toward the allowance.
+
+The helper locks and refreshes the account, rechecks the active character,
+locks/refreshes the profile and existing preference entities, and compares the
+version. It validates the entire replacement and resolves every species before
+removing, changing, or adding entries. Invalid input or stale/foreign/inactive
+characters leave the collection unchanged and return `ok: false` with `error`;
+success returns `ok: true`, a message, and fresh detail state. Unsupported
+verbs/actions and unexpected failures are handled by `MyCharacterHelper`.
+
+`maxEntries()` reads `profile.species_affinities.max` (default 10), accepting a
+nonnegative integer including zero; invalid settings fall back to 10. This is
+the single policy point for future character-dependent allowances. Clients
+should read the returned allowance rather than assume ten.
+
+Apply `ddl/ProfileSpeciesAffinities.sql` before deploying the model/editor.
+`ProfileSpeciesAffinityModelImpl` in `src/classes/models/` maps
+`ane_profile_species_affinities` with a composite profile/species key and a
+bounded, five-step small-integer adjustment. Foreign keys cascade on profile
+or species deletion. `ProfileModelImpl::getSpeciesAffinities()` owns a lazy
+collection with persist/remove cascading and orphan removal; deleting an entry
+from a replacement list deletes its row.
+
+The selector can use GET `/api?class=SpeciesHelper&by=search&q=<text>`.
+`SpeciesLookupHelper` in `src/classes/helpers/SpeciesLookupHelper.php` shares
+lookup and option serialization with onboarding and form selection. Blank
+queries list caller-owned species; nonblank queries search species names.
+Options carry identity, hybrid recipe/type, spawnability, and reproductive
+specifics. Preference validation requires an existing species, not ownership
+or spawnability; this lookup does not itself grant permission to create a
+character of that species. The deployed selector's presentation is outside
+this repository.
+
+Coverage under `tests/unit/` includes `ProfileAttractionTest.php`,
+`SpeciesAttractionAffinityTest.php`, and `ProfileSpeciesAffinitiesHelperTest.php`.
+The E2E cases under `tests/e2e/cases/` include
+`ProfileSpeciesAffinitiesSaveValidatesAndPersistsTest.php`,
+`ProfileSpeciesAffinitiesMigrationEnforcesConstraintsTest.php`,
+`SpeciesLookupSharedAcrossProfileAndOnboardingTest.php`, and
+`SpeciesAffinityGazeRaisesArousalOnlyForVisibleAttractiveTargetsTest.php` for
+persistence, locking, migration constraints, shared lookup, directional
+attraction, encounter notices, and the separate observer cooldown.
 
 ### Composition resolution and cost
 

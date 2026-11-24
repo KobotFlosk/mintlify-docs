@@ -21,8 +21,9 @@ in-world browser.
 You can also choose **UI** from the **Start** menu before activating a
 character. That option opens the dashboard again rather than toggling it closed.
 When the companion initializes, accounts with no characters automatically open
-the dashboard for onboarding. Having existing characters but none active does
-not trigger that automatic opening.
+the dashboard for onboarding. Otherwise, an already-open browser view is restored,
+including when you have existing characters but none active. A previously closed
+browser stays closed.
 
 If an opening link has expired, open the view again from the companion.
 
@@ -45,6 +46,9 @@ and allow it to reconnect before trying again.
   defense), fertility/pregnancy flags, and body growth. Where offered, edit your
   optional sexuality and character picture; these can be shared in discovery
   results. See [Optional character identity](account-and-profiles.md#optional-character-identity).
+- **Species attraction preferences** — where offered, adjust your character's
+  attraction toward selected species without changing breeding compatibility;
+  see [Personal species preferences](species-compatibility.md#11-personal-species-preferences).
 - **Abilities** — any special ability your character currently has access to
   (for example, a shapeshifter's Shift ability, or Bite), with the same
   controls as the in-world menu.
@@ -73,7 +77,9 @@ and allow it to reconnect before trying again.
 - **Search & discovery** — other active characters nearby, online, or
   currently fertile, each with a compatibility percentage against your active
   character when available. Saved identity and inherited ancestry can appear
-  alongside the species name; see [Search & Discovery](search-and-discovery.md).
+  alongside the species name, with an indication of an ongoing engagement.
+  Where offered, combine discovery filters and save searches for reuse; see
+  [Search & Discovery](search-and-discovery.md).
   Nearby eligible results can offer a "Breed" button that sends the same
   request as the in-world Search menu.
 - **Gardens** — where offered, browse registered community locations and manage
@@ -169,8 +175,9 @@ describe supported interactions, not a verified inventory of deployed panels.
   regardless of tester role or administrator status. This path requires no
   active profile and always opens, rather than toggles, the browser.
   During system initialization, accounts with no profiles automatically open
-  the same signed Web UI for onboarding. Accounts with existing profiles do not
-  auto-open it, even if no profile is currently active.
+  the same signed Web UI for onboarding. For accounts with existing profiles,
+  initialization instead restores the saved media view as described below;
+  an inactive profile does not independently trigger onboarding.
 - **Legacy Tree handler:** `ProfileDialog::buildButtons()` no longer offers the
   Tree button. The retained `ProfileDialog::menu_profile_dialog()`
   `PROFILE_TREE` branch mints a
@@ -272,12 +279,14 @@ framework's `ApiService`/`ApiEvent` machinery (`/api?...`) and matched to
      (AI role-play narration limits), `privacy` (location broadcasting),
      `rlv` (movement/auto-strip/detachable/character-switching/relay
      restrictions), `access` (public access).
-   - `DiscoveryHelper` — scoped character rows with saved identity, species
-     definitions, individual ancestry, and canonical pair compatibility;
+   - `DiscoveryHelper` — scoped character rows with saved identity, engagement
+     activity, species definitions, individual ancestry, and canonical pair compatibility;
      `global` returns region activity. See
      [Web discovery rows](search-and-discovery.md#web-discovery-rows) for field
      contracts, precision, nulls, proximity, and privacy differences from HUD
-     dialogs. Its legacy `garden` scope remains unavailable.
+     dialogs. `scope=filter` adds account-owned presets and validated multi-choice
+     searches; see [Filter requests](search-and-discovery.md#filter-requests-and-persistence).
+     Its legacy `garden` scope remains unavailable.
    - `GardenHelper` — a separate, working directory and management surface;
      clients must use it instead of the legacy discovery garden scope. It
      shares live parcel registration checks with the HUD and restores its API
@@ -324,6 +333,25 @@ intentionally **not persisted**: it's cleared on state entry/exit, unlike the
 [The AI Role-Play Companion](ai-companion.md)).
 
 ### Media controls
+
+`MediaModule` (`src/classes/modules/MediaModule.php`) persists the loaded browser
+destination in the account's `hud.browser.url` setting; closing clears it.
+`AbstractAneState` restores it during system initialization and UUID handling.
+A missing/empty saved destination explicitly closes the media prim rather than
+assuming the viewer already hid it.
+
+When the saved destination matches the configured dashboard origin,
+`WebUiHelper::isUiUrl()` compares scheme, host, and effective port
+case-insensitively for scheme/host, rejects embedded user information, and
+does not trust a saved token. `createUrl()` signs a new launch for the current
+account and demo context; the old path, query, and fragment are not replayed.
+This also refreshes a dashboard address saved without a token. Other saved
+origins are reopened unchanged. This origin check is for restoring the
+dashboard, not a general allowlist for external destinations.
+
+`tests/e2e/cases/InitialStateInitializationRestoresSavedMediaUrlTest.php` and
+`tests/integration/helpers/WebUiHelperTest.php` cover fresh signing, saved
+non-dashboard destinations, closed views, and origin matching.
 
 `MediaHelper` (`src/classes/helpers/MediaHelper.php`) handles POST at
 `/api?class=MediaHelper`, with an `action` in the request body:
@@ -380,10 +408,11 @@ return errors; unexpected failures are logged with a generic client message.
 | `change` | Race and gender summary plus directions back to the HUD. | None. |
 | `genetics`, `births` | Delegates to the read-only history helpers. | None; see [History APIs](reproduction-and-genetics.md#history-api-visibility). |
 | `profile` | Optional identity, personal fluid definitions, and incubator contents/volumes. | `save-profile-identity`; also `switch-character`, only in `RunningState`, which transactionally leaves the current profile and checks arrival in `InitialState`. |
+| `affinities` | Personal species attraction adjustments, allowance, and version. | `save`, replacing the whole list after validation and stale-view checks; see [Species preference contract](species-compatibility.md#species-preference-storage-and-browser-contract). |
 
 Most GET panels use `groups` with labelled `details`, `entries`, and action metadata.
 Most mutations require a nonempty `targetId` in addition to `characterId`; the
-switch and identity-save actions do not. The frontend must re-read panels after successful
+switch, identity-save, and affinity-save actions do not. The frontend must re-read panels after successful
 mutations rather than assuming a submitted action is still available.
 
 The `profile` GET is not a grouped panel: it returns `identity`, `fluids`, and

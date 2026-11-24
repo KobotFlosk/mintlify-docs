@@ -119,7 +119,7 @@ responsibility:
 | **States** | `classes/states` | Request-handling flow / gameplay loop (above). |
 | **Stories** | `classes/stories` | Self-contained intimate "scenes" (oral, anal, breed, oviposit, climax) offered inside `CopulateState`. Each is a `StoryInterface` with its own actions and dialogs. |
 | **Services** | `classes/services` | Long-lived cross-cutting subscribers (interaction routing, role-play, AI, attachments, fluid transfer, profile modifiers, the web portal). |
-| **Modules** | `classes/modules` | Feature bundles attached to a session (copulate, birth/adopt offers, packs, store, media, Lovense, RLV shared folders, command line). |
+| **Modules** | `classes/modules` | Feature bundles attached to a session (copulate, birth/adopt offers, store, media, Lovense, RLV shared folders, command line). |
 | **Helpers** | `classes/helpers` | Domain logic, queries, and API surfaces: profiles, species, genetics, fluids, pregnancy, birth, ovum, incubators, compatibility, attachments, transactions, etc. |
 | **Models** | `classes/models` + `interfaces/models` | Doctrine entities (interface + `…Impl`) for accounts, profiles, species, births, pregnancies, fluids, ovum, items, plugins, sessions, and more. |
 | **Repositories** | `classes/repos` | Doctrine repositories; persistence and queries per aggregate, mapped in `Application`. |
@@ -207,6 +207,68 @@ a chain of cooperating helpers (`FluidsHelper`, `IncubatorHelper`, `OvumHelper`,
   environment name, logging level, third-party keys). **Never** commit secrets;
   configuration specifics stay out of end-user documentation.
 
+### Deployment announcements
+
+`deploy.commence.json` and `deploy.conclude.json` are notification templates.
+Cloud Build runs `bin/render-deploy-notifications.php` after fetching secrets
+and before the first announcement. It writes `commence.json` and
+`conclude.json` under `/workspace/deploy-notifications`; the two curl steps
+send those generated payloads to the existing broadcast endpoint.
+
+| Placeholder | Value |
+|---|---|
+| `{{commit.tag}}` | A tag verified against the deployed SHA; the short SHA when no tag is available |
+| `{{commit.title}}` | First line of the deployed commit message |
+| `{{commit.description}}` | Remaining commit message, with surrounding whitespace trimmed |
+
+The helper reads `GITHUB_REPOSITORY`, `DEPLOY_COMMIT_SHA`, and
+`DEPLOY_TAG_NAME`, supplied from Cloud Build's `REPO_FULL_NAME`, `COMMIT_SHA`,
+and `TAG_NAME`. Cloud Build injects `GITHUB_TOKEN` into only the rendering step
+using `availableSecrets` and `secretEnv`, referencing the existing `github-token`
+Secret Manager secret. The build service account needs Secret Accessor on that
+secret, and the GitHub token needs read access to the application repository.
+The renderer does not use Composer's `github-oauth` / `auth.json` credential:
+that token returned HTTP 404 for the private application repository, causing
+announcements to show only the short SHA and `Update`. The application token
+was verified to read the same commit and its release tag. No application boot
+or Composer installation is required. Metadata is fetched once for both
+announcements.
+
+A trigger tag is resolved through any annotations and checked against the
+exact build SHA. Branch builds select the highest numeric `YY.M.D.Rev` tag
+pointing to that SHA, across all retrieved tag pages. Missing tags are retried
+three times at five-second intervals to allow the separate tagging workflow
+to finish. Tag errors keep the commit title/body and use the short SHA;
+unavailable commit metadata produces a generic update announcement. Build logs
+identify missing `GITHUB_TOKEN` and HTTP failures (including private-repository
+access checks for HTTP 404), without printing credentials or API response bodies.
+
+Substitution happens in parsed JSON string values in a single pass, so quotes,
+newlines, and placeholder-looking commit text remain safe literal data.
+Unknown template variables fail rendering. Each rendered `root:AnE.output`
+`owner.say` message is split into numbered actions when it exceeds 1,024 UTF-8
+bytes, including the numbering overhead. Splitting prefers paragraphs, lines,
+and spaces before cutting between Unicode characters. The first message keeps
+its `/me` prefix. All text is retained; no commit link or message-count cap is
+added. Short messages remain unchanged.
+
+For an offline preview, put the three dotted placeholder names and their string
+values in a JSON object, then run:
+
+```bash
+php bin/render-deploy-notifications.php /tmp/ane-notifications /tmp/commit-metadata.json
+```
+
+This writes payload files only and does not broadcast them. Set
+`DEPLOY_TEMPLATE_DIRECTORY` to preview a different directory containing
+`deploy.commence.json` and `deploy.conclude.json`; when unset, the helper uses
+the repository templates. Templates can omit any metadata placeholders.
+The integration tests use fixed templates for chunking and fallback behavior
+and check the current repository templates separately, so announcement wording
+can change without requiring the behavioral tests to be rewritten. Coverage lives in
+`tests/unit/DeploymentNotificationTest.php` and the deployment metadata and
+notification integration tests under `tests/integration/infrastructure/`.
+
 ### Observability & metrics endpoints
 
 Operational metrics run independently of the account/profile HUD request path.
@@ -233,9 +295,14 @@ counts header rows, not distinct owners, so multiple devices can inflate counts.
 
 An **account** (`AccountModelImpl`) represents the caller and owns one or more
 **profiles** (`ProfileModelImpl`, the character aggregate); one profile is
-active at a time. Optional character identity is persisted through
-`ProfileIdentityHelper`, with active-character checks and versioned saves,
-and read by the dashboard and discovery without changing reproductive biology.
+active at a time. Native dialogs and the browser share `ProfileIdentityHelper`
+for optional identity, with active-character checks and versioned saves;
+the dashboard and discovery read that identity without changing reproductive biology.
+Personal species preferences are stored separately and adjust directional
+attraction, not genetic compatibility. `RolePlayService` combines these
+preferences with sexuality eligibility for idle gaze effects, keeping target
+encounter notices separate from cooldown-limited observer narration. See
+[Species attraction](species-compatibility.md#personal-attraction-preferences-and-gaze-processing).
 Roles (`AccountRoleEnum`) and permissions
 (`AccountPermissionEnum`) gate privileged features (e.g. the AI companion).
 See [Accounts & Profiles](account-and-profiles.md).
@@ -249,8 +316,11 @@ and header/presence queries (`HeaderHelper`). A community-maintained directory
 of public breeding-friendly locations (`SimulatorModelImpl`, `GardenHelper`) is
 browsable from the Gardens scope, and `AccountBlockHelper` lets a character
 exclude another from their own character results. `DiscoveryHelper` exposes
-browser character searches, while `GardenHelper` separately handles browser
-listing and management with HUD-backed parcel checks.
+browser character searches and engagement activity; `DiscoveryFilterHelper`
+validates multi-criteria searches and stores versioned account-owned presets.
+Filters refine the ordinary online rows rather than bypassing their scope or
+block checks. `GardenHelper` separately handles browser listing and management
+with HUD-backed parcel checks.
 
 The shared `SpeciesCompositionHelper` resolves recipes and family inheritance.
 `CharacterAncestryHelper` presents an individual's full ancestry and definition
@@ -258,14 +328,6 @@ match independently of `CompatibilityHelper`'s pair-specific score and
 contribution breakdown. The search API returns both without treating a species
 label or a positive-match contributor list as a substitute for ancestry. See
 [Search & Discovery](search-and-discovery.md).
-
-### Packs & groups
-
-`PackModule` (`classes/modules/`) lets a profile create or join a small,
-role-hierarchied group (`ProfilePackModelImpl` / `ProfilePackRoleModelImpl`,
-roles from `ProfilePackRoleHelper`), reached from the profile menu, with
-newborns inheriting their mother's pack role at birth (`InitialState`). See
-[Packs & Groups](packs-and-groups.md).
 
 ### The AI role-play companion
 
@@ -309,7 +371,9 @@ clients, with Redis events accelerating delivery rather than owning the prompt.
 without ending others. `MediaHelper` queues owner-only website prompts or closes
 the media view, while `WebUiHelper` shares signed dashboard routing between the
 Web button and the pre-character Start menu for every account. Accounts without
-profiles also open it automatically during initialization. Dashboard host
+profiles also open it automatically during initialization. Other saved media
+views are restored, with fresh launch tokens for the configured dashboard
+origin rather than reusing expired opening links. Dashboard host
 selection depends on configuration and the request's test-domain classification,
 not tester eligibility. See
 [The Companion Web Dashboard](companion-dashboard.md).
@@ -371,7 +435,6 @@ parallel `CommandHelpService` bus for `/ane help <topic>`. See
 - Shapeshifting biology → [Form Shapeshifters](form-shapeshifters.md)
 - Consumable items and attachable devices → [Attachable Items & Devices](attachable-items-and-devices.md)
 - Accounts, characters, and access → [Accounts & Profiles](account-and-profiles.md)
-- Forming a named group with roles and invites → [Packs & Groups](packs-and-groups.md)
 - Finding other characters and breeding locations → [Search & Discovery](search-and-discovery.md)
 - The optional AI narrator → [The AI Role-Play Companion](ai-companion.md)
 - External services and third-party product compatibility → [Third-Party Integrations & Product Compatibility](third-party-integrations.md)

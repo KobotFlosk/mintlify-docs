@@ -32,22 +32,35 @@ Two different things are tracked for every person who uses the system:
 
 ### Optional character identity
 
-Where your dashboard offers **Character → Profile → Change**, you can save a
-sexuality and character picture for your active character. The sexuality choices
+Open **MyProfile → Change → Sexuality** or **Profile Image** in-world to edit
+your active character's identity. Where your dashboard offers
+**Character → Profile → Change**, it edits the same details. The sexuality choices
 are Straight, Gay, Lesbian, Bi, Pan, Asexual, Demisexual, and Questioning; leaving
 it unspecified is also supported. These are character identity details, not
-changes to reproductive biology or breeding compatibility.
+changes to reproductive biology or breeding compatibility. Sexuality does affect
+automatic attraction from looking at another character; see
+[Species affinity and arousal](species-compatibility.md#10-species-affinity-and-arousal).
 
 These details belong to the character, so changing appearance through
 shapeshifting does not replace them. They can appear in the character overview
 and other people's discovery results: only save details you intend to share.
-Leaving a detail blank clears it.
+In-world, choose **Not specified** to clear sexuality. For a picture, choose
+**Set image** and paste the texture identifier for your chosen picture from the
+virtual world; use **Clear image** to remove it. An empty picture reply cancels
+that edit without removing the existing picture. In the browser editor, leaving
+either detail blank clears it.
 
 If you change characters while editing, refresh before saving. If another edit
 has already changed the same details, reload the latest values rather than
 overwriting them from an old view. A rejected picture or sexuality leaves both
 details unchanged. A picture that saves successfully may still be unavailable
-to display.
+to display. In-world, an invalid picture keeps the entry prompt open so you can
+correct it; an outdated edit sends you back to reopen the editor.
+
+Your character can also have personal species attraction preferences, separate
+from identity and breeding compatibility. See
+[Personal species preferences](species-compatibility.md#11-personal-species-preferences)
+for their effects and supported browser controls.
 
 ### Relationships and trust
 
@@ -67,13 +80,6 @@ to display.
   access, and partnership) and their priority order are described under
   [When a breeding request auto-accepts](interaction-lifecycle.md#when-a-breeding-request-auto-accepts).
 
-### Packs
-
-Characters can also band together into a named **pack** with a small
-leadership hierarchy (an Alpha, optional Betas, and Omegas), reached from your
-character's profile menu. See [Packs & Groups](packs-and-groups.md) for the
-full walkthrough.
-
 ### Professions
 
 A character can be granted a **profession title** (for example, Chemist or
@@ -83,8 +89,8 @@ title is simply recorded on your character.
 
 ### Blocking
 
-You can block another person from your nearby, online, and fertile character
-results.
+You can block another person from your nearby, online, fertile, and filtered
+character results.
 Blocking is one-directional — it only affects what you see, doesn't notify the
 other person, and doesn't stop them from finding or contacting you through
 other means. Name-based profile searches and region activity totals are not
@@ -240,7 +246,6 @@ into the broader state machine.
 
 - Layered architecture and the request lifecycle → [Architecture](architecture.md)
 - Finding other characters and breeding locations → [Search & Discovery](search-and-discovery.md)
-- Forming a named group with roles and invites → [Packs & Groups](packs-and-groups.md)
 - How a profile's biology drives scenes → [Interaction & Role-Play Lifecycle](interaction-lifecycle.md)
 - How a profile's genetics/species are inherited → [Reproduction & Genetics Lifecycle](reproduction-and-genetics.md)
 - The optional AI narrator and its access gating → [The AI Role-Play Companion](ai-companion.md)
@@ -264,23 +269,108 @@ Apply `ddl/ProfileIdentity.sql` before deploying this model change. It is an
 additive PostgreSQL migration; no live database is modified by the code change.
 
 `ProfileIdentityHelper` (`src/classes/helpers/ProfileIdentityHelper.php`) owns
-normalization and persistence. The dashboard integration targets Character →
+normalization and persistence for both native and browser editing. Its
+`saveValues()` accepts the character ID, version, and complete identity values;
+the API-facing `save()` delegates to it. The dashboard integration targets Character →
 Profile → Change; the separate frontend is not present here, so its deployed
 editor and image preview cannot be verified from this repository.
 `MyCharacterHelper` (`src/classes/helpers/MyCharacterHelper.php`) profile GET
-includes
-`identity: { sexuality, sexualityOptions, imageUuid, version }`. `sexuality` is
+includes the sexuality and relationship choices, the profile portrait
+(`imageUuid`), the `personality` and `images` profile settings, and the version.
+`sexuality` is
 the enum's backing value or null. `sexualityOptions` is the enum-derived list of
 `{ value, label }` choices used by the editor. Labels are not used as stored keys
 and are excluded from the version hash. POST with `section=profile` and
 `do=save-profile-identity` takes
 `{ characterId, version, values: { sexuality, imageUuid } }`, normalizes both
 values before changing the model, and returns `{ ok, characterId, identity,
-message }` on success. Both keys must be present, with no extra keys inside
-`values`. Null or blank clears either field; image keys are trimmed and
-lowercased. Requests cannot select an inactive or foreign character; the
-authenticated account is locked
-and its active character is rechecked before saving. The version is a hash of
+message }` on success. Both keys are required. The editor may also submit
+`race`, `relationship`, `personality`, and `images`. Null or blank clears sexuality or
+the portrait. Image keys are trimmed and lowercased.
+
+Profile → Change and the HUD’s Character → Change menu let the owner set the
+base character’s `p_race` once, for free. The response includes `race` and
+`canSetRace`. A blank Race can be filled in later. A Race supplied at creation,
+inherited at birth, or saved previously is already permanent. Both editors use
+the same name formatting, character ID, version, and locked save operation.
+
+Personality can be saved on its own and accepts up to 4,096 Unicode characters.
+Earlier, longer descriptions are preserved until the owner edits them.
+The first reference image submission
+requires a personality and eight distinct Second Life texture UUIDs, stored
+in field order in the `images` profile setting. An empty array leaves the
+character eligible to submit references later. Once any references are stored,
+the set is permanent, including partial sets saved by older releases. The editor
+displays the saved thumbnails and omits `images` when updating Personality or
+the separate portrait. The backend rejects changes to the set while holding
+the profile lock.
+
+### Full-body portrait on the web Overview
+
+An account with the explicit Tester role can generate and download a front-view
+portrait of its active character. Portrait settings use `.env` first and fall
+back to `ane_application` for missing keys. With Google enabled, ANE sends
+the saved personality and eight JPEGs to Vertex AI’s
+global `gemini-3.1-flash-image:generateContent` endpoint. It uses Google
+Application Default Credentials. On the production VM, the attached service
+account has the `aiplatform.endpoints.predict` permission. [Google image-editing API](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/gemini-edit-images)
+
+Set `ai.image.google.enabled=false` in `.env` to use the self-hosted service
+directly, or `true` to try Google first. For a database-managed toggle, omit
+that key from `.env`. Apply `ddl/ProfilePortraitGoogle.sql` to seed the
+database defaults, then update the toggle as needed.
+
+```sql
+UPDATE ane_application SET a_val = 'false' WHERE a_key = 'ai.image.google.enabled';
+```
+
+A missing or disabled toggle selects the self-hosted service. When enabled,
+Vertex AI uses `GOOGLE_CLOUD_PROJECT` from `.env`, the same project used for
+Cloud Logging. A nonblank `ai.image.google.project` overrides it for portraits.
+If an earlier migration populated that setting with `nuekryl`, clear its value
+to have portraits follow `GOOGLE_CLOUD_PROJECT`.
+If Google authentication, the request, or the returned image fails, ANE tries the
+configured self-hosted service once with the same downloaded JPEGs. An enabled
+Google project can also serve portraits with an empty self-hosted URL.
+The request log records when Vertex returns a validated portrait. If an HTTP 200
+response contains no usable portrait, the warning includes the available Google
+`finish_reason` or `block_reason` and distinguishes missing from invalid image data.
+When Google returns `IMAGE_SAFETY` and no provider delivers a portrait, Overview
+shows the safety decision along with any fallback error.
+
+Keep `ai.image.url` on `/v1/images/generations` for text-only image generation.
+For Full Body, ANE posts to `/v1/images/edits` on that same server. An explicitly
+configured edit URL is also supported. Set `ai.image.model` for the model and
+`ai.image.apiKey` if the service requires a bearer token.
+
+The multipart `prompt` field contains the four portrait instructions followed
+by the saved personality. Each of the eight ordered JPEGs is a separate binary
+`image[]` file part with content type `image/jpeg`. ANE requests one 256 × 256
+PNG with `n=1`, `size=256x256`, and `output_format=png`, and reads it from
+`data[0].b64_json`. [stable-diffusion.cpp edit API](https://github.com/leejet/stable-diffusion.cpp/blob/master/examples/server/api.md#post-v1imagesedits)
+
+The request log includes the host, reference count, byte counts, and request
+format.
+Overview reports a JSON-only endpoint rejecting a multipart upload. When
+sd-server accepts an edit and its model returns no image, Overview
+directs the operator to the renderer’s log.
+
+`StatusHelper.isTester` controls visibility. `MyCharacterHelper` checks the
+role and active character on both portrait operations. GET with
+`section=portrait&characterId=<id>` reads availability and the latest portrait.
+POST with `section=portrait&do=generate` takes `{ characterId }` and an optional
+`size` string for Gemini. A blank or omitted size lets Gemini choose. For an
+explicit size, ANE requests the nearest supported aspect ratio and resolution
+class. Dimensions must be positive whole pixels within the 16,777,216-pixel
+output limit. Overview displays the dimensions of the returned image.
+
+PHP loads all eight saved texture keys as 320 × 240 JPEGs from the Second Life Picture
+Service. An unavailable reference stops the edit before either provider is called.
+On success, the backend saves
+the result under the character’s `generated-full-body-portrait` setting.
+
+The backend locks the authenticated account and rechecks its active character
+before saving. The version is a hash of
 the character ID and current identity values, checked after refreshing the
 locked profile to reject stale editors. `ProfileHelper::lockAndRefresh()` locks
 the profile row first and then refreshes it without a lock mode, avoiding
@@ -292,7 +382,7 @@ and reported with its generic refresh message.
 
 `StatusHelper.character` supplies the readable sexuality label and image UUID
 for the Overview. `DiscoveryHelper` exposes the same saved details for other
-accounts' active characters in Region, Online, and Fertile results; unset values
+accounts' active characters in Region, Online, Fertile, and filtered results; unset values
 remain null. It does not expose identity from an account's inactive characters.
 These reads do not offer a separate per-field privacy gate, so clients must not
 present the editor as private storage. See
@@ -310,3 +400,30 @@ clearing, enum hydration for every predefined value, and preservation of existin
 every sexuality label, missing values, inactive accounts, and subsequent updates.
 `tests/integration/helpers/ProfileLockRefreshTest.php` covers the separate
 lock-and-refresh sequence.
+
+### Native identity editing
+
+`MyProfileDialog::menu_character_change()` in
+`src/classes/prefabs/dialogs/MyProfileDialog.php` opens
+`ProfileIdentityDialog` (`src/classes/prefabs/dialogs/ProfileIdentityDialog.php`)
+for either sexuality or profile image. The dialog stores a scalar character ID
+and identity snapshot, not a serialized entity. Changing one field submits both
+snapshot values through `ProfileIdentityHelper::saveValues()`, so native and
+browser editors share validation, account/profile locking, and stale-view guards.
+
+- **Race** appears while the base character's Race is blank. The owner enters
+  and confirms the permanent name. Previously opened payment dialogs for Race
+  direct the owner back to the HUD menu without debiting the account.
+- Sexuality buttons come from `SexualityTypeEnum`; **Not specified** saves null.
+- **Set image** opens a textbox; whitespace-only input returns without saving.
+  Invalid syntax keeps the textbox open with the error and prompt.
+- **Clear image** is offered only when the snapshot has an image and explicitly
+  saves null. A dialog timeout does not save.
+- Successful saves replace the snapshot with the returned identity and version,
+  notify the owner, and retain the editor. Stale or switched-character edits
+  notify the owner and return to the previous menu for a fresh snapshot; losing
+  the active character closes the flow.
+
+`tests/e2e/cases/ProfileIdentityHudDialogsPersistAndRejectStaleEditsTest.php`
+exercises serialized dialogs, the free one-time Race choice, clearing, invalid input, concurrent
+web edits, character changes, and owner-only success/error messages.
