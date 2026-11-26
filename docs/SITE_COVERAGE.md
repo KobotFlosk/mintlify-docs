@@ -1,5 +1,46 @@
 # Published documentation coverage
 
+## November 26, 2026 navigation cleanup
+
+Reorganized the sidebar around eight player tasks: Start here, Characters and
+stats, Species and ancestry, Roleplay and discovery, Breeding and family,
+Add-ons and items, Credits and store, and Help and development. Labels are
+shorter and consistent, without the old mixed emoji/all-caps section names.
+Main groups default to open. Nested groups default to collapsed; Starlight
+expands the nested group containing the current page.
+Stats, conception details, integrations, plugins, items, and developer resources
+use nested groups to keep the main list compact.
+
+Kept every player guide at its existing URL. The main species compatibility
+guide is now the sidebar entry; the older compatibility examples remain linked
+from that guide. Added the previously unlisted classes/forms guide. Updated
+Getting Started and homepage links to match the new topic organization.
+
+At the user's request, removed the technical flow diagrams page, its unused
+`SourceDiagram.astro` component, and all published links to it. Its old address
+redirects to `/development` in both Astro and Netlify. The imported Markdown
+sources and all their diagrams are untouched. The seven player-facing ancestry
+flowcharts and `AncestryFlowchart.astro` remain unchanged.
+
+Verification: `npm run validate` passed with zero Astro diagnostics, 80 generated
+HTML pages (including redirect pages), 6,652 checked local links/assets, and all
+69 migrated routes retained. Checked the rendered sidebar on the homepage and
+five representative guides: all eight top-level groups appear in order, all 61
+sidebar destinations are unique, and all main groups start expanded while
+inactive nested groups stay collapsed. Existing page IDs are preserved except on the
+explicitly withdrawn technical diagram page. All imported source hashes and
+the seven ancestry chart figures match the pre-edit baseline.
+
+Both development and production previews return the new navigation. The old
+technical diagram URL serves an Astro redirect page to `/development`; the
+matching Netlify HTTP 301 rule is configured but not deployed. Production
+Pagefind returns Oviposit and ancestry results and no technical flow diagram
+page. Browser automation was unavailable, so visual desktop/mobile review
+remains for local review at `http://127.0.0.1:4324`.
+
+The records below describe earlier publication states, including the now-removed
+technical diagram page. This pass is local and uncommitted.
+
 ## November 24, 2026 synchronization
 
 Compared the full `/Volumes/Personal-Drive/docs` directory with this repository's
@@ -94,7 +135,7 @@ sections, so those player pages did not need a rewrite.
 Audited all 24 supplied files for Mermaid, text flow diagrams, and structural
 layouts. All nine Mermaid diagrams are now represented on the site: the existing
 seven ancestry charts plus the ability resolver and shared scene-choice charts.
-The [Technical flow diagrams](../src/content/docs/development/source-diagrams.mdx)
+The `Technical flow diagrams` (withdrawn November 26)
 page also preserves all seven text flow diagrams (request lifecycle,
 reproduction, interaction states, service linking, purchase, reward, and command
 dispatch) and the RLV shared-folder layout. Related player guides and the

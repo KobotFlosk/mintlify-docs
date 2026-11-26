@@ -23,3 +23,10 @@
   to = "/getting-started/operation"
   status = 301
   force = true
+
+# The technical diagrams page was withdrawn; retain its old address.
+[[redirects]]
+  from = "/development/source-diagrams"
+  to = "/development"
+  status = 301
+  force = true
